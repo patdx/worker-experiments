@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["vite build --watch", "wrangler pages dev ./dist"],
+        "cwd": "packages/cloudflare-pages-htmx"
+      }
+    }
+  }
+}

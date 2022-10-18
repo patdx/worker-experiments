@@ -1,0 +1,4 @@
+# https://developers.cloudflare.com/pages/platform/headers/
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable

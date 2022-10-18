@@ -5,19 +5,28 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "wrangler pages dev ./public"
+    "dev": "nx dev",
+    "build": "vite build --emptyOutDir",
+    "deploy": "vite build --emptyOutDir && wrangler pages publish ./dist"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@cloudflare/workers-types": "^3.14.1",
+    "@types/node": "^18.11.0",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
+    "autoprefixer": "^10.4.12",
+    "postcss": "^8.4.18",
+    "tailwindcss": "^3.1.8",
     "typescript": "^4.7.4",
+    "vite": "^3.1.8",
     "wrangler": "^2.0.22"
   },
   "dependencies": {
+    "clsx": "^1.2.1",
+    "htmx.org": "^1.8.2",
     "preact": "^10.11.2",
     "preact-render-to-string": "^5.2.5",
     "react": "npm:@preact/compat",
