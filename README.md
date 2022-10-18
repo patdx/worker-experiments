@@ -3,6 +3,8 @@
 This repo contains some simple experiments with htmx to see what kind of small
 dynamic site is possible.
 
+Even with something like HTMX, JSX is my favorite templating language. Also, as the cloudflare workers runtime works on JSX, and HTMX needs to be paired with a server that can generate HTML, they seem like they would be good companions for for a small, fast, website.
+
 ## remix-htmx
 
 Preview: https://remix-alpine-htmx.pmil.workers.dev/
