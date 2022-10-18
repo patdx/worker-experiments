@@ -3,15 +3,18 @@
 This repo contains some simple experiments with htmx to see what kind of small
 dynamic site is possible.
 
-Even with something like HTMX, JSX is my favorite templating language. Also, as the cloudflare workers runtime works on JSX, and HTMX needs to be paired with a server that can generate HTML, they seem like they would be good companions for for a small, fast, website.
+Even with something like HTMX, JSX is my favorite templating language. Also, as
+the cloudflare workers runtime works on JSX, and HTMX needs to be paired with a
+server that can generate HTML, they seem like they would be good companions for
+for a small, fast, website.
 
 ## remix-htmx
 
 Preview: https://remix-alpine-htmx.pmil.workers.dev/
 
 This experiment did not work so well because while Remix supports no Javascript
-mode, it does not support "some javascript" mode. If I want to have
-htmx and tailwind bundled and hashed, Remix also seems to be bundling the full react,
+mode, it does not support "some javascript" mode. If I want to have htmx and
+tailwind bundled and hashed, Remix also seems to be bundling the full react,
 which defeats the purpose.
 
 ## cloudflare-pages-htmx
@@ -29,6 +32,12 @@ pages to html, but the server response speed is already extremely fast.
 
 Since hydration is not needed, the server side is actually using preact and
 preact-render-to-string.
+
+## cloudflare-solid-app
+
+Preview: https://cloudflare-solid-app.pmil.workers.dev/
+
+Just a simple served solid start app.
 
 ## Future ideas:
 
