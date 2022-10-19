@@ -35,9 +35,11 @@ preact-render-to-string.
 
 ## cloudflare-solid-app
 
-Preview: https://cloudflare-solid-app.pmil.workers.dev/
+Preview: https://cloudflare-solid-app.pages.dev/
 
 Just a simple served solid start app.
+
+The URL https://cloudflare-solid-app.pages.dev/api/hello will serve two `set-cookie` headers.
 
 ## Future ideas:
 
