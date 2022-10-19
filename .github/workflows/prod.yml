@@ -43,3 +43,6 @@ jobs:
 
       - name: Build apps
         run: pnpm nx build cloudflare-solid-app
+
+      - name: Deploy cloudflare-solid-app
+        run: pnpm nx deploy cloudflare-solid-app
