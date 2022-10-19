@@ -1,7 +1,7 @@
-# htmx-experiments
+# worker-experiments
 
-This repo contains some simple experiments with htmx to see what kind of small
-dynamic site is possible.
+This repo contains some simple experiments with Cloudflare Workers and
+htmx to see what kind of small dynamic site is possible.
 
 Even with something like HTMX, JSX is my favorite templating language. Also, as
 the cloudflare workers runtime works on JSX, and HTMX needs to be paired with a
