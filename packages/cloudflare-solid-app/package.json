@@ -3,7 +3,8 @@
   "scripts": {
     "dev": "solid-start dev",
     "build": "solid-start build",
-    "start": "solid-start start"
+    "start": "solid-start start",
+    "deploy": "wrangler pages publish --project-name cloudflare-solid-app ./dist/public"
   },
   "type": "module",
   "devDependencies": {
