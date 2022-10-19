@@ -45,6 +45,6 @@ jobs:
         run: pnpm nx build cloudflare-solid-app
 
       - name: Deploy cloudflare-solid-app
-        run: pnpm nx deploy cloudflare-solid-app
+        run: echo $CLOUDFLARE_API_TOKEN && pnpm nx deploy cloudflare-solid-app
         env: # Or as an environment variable
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
