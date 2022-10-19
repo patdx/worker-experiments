@@ -2,7 +2,7 @@
   "name": "cloudflare-solid-app",
   "scripts": {
     "dev": "solid-start dev",
-    "build": "solid-start build",
+    "build": "solid-start build && wrangler pages functions build ./functions --output-routes-path ./pages/_routes.json --output-config-path ./pages/config.json --outfile ./pages/_worker.js",
     "start": "solid-start start",
     "deploy": "wrangler pages publish --project-name cloudflare-solid-app ./dist/public"
   },
