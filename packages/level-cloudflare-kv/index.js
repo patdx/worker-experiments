@@ -16,15 +16,17 @@ export class CloudflareKvLevel extends AbstractLevel {
   ns;
 
   // This in-memory example doesn't have a location argument
-  constructor(options) {
+  constructor(path, options) {
+    console.log(`constructor`, path);
     // Declare supported encodings
     const encodings = { utf8: true };
 
     // Call AbstractLevel constructor
     super({ encodings }, options);
 
+    // './sandbox/cloudflare-kv'
     // Create a map to store entries
-    this.ns = new KVNamespace(new FileStorage('./sandbox/cloudflare-kv'));
+    this.ns = new KVNamespace(new FileStorage(path));
   }
 
   _open(options, callback) {
@@ -74,11 +76,24 @@ export class CloudflareKvLevel extends AbstractLevel {
   _batch(/** @type {any[]} */ operations, options, callback) {
     console.log('_batch', JSON.stringify(operations));
     Promise.all(
-      operations.map(async (op) => {
+      operations.map(async (op, index) => {
         if (op.type === 'put') {
-          await this.ns.put(op.key, op.value);
+          // to support official test suite, a "del" operation that follows "put"
+          // for the same key should override the "del"
+          const foundIndex = operations.findIndex(
+            (item, itemIndex) =>
+              itemIndex >= index && item.key === op.key && item.type === 'del'
+          );
+          if (foundIndex >= 0) {
+            console.log(
+              `found an op that would replace this one, skipipng put ${op.key}`
+            );
+          } else {
+            await this.ns.put(op.key, op.value);
+          }
         } else {
           await this.ns.delete(op.key);
+          console.log(`deleted`, op.key);
         }
       })
     )
