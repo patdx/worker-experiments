@@ -1,30 +1,54 @@
-import { A } from "solid-start";
-import Counter from "~/components/Counter";
+import { A, Link } from 'solid-start';
+import Counter from '~/components/Counter';
 
 export default function Home() {
   return (
     <main class="text-center mx-auto text-gray-700 p-4">
-      <h1 class="max-6-xs text-6xl text-sky-700 font-thin uppercase my-16">
-        Hello world!
-      </h1>
+      <div class="flex gap-4 justify-center">
+        <h1 class="max-6-xs text-6xl text-sky-700 font-thin uppercase my-16">
+          Hello world!
+        </h1>
+
+        {/* https://www.w3.org/International/articles/vertical-text/ */}
+        <Link rel="preconnect" href="https://fonts.googleapis.com" />
+        <Link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <Link
+          href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500&display=swap"
+          rel="stylesheet"
+        />
+
+        <div
+          lang="ja"
+          style={{
+            'writing-mode': 'vertical-rl',
+            'font-family': "'Noto Serif JP', serif",
+          }}
+        >
+          ハロー世界
+        </div>
+      </div>
       <Counter />
       <p class="mt-8">
-        Visit{" "}
+        Visit{' '}
         <a
           href="https://solidjs.com"
           target="_blank"
           class="text-sky-600 hover:underline"
         >
           solidjs.com
-        </a>{" "}
+        </a>{' '}
         to learn how to build Solid apps.
       </p>
       <p class="my-4">
         <span>Home</span>
-        {" - "}
+        {' - '}
         <A href="/about" class="text-sky-600 hover:underline">
           About Page
-        </A>{" "}
+        </A>{' '}
       </p>
     </main>
   );

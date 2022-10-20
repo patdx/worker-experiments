@@ -2,89 +2,89 @@ var manifest = {
 	"/(pages)": [
 	{
 		type: "script",
-		href: "/assets/(pages).d50501aa.js"
+		href: "/assets/(pages).8b2c88f4.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.bbe4bf18.js"
+		href: "/assets/entry-client.982c2df2.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client.b4a47d5a.css"
+		href: "/assets/entry-client.cc032adb.css"
 	}
 ],
 	"/(pages)/about": [
 	{
 		type: "script",
-		href: "/assets/about.f7c87877.js"
+		href: "/assets/about.b3f55b5c.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.bbe4bf18.js"
+		href: "/assets/entry-client.982c2df2.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client.b4a47d5a.css"
+		href: "/assets/entry-client.cc032adb.css"
 	},
 	{
 		type: "script",
-		href: "/assets/Counter.4a85abca.js"
+		href: "/assets/Counter.1f108553.js"
 	}
 ],
 	"/(pages)/": [
 	{
 		type: "script",
-		href: "/assets/index.6bc4a9ed.js"
+		href: "/assets/index.cd8e4ebb.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.bbe4bf18.js"
+		href: "/assets/entry-client.982c2df2.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client.b4a47d5a.css"
+		href: "/assets/entry-client.cc032adb.css"
 	},
 	{
 		type: "script",
-		href: "/assets/Counter.4a85abca.js"
+		href: "/assets/Counter.1f108553.js"
 	}
 ],
 	"/(pages)/:profile/view": [
 	{
 		type: "script",
-		href: "/assets/view.92970928.js"
+		href: "/assets/view.09da6c37.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.bbe4bf18.js"
+		href: "/assets/entry-client.982c2df2.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client.b4a47d5a.css"
+		href: "/assets/entry-client.cc032adb.css"
 	}
 ],
 	"/*404": [
 	{
 		type: "script",
-		href: "/assets/_...404_.6ef8deb0.js"
+		href: "/assets/_...404_.b26036fa.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.bbe4bf18.js"
+		href: "/assets/entry-client.982c2df2.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client.b4a47d5a.css"
+		href: "/assets/entry-client.cc032adb.css"
 	}
 ],
 	"entry-client": [
 	{
 		type: "script",
-		href: "/assets/entry-client.bbe4bf18.js"
+		href: "/assets/entry-client.982c2df2.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client.b4a47d5a.css"
+		href: "/assets/entry-client.cc032adb.css"
 	}
 ],
 	"index.html": [
@@ -435,10 +435,10 @@ const booleans = ["allowfullscreen", "async", "autofocus", "autoplay", "checked"
 const BooleanAttributes = /*#__PURE__*/new Set(booleans);
 /*#__PURE__*/new Set(["className", "value", "readOnly", "formNoValidate", "isMap", "noModule", "playsInline", ...booleans]);
 const ChildProperties = /*#__PURE__*/new Set(["innerHTML", "textContent", "innerText", "children"]);
-const Aliases = {
+const Aliases = /*#__PURE__*/Object.assign(Object.create(null), {
   className: "class",
   htmlFor: "for"
-};
+});
 
 const {
   hasOwnProperty
@@ -690,7 +690,7 @@ function toRefParam(index) {
   return ref;
 }
 
-const REPLACE_SCRIPT = `function $df(e,t,d,l){d=document.getElementById(e),(l=document.getElementById("pl-"+e))&&l.replaceWith(...d.childNodes),d.remove(),_$HY.set(e,t)}`;
+const REPLACE_SCRIPT = `function $df(e,t,d,l){d=document.getElementById(e),(l=document.getElementById("pl-"+e))&&l.replaceWith(...d.childNodes),d.remove(),_$HY.set(e,t),_$HY.fe(e)}`;
 function renderToString(code, options = {}) {
   let scripts = "";
   sharedConfig.context = {
@@ -700,6 +700,7 @@ function renderToString(code, options = {}) {
     assets: [],
     nonce: options.nonce,
     writeResource(id, p, error) {
+      if (sharedConfig.context.noHydrate) return;
       if (error) return scripts += `_$HY.set("${id}", ${serializeError(p)});`;
       scripts += `_$HY.set("${id}", ${stringify(p)});`;
     }
@@ -792,9 +793,11 @@ function renderToStream(code, options = {}) {
       html = html.replace(html.slice(first, last + placeholder.length + 1), resolveSSRNode(payloadFn()));
     },
     writeResource(id, p, error, wait) {
-      if (error) return pushTask(serializeSet(dedupe, id, p, serializeError));
-      if (!p || typeof p !== "object" || !("then" in p)) return pushTask(serializeSet(dedupe, id, p));
-      if (!firstFlushed) wait && blockingResources.push(p);else pushTask(`_$HY.init("${id}")`);
+      const serverOnly = sharedConfig.context.noHydrate;
+      if (error) return !serverOnly && pushTask(serializeSet(dedupe, id, p, serializeError));
+      if (!p || typeof p !== "object" || !("then" in p)) return !serverOnly && pushTask(serializeSet(dedupe, id, p));
+      if (!firstFlushed) wait && blockingResources.push(p);else !serverOnly && pushTask(`_$HY.init("${id}")`);
+      if (serverOnly) return;
       p.then(d => {
         !completed && pushTask(serializeSet(dedupe, id, d));
       }).catch(() => {
@@ -902,13 +905,6 @@ function HydrationScript(props) {
     ...props
   }));
 }
-function NoHydration(props) {
-  const c = sharedConfig.context;
-  c.noHydrate = true;
-  const children = props.children;
-  c.noHydrate = false;
-  return children;
-}
 function ssr(t, ...nodes) {
   if (nodes.length) {
     let result = "";
@@ -930,7 +926,7 @@ function ssrClassList(value) {
   for (let i = 0, len = classKeys.length; i < len; i++) {
     const key = classKeys[i],
           classValue = !!value[key];
-    if (!key || !classValue) continue;
+    if (!key || key === "undefined" || !classValue) continue;
     i && (result += " ");
     result += key;
   }
@@ -943,8 +939,11 @@ function ssrStyle(value) {
   const k = Object.keys(value);
   for (let i = 0; i < k.length; i++) {
     const s = k[i];
-    if (i) result += ";";
-    result += `${s}:${escape(value[s], true)}`;
+    const v = value[s];
+    if (v != undefined) {
+      if (i) result += ";";
+      result += `${s}:${escape(v, true)}`;
+    }
   }
   return result;
 }
@@ -1060,7 +1059,11 @@ function generateHydrationScript({
   eventNames = ["click", "input"],
   nonce
 } = {}) {
-  return `<script${nonce ? ` nonce="${nonce}"` : ""}>var e,t;e=window._$HY||(_$HY={events:[],completed:new WeakSet,r:{}}),t=e=>e&&e.hasAttribute&&(e.hasAttribute("data-hk")?e:t(e.host&&e.host instanceof Node?e.host:e.parentNode)),["${eventNames.join('","')}"].forEach((o=>document.addEventListener(o,(o=>{let s=o.composedPath&&o.composedPath()[0]||o.target,a=t(s);a&&!e.completed.has(a)&&e.events.push([a,o])})))),e.init=(t,o)=>{e.r[t]=[new Promise(((e,t)=>o=e)),o]},e.set=(t,o,s)=>{(s=e.r[t])&&s[1](o),e.r[t]=[o]},e.unset=t=>{delete e.r[t]},e.load=t=>e.r[t];</script><!--xs-->`;
+  return `<script${nonce ? ` nonce="${nonce}"` : ""}>var e,t;e=window._$HY||(_$HY={events:[],completed:new WeakSet,r:{},fe(){},init(e,t){_$HY.r[e]=[new Promise(((e,o)=>t=e)),t]},set(e,t,o){(o=_$HY.r[e])&&o[1](t),_$HY.r[e]=[t]},unset(e){delete _$HY.r[e]},load:e=>_$HY.r[e]}),t=e=>e&&e.hasAttribute&&(e.hasAttribute("data-hk")?e:t(e.host&&e.host instanceof Node?e.host:e.parentNode)),["${eventNames.join('", "')}"].forEach((o=>document.addEventListener(o,(o=>{let s=o.composedPath&&o.composedPath()[0]||o.target,a=t(s);a&&!e.completed.has(a)&&e.events.push([a,o])}))));</script><!--xs-->`;
+}
+function NoHydration(props) {
+  sharedConfig.context.noHydrate = true;
+  return props.children;
 }
 function injectAssets(assets, html) {
   if (!assets || !assets.length) return html;
@@ -1424,6 +1427,7 @@ function renderTags(tags) {
 }
 const Title = props => MetaTag("title", props);
 const Meta$1 = props => MetaTag("meta", props);
+const Link = props => MetaTag("link", props);
 function normalizeIntegration(integration) {
     if (!integration) {
         return {
@@ -2035,9 +2039,17 @@ function ErrorMessage(props) {
   return ssr(_tmpl$$8, ssrHydrationKey(), "padding:" + "16px", "background-color:" + "rgba(252, 165, 165)" + (";color:" + "rgb(153, 27, 27)") + (";border-radius:" + "5px") + (";overflow:" + "scroll") + (";padding:" + "16px") + (";margin-bottom:" + "8px"), "font-weight:" + "bold", escape(props.error.message), "color:" + "rgba(252, 165, 165)" + (";background-color:" + "rgb(153, 27, 27)") + (";border-radius:" + "5px") + (";padding:" + "4px 8px"), "margin-top:" + "8px" + (";width:" + "100%"), escape(props.error.stack));
 }
 
-const _tmpl$$7 = ["<div", "><h1>This is a page</h1><!--#-->", "<!--/--></div>"];
+const _tmpl$$7 = ["<div", " class=\"shadow bg-gray-100 sticky top-0\"><!--#-->", "<!--/--><!--#-->", "<!--/--><a class=\"p-2 h-full inline-block transition-colors bg-gray-100 hover:bg-white\" href=\"/api/render-static-markup\">Render static markup</a></div>"];
 function PagesLayout() {
-  return ssr(_tmpl$$7, ssrHydrationKey(), escape(createComponent(Outlet, {})));
+  return [ssr(_tmpl$$7, ssrHydrationKey(), escape(createComponent(A, {
+    "class": "p-2 h-full inline-block transition-colors bg-gray-100 hover:bg-white",
+    href: "/",
+    children: "Index"
+  })), escape(createComponent(A, {
+    "class": "p-2 h-full inline-block transition-colors bg-gray-100 hover:bg-white",
+    href: "/about",
+    children: "About"
+  }))), createComponent(Outlet, {})];
 }
 
 const _tmpl$$6 = ["<button", " class=\"w-[200px] rounded-full bg-gray-100 border-2 border-gray-300 focus:border-gray-400 active:border-gray-400 px-[2rem] py-[1rem]\">Clicks: <!--#-->", "<!--/--></button>"];
@@ -2060,9 +2072,19 @@ function About() {
   })));
 }
 
-const _tmpl$$4 = ["<main", " class=\"text-center mx-auto text-gray-700 p-4\"><h1 class=\"max-6-xs text-6xl text-sky-700 font-thin uppercase my-16\">Hello world!</h1><!--#-->", "<!--/--><p class=\"mt-8\">Visit <a href=\"https://solidjs.com\" target=\"_blank\" class=\"text-sky-600 hover:underline\">solidjs.com</a> to learn how to build Solid apps.</p><p class=\"my-4\"><span>Home</span> - <!--#-->", "<!--/--> </p></main>"];
+const _tmpl$$4 = ["<main", " class=\"text-center mx-auto text-gray-700 p-4\"><div class=\"flex gap-4 justify-center\"><h1 class=\"max-6-xs text-6xl text-sky-700 font-thin uppercase my-16\">Hello world!</h1><!--#-->", "<!--/--><!--#-->", "<!--/--><!--#-->", "<!--/--><div lang=\"ja\" style=\"", "\">\u30CF\u30ED\u30FC\u4E16\u754C</div></div><!--#-->", "<!--/--><p class=\"mt-8\">Visit <a href=\"https://solidjs.com\" target=\"_blank\" class=\"text-sky-600 hover:underline\">solidjs.com</a> to learn how to build Solid apps.</p><p class=\"my-4\"><span>Home</span> - <!--#-->", "<!--/--> </p></main>"];
 function Home() {
-  return ssr(_tmpl$$4, ssrHydrationKey(), escape(createComponent(Counter, {})), escape(createComponent(A, {
+  return ssr(_tmpl$$4, ssrHydrationKey(), escape(createComponent(Link, {
+    rel: "preconnect",
+    href: "https://fonts.googleapis.com"
+  })), escape(createComponent(Link, {
+    rel: "preconnect",
+    href: "https://fonts.gstatic.com",
+    crossOrigin: "anonymous"
+  })), escape(createComponent(Link, {
+    href: "https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500&display=swap",
+    rel: "stylesheet"
+  })), "writing-mode:" + "vertical-rl" + (";font-family:" + "'Noto Serif JP', serif"), escape(createComponent(Counter, {})), escape(createComponent(A, {
     href: "/about",
     "class": "text-sky-600 hover:underline",
     children: "About Page"
@@ -2141,7 +2163,7 @@ const FileRoutes = () => {
 };
 
 const _tmpl$$1 = ["<link", " rel=\"stylesheet\"", ">"],
-  _tmpl$2 = ["<link", " rel=\"modulepreload\"", ">"];
+  _tmpl$2$1 = ["<link", " rel=\"modulepreload\"", ">"];
 function getAssetsFromManifest(manifest, routerContext) {
   const match = routerContext.matches.reduce((memo, m) => {
     if (m.length) {
@@ -2157,7 +2179,7 @@ function getAssetsFromManifest(manifest, routerContext) {
   }, []);
   match.push(...(manifest["entry-client"] || []));
   const links = match.reduce((r, src) => {
-    r[src.href] = src.type === "style" ? ssr(_tmpl$$1, ssrHydrationKey(), ssrAttribute("href", escape(src.href, true), false)) : src.type === "script" ? ssr(_tmpl$2, ssrHydrationKey(), ssrAttribute("href", escape(src.href, true), false)) : undefined;
+    r[src.href] = src.type === "style" ? ssr(_tmpl$$1, ssrHydrationKey(), ssrAttribute("href", escape(src.href, true), false)) : src.type === "script" ? ssr(_tmpl$2$1, ssrHydrationKey(), ssrAttribute("href", escape(src.href, true), false)) : undefined;
     return r;
   }, {});
   return Object.values(links);
@@ -2229,18 +2251,11 @@ function Root() {
             get children() {
               return createComponent(ErrorBoundary, {
                 get children() {
-                  return [createComponent(A, {
-                    "class": "mr-2",
-                    href: "/",
-                    children: "Index"
-                  }), createComponent(A, {
-                    href: "/about",
-                    children: "About"
-                  }), createComponent(Routes, {
+                  return createComponent(Routes, {
                     get children() {
                       return createComponent(FileRoutes, {});
                     }
-                  })];
+                  });
                 }
               });
             }
@@ -2251,9 +2266,26 @@ function Root() {
   });
 }
 
-const _tmpl$ = ["<div", ">Hello world <strong>this is a test</strong></div>"];
+const _tmpl$ = ["<div", "><span>", "</span><strong>", "</strong></div>"],
+  _tmpl$2 = "<head><title>Static text</title></head>",
+  _tmpl$3 = ["<html", ">", "<body><div>Hello world <strong>this is a test</strong></div><!--#-->", "<!--/--><!--#-->", "<!--/--></body></html>"];
+const Plus = props => ssr(_tmpl$, ssrHydrationKey(), `${escape(props.a)} + ${escape(props.b)} = `, escape(props.a) + escape(props.b));
 const GET = async ctx => {
-  const response = new Response(renderToString(() => ssr(_tmpl$, ssrHydrationKey())), {
+  const response = new Response('<!DOCTYPE html>' + renderToString(() => createComponent(NoHydration, {
+    get children() {
+      return ssr(_tmpl$3, ssrHydrationKey(), NoHydration({
+        get children() {
+          return ssr(_tmpl$2);
+        }
+      }), escape(createComponent(Plus, {
+        a: 1,
+        b: 2
+      })), escape(createComponent(Plus, {
+        a: 2,
+        b: 3
+      })));
+    }
+  })), {
     headers: {
       'content-type': 'text/html'
     }
@@ -2279,7 +2311,7 @@ const api = [
   },
   {
     GET: GET,
-    path: "/api/hello"
+    path: "/api/render-static-markup"
   },
   {
     GET: "skip",
