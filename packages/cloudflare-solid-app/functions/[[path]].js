@@ -2,11 +2,11 @@ var manifest = {
 	"/(pages)": [
 	{
 		type: "script",
-		href: "/assets/(pages).5ec78c61.js"
+		href: "/assets/(pages).d50501aa.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.628362b1.js"
+		href: "/assets/entry-client.bbe4bf18.js"
 	},
 	{
 		type: "style",
@@ -16,11 +16,11 @@ var manifest = {
 	"/(pages)/about": [
 	{
 		type: "script",
-		href: "/assets/about.a79a715b.js"
+		href: "/assets/about.f7c87877.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.628362b1.js"
+		href: "/assets/entry-client.bbe4bf18.js"
 	},
 	{
 		type: "style",
@@ -28,17 +28,17 @@ var manifest = {
 	},
 	{
 		type: "script",
-		href: "/assets/Counter.9b687f2c.js"
+		href: "/assets/Counter.4a85abca.js"
 	}
 ],
 	"/(pages)/": [
 	{
 		type: "script",
-		href: "/assets/index.ff8cae82.js"
+		href: "/assets/index.6bc4a9ed.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.628362b1.js"
+		href: "/assets/entry-client.bbe4bf18.js"
 	},
 	{
 		type: "style",
@@ -46,17 +46,17 @@ var manifest = {
 	},
 	{
 		type: "script",
-		href: "/assets/Counter.9b687f2c.js"
+		href: "/assets/Counter.4a85abca.js"
 	}
 ],
 	"/(pages)/:profile/view": [
 	{
 		type: "script",
-		href: "/assets/view.d470f7a9.js"
+		href: "/assets/view.92970928.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.628362b1.js"
+		href: "/assets/entry-client.bbe4bf18.js"
 	},
 	{
 		type: "style",
@@ -66,11 +66,11 @@ var manifest = {
 	"/*404": [
 	{
 		type: "script",
-		href: "/assets/_...404_.4be7ea17.js"
+		href: "/assets/_...404_.6ef8deb0.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.628362b1.js"
+		href: "/assets/entry-client.bbe4bf18.js"
 	},
 	{
 		type: "style",
@@ -80,7 +80,7 @@ var manifest = {
 	"entry-client": [
 	{
 		type: "script",
-		href: "/assets/entry-client.628362b1.js"
+		href: "/assets/entry-client.bbe4bf18.js"
 	},
 	{
 		type: "style",

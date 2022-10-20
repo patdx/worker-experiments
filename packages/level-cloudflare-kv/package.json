@@ -1,0 +1,18 @@
+{
+  "name": "level-cloudflare-kv",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "dependencies": {
+    "abstract-level": "1.0.3",
+    "module-error": "1.0.2"
+  },
+  "devDependencies": {
+    "@miniflare/kv": "2.10.0",
+    "@miniflare/storage-file": "2.10.0",
+    "classic-level": "1.2.0",
+    "level-auto-index": "2.0.0"
+  }
+}
