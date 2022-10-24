@@ -55,7 +55,7 @@ jobs:
       - name: Build apps
         run: pnpm nx affected --target=build
 
-      - name: Deploy cloudflare-solid-app
+      - name: Deploy affected apps
         run: pnpm nx affected --target=deploy
         env: # Or as an environment variable
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

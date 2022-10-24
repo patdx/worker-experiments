@@ -3,11 +3,11 @@ var manifest = {
   "/(pages)": [
     {
       type: "script",
-      href: "/assets/(pages).8b2c88f4.js"
+      href: "/assets/(pages).b672a5a5.js"
     },
     {
       type: "script",
-      href: "/assets/entry-client.982c2df2.js"
+      href: "/assets/entry-client.6b347fee.js"
     },
     {
       type: "style",
@@ -17,11 +17,11 @@ var manifest = {
   "/(pages)/about": [
     {
       type: "script",
-      href: "/assets/about.b3f55b5c.js"
+      href: "/assets/about.d690925b.js"
     },
     {
       type: "script",
-      href: "/assets/entry-client.982c2df2.js"
+      href: "/assets/entry-client.6b347fee.js"
     },
     {
       type: "style",
@@ -29,17 +29,17 @@ var manifest = {
     },
     {
       type: "script",
-      href: "/assets/Counter.1f108553.js"
+      href: "/assets/Counter.09b7599e.js"
     }
   ],
   "/(pages)/": [
     {
       type: "script",
-      href: "/assets/index.cd8e4ebb.js"
+      href: "/assets/index.899cbfe7.js"
     },
     {
       type: "script",
-      href: "/assets/entry-client.982c2df2.js"
+      href: "/assets/entry-client.6b347fee.js"
     },
     {
       type: "style",
@@ -47,17 +47,17 @@ var manifest = {
     },
     {
       type: "script",
-      href: "/assets/Counter.1f108553.js"
+      href: "/assets/Counter.09b7599e.js"
     }
   ],
   "/(pages)/:profile/view": [
     {
       type: "script",
-      href: "/assets/view.09da6c37.js"
+      href: "/assets/view.4ec990af.js"
     },
     {
       type: "script",
-      href: "/assets/entry-client.982c2df2.js"
+      href: "/assets/entry-client.6b347fee.js"
     },
     {
       type: "style",
@@ -67,11 +67,11 @@ var manifest = {
   "/*404": [
     {
       type: "script",
-      href: "/assets/_...404_.b26036fa.js"
+      href: "/assets/_...404_.83046882.js"
     },
     {
       type: "script",
-      href: "/assets/entry-client.982c2df2.js"
+      href: "/assets/entry-client.6b347fee.js"
     },
     {
       type: "style",
@@ -81,7 +81,7 @@ var manifest = {
   "entry-client": [
     {
       type: "script",
-      href: "/assets/entry-client.982c2df2.js"
+      href: "/assets/entry-client.6b347fee.js"
     },
     {
       type: "style",
@@ -2024,10 +2024,12 @@ function A$1(props) {
 }
 var ServerError = class extends Error {
   constructor(message, {
+    status,
     stack
   } = {}) {
     super(message);
     this.name = "ServerError";
+    this.status = status || 400;
     if (stack) {
       this.stack = stack;
     }
@@ -2191,8 +2193,21 @@ var FileRoutes = () => {
 };
 var _tmpl$$1 = ["<link", ' rel="stylesheet"', ">"];
 var _tmpl$2$1 = ["<link", ' rel="modulepreload"', ">"];
+function flattenIslands(match2, manifest2) {
+  let result = [...match2];
+  match2.forEach((m) => {
+    if (m.type !== "island")
+      return;
+    const islandManifest = manifest2[m.href];
+    if (islandManifest) {
+      const res = flattenIslands(islandManifest.assets, manifest2);
+      result.push(...res);
+    }
+  });
+  return result;
+}
 function getAssetsFromManifest(manifest2, routerContext) {
-  const match2 = routerContext.matches.reduce((memo, m) => {
+  let match2 = routerContext.matches.reduce((memo, m) => {
     if (m.length) {
       const fullPath = m.reduce((previous, match3) => previous + match3.originalPath, "");
       const route = routesConfig.routeLayouts[fullPath];
@@ -2205,6 +2220,7 @@ function getAssetsFromManifest(manifest2, routerContext) {
     return memo;
   }, []);
   match2.push(...manifest2["entry-client"] || []);
+  match2 = flattenIslands(match2, manifest2);
   const links = match2.reduce((r, src) => {
     r[src.href] = src.type === "style" ? ssr(_tmpl$$1, ssrHydrationKey(), ssrAttribute("href", escape(src.href, true), false)) : src.type === "script" ? ssr(_tmpl$2$1, ssrHydrationKey(), ssrAttribute("href", escape(src.href, true), false)) : void 0;
     return r;
@@ -2287,7 +2303,7 @@ var Plus = (props) => ssr(_tmpl$, ssrHydrationKey(), `${escape(props.a)} + ${esc
 var GET = async (ctx) => {
   const response = new Response("<!DOCTYPE html>" + renderToString(() => createComponent(NoHydration, {
     get children() {
-      return ssr(_tmpl$3, ssrHydrationKey(), NoHydration({
+      return ssr(_tmpl$3, ssrHydrationKey(), createComponent(NoHydration, {
         get children() {
           return ssr(_tmpl$2);
         }
@@ -2496,7 +2512,7 @@ function respondWith(request, data, responseType) {
         }
       }),
       {
-        status: 400,
+        status: data.status,
         headers: {
           [XSolidStartResponseTypeHeader]: responseType,
           [XSolidStartContentTypeHeader]: "server-error"
@@ -2775,7 +2791,7 @@ async function onRequestPatch({ request, env }) {
   });
 }
 
-// ../../../../tmp/functionsRoutes-0.6317636451071167.mjs
+// ../../../../../../tmp/functionsRoutes-0.3258403936748713.mjs
 var routes = [
   {
     routePath: "/:path*",
@@ -3106,7 +3122,7 @@ function pathToRegexp(path, keys, options) {
   return stringToRegexp(path, keys, options);
 }
 
-// ../../node_modules/.pnpm/wrangler@2.1.12/node_modules/wrangler/templates/pages-template-worker.ts
+// ../../node_modules/.pnpm/wrangler@2.1.13/node_modules/wrangler/templates/pages-template-worker.ts
 var escapeRegex = /[.+?^${}()|[\]\\]/g;
 function* executeRequest(request) {
   const requestPath = new URL(request.url).pathname;

@@ -2,11 +2,11 @@ var manifest = {
 	"/(pages)": [
 	{
 		type: "script",
-		href: "/assets/(pages).8b2c88f4.js"
+		href: "/assets/(pages).b672a5a5.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.982c2df2.js"
+		href: "/assets/entry-client.6b347fee.js"
 	},
 	{
 		type: "style",
@@ -16,11 +16,11 @@ var manifest = {
 	"/(pages)/about": [
 	{
 		type: "script",
-		href: "/assets/about.b3f55b5c.js"
+		href: "/assets/about.d690925b.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.982c2df2.js"
+		href: "/assets/entry-client.6b347fee.js"
 	},
 	{
 		type: "style",
@@ -28,17 +28,17 @@ var manifest = {
 	},
 	{
 		type: "script",
-		href: "/assets/Counter.1f108553.js"
+		href: "/assets/Counter.09b7599e.js"
 	}
 ],
 	"/(pages)/": [
 	{
 		type: "script",
-		href: "/assets/index.cd8e4ebb.js"
+		href: "/assets/index.899cbfe7.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.982c2df2.js"
+		href: "/assets/entry-client.6b347fee.js"
 	},
 	{
 		type: "style",
@@ -46,17 +46,17 @@ var manifest = {
 	},
 	{
 		type: "script",
-		href: "/assets/Counter.1f108553.js"
+		href: "/assets/Counter.09b7599e.js"
 	}
 ],
 	"/(pages)/:profile/view": [
 	{
 		type: "script",
-		href: "/assets/view.09da6c37.js"
+		href: "/assets/view.4ec990af.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.982c2df2.js"
+		href: "/assets/entry-client.6b347fee.js"
 	},
 	{
 		type: "style",
@@ -66,11 +66,11 @@ var manifest = {
 	"/*404": [
 	{
 		type: "script",
-		href: "/assets/_...404_.b26036fa.js"
+		href: "/assets/_...404_.83046882.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.982c2df2.js"
+		href: "/assets/entry-client.6b347fee.js"
 	},
 	{
 		type: "style",
@@ -80,7 +80,7 @@ var manifest = {
 	"entry-client": [
 	{
 		type: "script",
-		href: "/assets/entry-client.982c2df2.js"
+		href: "/assets/entry-client.6b347fee.js"
 	},
 	{
 		type: "style",
@@ -1980,10 +1980,12 @@ function A$1(props) {
 
 class ServerError extends Error {
   constructor(message, {
+    status,
     stack
   } = {}) {
     super(message);
     this.name = "ServerError";
+    this.status = status || 400;
     if (stack) {
       this.stack = stack;
     }
@@ -2164,8 +2166,20 @@ const FileRoutes = () => {
 
 const _tmpl$$1 = ["<link", " rel=\"stylesheet\"", ">"],
   _tmpl$2$1 = ["<link", " rel=\"modulepreload\"", ">"];
+function flattenIslands(match, manifest) {
+  let result = [...match];
+  match.forEach(m => {
+    if (m.type !== "island") return;
+    const islandManifest = manifest[m.href];
+    if (islandManifest) {
+      const res = flattenIslands(islandManifest.assets, manifest);
+      result.push(...res);
+    }
+  });
+  return result;
+}
 function getAssetsFromManifest(manifest, routerContext) {
-  const match = routerContext.matches.reduce((memo, m) => {
+  let match = routerContext.matches.reduce((memo, m) => {
     if (m.length) {
       const fullPath = m.reduce((previous, match) => previous + match.originalPath, "");
       const route = routesConfig.routeLayouts[fullPath];
@@ -2178,6 +2192,7 @@ function getAssetsFromManifest(manifest, routerContext) {
     return memo;
   }, []);
   match.push(...(manifest["entry-client"] || []));
+  match = flattenIslands(match, manifest);
   const links = match.reduce((r, src) => {
     r[src.href] = src.type === "style" ? ssr(_tmpl$$1, ssrHydrationKey(), ssrAttribute("href", escape(src.href, true), false)) : src.type === "script" ? ssr(_tmpl$2$1, ssrHydrationKey(), ssrAttribute("href", escape(src.href, true), false)) : undefined;
     return r;
@@ -2191,9 +2206,7 @@ function getAssetsFromManifest(manifest, routerContext) {
  */
 function Links() {
   const context = useContext(ServerContext);
-  useAssets(() =>
-  // @ts-expect-error The ssr() types do not match the Assets child types
-  getAssetsFromManifest(context.env.manifest, context.routerContext));
+  useAssets(() => getAssetsFromManifest(context.env.manifest, context.routerContext));
 }
 
 function Meta() {
@@ -2273,7 +2286,7 @@ const Plus = props => ssr(_tmpl$, ssrHydrationKey(), `${escape(props.a)} + ${esc
 const GET = async ctx => {
   const response = new Response('<!DOCTYPE html>' + renderToString(() => createComponent(NoHydration, {
     get children() {
-      return ssr(_tmpl$3, ssrHydrationKey(), NoHydration({
+      return ssr(_tmpl$3, ssrHydrationKey(), createComponent(NoHydration, {
         get children() {
           return ssr(_tmpl$2);
         }
@@ -2485,7 +2498,7 @@ function respondWith(request, data, responseType) {
         }
       }),
       {
-        status: 400,
+        status: data.status,
         headers: {
           [XSolidStartResponseTypeHeader]: responseType,
           [XSolidStartContentTypeHeader]: "server-error"
