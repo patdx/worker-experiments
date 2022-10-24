@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nx dev",
     "build": "vite build --emptyOutDir",
-    "deploy": "vite build --emptyOutDir && wrangler pages publish ./dist"
+    "deploy": "vite build --emptyOutDir && wrangler pages publish ./dist --project-name cloudflare-pages-htmx"
   },
   "keywords": [],
   "author": "",

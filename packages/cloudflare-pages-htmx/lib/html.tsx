@@ -34,7 +34,7 @@ const Page: FC<{ children?: ReactNode; manifest: any }> = ({
     <head>
       <meta charSet="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Vite App</title>
+      <title>Todos</title>
       <link rel="stylesheet" href={`/${manifest['src/main.ts'].css[0]}`} />
       <script type="module" src={`/${manifest['src/main.ts'].file}`}></script>
       <meta
