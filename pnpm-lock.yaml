@@ -21,7 +21,7 @@ importers:
       '@types/node': 18.11.7
       '@types/react': 18.0.24
       '@types/react-dom': 18.0.8
-      autoprefixer: 10.4.12
+      autoprefixer: 10.4.13
       clsx: ^1.2.1
       htmx.org: ^1.8.2
       postcss: 8.4.18
@@ -48,7 +48,7 @@ importers:
       '@types/node': 18.11.7
       '@types/react': 18.0.24
       '@types/react-dom': 18.0.8
-      autoprefixer: 10.4.12_postcss@8.4.18
+      autoprefixer: 10.4.13_postcss@8.4.18
       postcss: 8.4.18
       tailwindcss: 3.2.1_postcss@8.4.18
       typescript: 4.8.4
@@ -62,7 +62,7 @@ importers:
       '@solidjs/meta': 0.28.2
       '@solidjs/router': 0.5.0
       '@types/cookie': 0.5.1
-      autoprefixer: 10.4.12
+      autoprefixer: 10.4.13
       cookie: 0.5.0
       postcss: 8.4.18
       solid-js: 1.6.0
@@ -84,7 +84,7 @@ importers:
     devDependencies:
       '@cloudflare/workers-types': 3.18.0
       '@types/cookie': 0.5.1
-      autoprefixer: 10.4.12_postcss@8.4.18
+      autoprefixer: 10.4.13_postcss@8.4.18
       postcss: 8.4.18
       solid-js: 1.6.0
       solid-start: 0.2.0_zqp3sshxisvbm5xhprxh5zkapa
@@ -127,7 +127,7 @@ importers:
       '@remix-run/react': 1.7.3
       '@types/react': 18.0.24
       '@types/react-dom': 18.0.8
-      autoprefixer: 10.4.12
+      autoprefixer: 10.4.13
       clsx: 1.2.1
       concurrently: 7.5.0
       cross-env: 7.0.3
@@ -156,7 +156,7 @@ importers:
       '@remix-run/eslint-config': 1.7.3_lepdvhpfl4ktcue7v6mt34wuv4
       '@types/react': 18.0.24
       '@types/react-dom': 18.0.8
-      autoprefixer: 10.4.12_postcss@8.4.18
+      autoprefixer: 10.4.13_postcss@8.4.18
       concurrently: 7.5.0
       eslint: 8.26.0
       miniflare: 2.10.0
@@ -3291,15 +3291,15 @@ packages:
     hasBin: true
     dev: true
 
-  /autoprefixer/10.4.12_postcss@8.4.18:
-    resolution: {integrity: sha512-WrCGV9/b97Pa+jtwf5UGaRjgQIg7OK3D06GnoYoZNcG1Xb8Gt3EfuKjlhh9i/VtT16g6PYjZ69jdJ2g8FxSC4Q==}
+  /autoprefixer/10.4.13_postcss@8.4.18:
+    resolution: {integrity: sha512-49vKpMqcZYsJjwotvt4+h/BCjJVnhGwcLpDt5xkcaOG3eLrG/HUYLagrihYsQ+qrIBgIzX1Rw7a6L8I/ZA1Atg==}
     engines: {node: ^10 || ^12 || >=14}
     hasBin: true
     peerDependencies:
       postcss: ^8.1.0
     dependencies:
       browserslist: 4.21.4
-      caniuse-lite: 1.0.30001420
+      caniuse-lite: 1.0.30001426
       fraction.js: 4.2.0
       normalize-range: 0.1.2
       picocolors: 1.0.0
@@ -3597,7 +3597,7 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001420
+      caniuse-lite: 1.0.30001426
       electron-to-chromium: 1.4.284
       node-releases: 2.0.6
       update-browserslist-db: 1.0.10_browserslist@4.21.4
@@ -3739,8 +3739,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /caniuse-lite/1.0.30001420:
-    resolution: {integrity: sha512-OnyeJ9ascFA9roEj72ok2Ikp7PHJTKubtEJIQ/VK3fdsS50q4KWy+Z5X0A1/GswEItKX0ctAp8n4SYDE7wTu6A==}
+  /caniuse-lite/1.0.30001426:
+    resolution: {integrity: sha512-n7cosrHLl8AWt0wwZw/PJZgUg3lV0gk9LMI7ikGJwhyhgsd2Nb65vKvmSexCqq/J7rbH3mFG6yZZiPR5dLPW5A==}
     dev: true
 
   /catering/2.1.1:
