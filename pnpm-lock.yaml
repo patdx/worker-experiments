@@ -59,7 +59,7 @@ importers:
     specifiers:
       '@cloudflare/kv-asset-handler': 0.2.0
       '@cloudflare/workers-types': 3.18.0
-      '@solidjs/meta': 0.28.1
+      '@solidjs/meta': 0.28.2
       '@solidjs/router': 0.5.0
       '@types/cookie': 0.5.1
       autoprefixer: 10.4.12
@@ -77,7 +77,7 @@ importers:
       wrangler: 2.1.13
     dependencies:
       '@cloudflare/kv-asset-handler': 0.2.0
-      '@solidjs/meta': 0.28.1_solid-js@1.6.0
+      '@solidjs/meta': 0.28.2_solid-js@1.6.0
       '@solidjs/router': 0.5.0_solid-js@1.6.0
       cookie: 0.5.0
       undici: 5.11.0
@@ -87,7 +87,7 @@ importers:
       autoprefixer: 10.4.12_postcss@8.4.18
       postcss: 8.4.18
       solid-js: 1.6.0
-      solid-start: 0.2.0_5i6qjfkan6zv5pawawenwfkipy
+      solid-start: 0.2.0_zqp3sshxisvbm5xhprxh5zkapa
       solid-start-cloudflare-pages: 0.2.0_xjk2m5t4atnr5ix4w7nofudady
       solid-start-cloudflare-workers: 0.2.0_xjk2m5t4atnr5ix4w7nofudady
       solid-start-node: 0.2.0_ps2lpxk5hfnushqxoxo2mwt2xu
@@ -2550,8 +2550,8 @@ packages:
       '@sinonjs/commons': 1.8.3
     dev: true
 
-  /@solidjs/meta/0.28.1_solid-js@1.6.0:
-    resolution: {integrity: sha512-oWv7GjjkJ9Mp9gCKPWEc3jcLeoxzoBHlmj+CzEqfK3sORxvtaXKkf6lwheuJLbd0qDpmnuny3GDBN8OxpB5SNg==}
+  /@solidjs/meta/0.28.2_solid-js@1.6.0:
+    resolution: {integrity: sha512-avlLgBPdk4KVxzRGFlYp/MIJo8B5jVgXPgk6OUnUP8km21Z+ovO+DUd7ZPA7ejv8PBdWi9GE3zCzw8RU2YuV2Q==}
     peerDependencies:
       solid-js: '>=1.4.0'
     dependencies:
@@ -10080,7 +10080,7 @@ packages:
       '@types/ws': 8.5.3
       miniflare: 2.10.0
       rollup: 2.79.1
-      solid-start: 0.2.0_5i6qjfkan6zv5pawawenwfkipy
+      solid-start: 0.2.0_zqp3sshxisvbm5xhprxh5zkapa
       terser: 5.15.1
       vite: 3.1.8
       ws: 8.9.0
@@ -10110,7 +10110,7 @@ packages:
       '@types/ws': 8.5.3
       miniflare: 2.10.0
       rollup: 2.79.1
-      solid-start: 0.2.0_5i6qjfkan6zv5pawawenwfkipy
+      solid-start: 0.2.0_zqp3sshxisvbm5xhprxh5zkapa
       terser: 5.15.1
       vite: 3.1.8
       ws: 8.9.0
@@ -10136,7 +10136,7 @@ packages:
       polka: 1.0.0-next.22
       rollup: 2.79.1
       sirv: 2.0.2
-      solid-start: 0.2.0_5i6qjfkan6zv5pawawenwfkipy
+      solid-start: 0.2.0_zqp3sshxisvbm5xhprxh5zkapa
       terser: 5.15.1
       undici: 5.11.0
       vite: 3.1.8
@@ -10144,7 +10144,7 @@ packages:
       - supports-color
     dev: true
 
-  /solid-start/0.2.0_5i6qjfkan6zv5pawawenwfkipy:
+  /solid-start/0.2.0_zqp3sshxisvbm5xhprxh5zkapa:
     resolution: {integrity: sha512-BrG5PbmdTHFzEqCvquSkKCyg3Pwkj+NRO8wuu6NmW7O2WGs2GMQIYERNX0X09OxeY4AKBWpx9YT/cUJ52MlxEw==}
     hasBin: true
     peerDependencies:
@@ -10159,7 +10159,7 @@ packages:
       '@babel/preset-env': 7.19.4_@babel+core@7.19.6
       '@babel/preset-typescript': 7.18.6_@babel+core@7.19.6
       '@babel/template': 7.18.10
-      '@solidjs/meta': 0.28.1_solid-js@1.6.0
+      '@solidjs/meta': 0.28.2_solid-js@1.6.0
       '@solidjs/router': 0.5.0_solid-js@1.6.0
       '@types/cookie': 0.5.1
       '@vinxi/vite-plugin-inspect': 0.6.27_rollup@2.79.1+vite@3.1.8
