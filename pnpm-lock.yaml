@@ -66,7 +66,7 @@ importers:
       cookie: 0.5.0
       postcss: 8.4.18
       solid-js: 1.6.0
-      solid-start: 0.2.0
+      solid-start: 0.2.1
       solid-start-cloudflare-pages: 0.2.0
       solid-start-cloudflare-workers: 0.2.0
       solid-start-node: 0.2.0
@@ -87,10 +87,10 @@ importers:
       autoprefixer: 10.4.13_postcss@8.4.18
       postcss: 8.4.18
       solid-js: 1.6.0
-      solid-start: 0.2.0_zqp3sshxisvbm5xhprxh5zkapa
-      solid-start-cloudflare-pages: 0.2.0_xjk2m5t4atnr5ix4w7nofudady
-      solid-start-cloudflare-workers: 0.2.0_xjk2m5t4atnr5ix4w7nofudady
-      solid-start-node: 0.2.0_ps2lpxk5hfnushqxoxo2mwt2xu
+      solid-start: 0.2.1_zqp3sshxisvbm5xhprxh5zkapa
+      solid-start-cloudflare-pages: 0.2.0_iw3ujnsk6kqq7olksnqhz7ztxe
+      solid-start-cloudflare-workers: 0.2.0_iw3ujnsk6kqq7olksnqhz7ztxe
+      solid-start-node: 0.2.0_xoq5gueexccc242ckr4wq3ab2i
       tailwindcss: 3.2.1_postcss@8.4.18
       typescript: 4.8.4
       vite: 3.1.8
@@ -10062,7 +10062,7 @@ packages:
       solid-js: 1.6.0
     dev: true
 
-  /solid-start-cloudflare-pages/0.2.0_xjk2m5t4atnr5ix4w7nofudady:
+  /solid-start-cloudflare-pages/0.2.0_iw3ujnsk6kqq7olksnqhz7ztxe:
     resolution: {integrity: sha512-9thVOL6In3MhzXA5d7ymCwH3EJlMfwEVMzLA0O2qQv1r0cYdVyFH5DUjGMhtpftvEF8c+9ezkfU4WJdQgPEpAw==}
     peerDependencies:
       solid-start: '*'
@@ -10080,7 +10080,7 @@ packages:
       '@types/ws': 8.5.3
       miniflare: 2.10.0
       rollup: 2.79.1
-      solid-start: 0.2.0_zqp3sshxisvbm5xhprxh5zkapa
+      solid-start: 0.2.1_zqp3sshxisvbm5xhprxh5zkapa
       terser: 5.15.1
       vite: 3.1.8
       ws: 8.9.0
@@ -10092,7 +10092,7 @@ packages:
       - utf-8-validate
     dev: true
 
-  /solid-start-cloudflare-workers/0.2.0_xjk2m5t4atnr5ix4w7nofudady:
+  /solid-start-cloudflare-workers/0.2.0_iw3ujnsk6kqq7olksnqhz7ztxe:
     resolution: {integrity: sha512-3OyRdTs0p3riE59yPYbyvew5EEk1p/k+BVww/Y5NMMu7PUhqK9TFBwQ51a8VRxwW8trFpPQ8Uazrxoala1Qu0g==}
     peerDependencies:
       solid-start: '*'
@@ -10110,7 +10110,7 @@ packages:
       '@types/ws': 8.5.3
       miniflare: 2.10.0
       rollup: 2.79.1
-      solid-start: 0.2.0_zqp3sshxisvbm5xhprxh5zkapa
+      solid-start: 0.2.1_zqp3sshxisvbm5xhprxh5zkapa
       terser: 5.15.1
       vite: 3.1.8
       ws: 8.9.0
@@ -10122,7 +10122,7 @@ packages:
       - utf-8-validate
     dev: true
 
-  /solid-start-node/0.2.0_ps2lpxk5hfnushqxoxo2mwt2xu:
+  /solid-start-node/0.2.0_xoq5gueexccc242ckr4wq3ab2i:
     resolution: {integrity: sha512-PBGm9HkzKrVf0cl3V2ViWmy51GgbrA1tklDAqbbMvhO7Dhh0TnkVRoySgJuahln9nX+1yoJw+uJST3+s0leQ9w==}
     peerDependencies:
       solid-start: '*'
@@ -10136,7 +10136,7 @@ packages:
       polka: 1.0.0-next.22
       rollup: 2.79.1
       sirv: 2.0.2
-      solid-start: 0.2.0_zqp3sshxisvbm5xhprxh5zkapa
+      solid-start: 0.2.1_zqp3sshxisvbm5xhprxh5zkapa
       terser: 5.15.1
       undici: 5.11.0
       vite: 3.1.8
@@ -10144,8 +10144,8 @@ packages:
       - supports-color
     dev: true
 
-  /solid-start/0.2.0_zqp3sshxisvbm5xhprxh5zkapa:
-    resolution: {integrity: sha512-BrG5PbmdTHFzEqCvquSkKCyg3Pwkj+NRO8wuu6NmW7O2WGs2GMQIYERNX0X09OxeY4AKBWpx9YT/cUJ52MlxEw==}
+  /solid-start/0.2.1_zqp3sshxisvbm5xhprxh5zkapa:
+    resolution: {integrity: sha512-03tzpXcEqLP45TO0bhZGaM9h9ZXawZjH+PDAq8lrm9jfIXNbWaJDk5tuHPB+KdUFycLVlwwigywfRrAYCF76LQ==}
     hasBin: true
     peerDependencies:
       '@solidjs/meta': ^0.28.0
