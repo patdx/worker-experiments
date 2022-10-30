@@ -98,7 +98,7 @@ importers:
 
   packages/level-cloudflare-kv:
     specifiers:
-      '@miniflare/kv': 2.10.0
+      '@miniflare/kv': 2.11.0
       '@miniflare/storage-file': 2.10.0
       abstract-level: 1.0.3
       classic-level: 1.2.0
@@ -110,7 +110,7 @@ importers:
       abstract-level: 1.0.3
       module-error: 1.0.2
     devDependencies:
-      '@miniflare/kv': 2.10.0
+      '@miniflare/kv': 2.11.0
       '@miniflare/storage-file': 2.10.0
       classic-level: 1.2.0
       level-auto-index: 2.0.0
@@ -1960,6 +1960,13 @@ packages:
       '@miniflare/shared': 2.10.0
     dev: true
 
+  /@miniflare/kv/2.11.0:
+    resolution: {integrity: sha512-3m9dL2HBBN170V1JvwjjucR5zl4G3mlcsV6C1E7A2wLl2Z2TWvIx/tSY9hrhkD96dFnejwJ9qmPMbXMMuynhjg==}
+    engines: {node: '>=16.13'}
+    dependencies:
+      '@miniflare/shared': 2.11.0
+    dev: true
+
   /@miniflare/queues/2.10.0:
     resolution: {integrity: sha512-WKdO6qI9rfS96KlCjazzPFf+qj6DPov4vONyf18+jzbRjRJh/xwWSk1/1h5A+gDPwVNG8TsNRPh9DW5OKBGNjw==}
     engines: {node: '>=16.7'}
@@ -1993,6 +2000,16 @@ packages:
 
   /@miniflare/shared/2.10.0:
     resolution: {integrity: sha512-GDSweEhJ3nNtStGm6taZGUNytM0QTQ/sjZSedAKyF1/aHRaZUcD9cuKAMgIbSpKfvgGdLMNS7Bhd8jb249TO7g==}
+    engines: {node: '>=16.13'}
+    dependencies:
+      '@types/better-sqlite3': 7.6.2
+      kleur: 4.1.5
+      npx-import: 1.1.4
+      picomatch: 2.3.1
+    dev: true
+
+  /@miniflare/shared/2.11.0:
+    resolution: {integrity: sha512-fWMqq3ZkWAg+k7CnyzMV/rZHugwn+/JxvVzCxrtvxzwotTN547THlOxgZe8JAP23U9BiTxOfpTfnLvFEjAmegw==}
     engines: {node: '>=16.13'}
     dependencies:
       '@types/better-sqlite3': 7.6.2
