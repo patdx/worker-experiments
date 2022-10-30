@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "@miniflare/kv": "2.11.0",
-    "@miniflare/storage-file": "2.10.0",
+    "@miniflare/storage-file": "2.11.0",
     "classic-level": "1.2.0",
     "level-auto-index": "2.0.0",
     "tape": "5.6.1",

@@ -99,7 +99,7 @@ importers:
   packages/level-cloudflare-kv:
     specifiers:
       '@miniflare/kv': 2.11.0
-      '@miniflare/storage-file': 2.10.0
+      '@miniflare/storage-file': 2.11.0
       abstract-level: 1.0.3
       classic-level: 1.2.0
       level-auto-index: 2.0.0
@@ -111,7 +111,7 @@ importers:
       module-error: 1.0.2
     devDependencies:
       '@miniflare/kv': 2.11.0
-      '@miniflare/storage-file': 2.10.0
+      '@miniflare/storage-file': 2.11.0
       classic-level: 1.2.0
       level-auto-index: 2.0.0
       tape: 5.6.1
@@ -2035,11 +2035,26 @@ packages:
       '@miniflare/storage-memory': 2.10.0
     dev: true
 
+  /@miniflare/storage-file/2.11.0:
+    resolution: {integrity: sha512-beWF/lTX74x7AiaSB+xQxywPSNdhtEKvqDkRui8eOJ5kqN2o4UaleLKQGgqmCw3WyHRIsckV7If1qpbNiLtWMw==}
+    engines: {node: '>=16.13'}
+    dependencies:
+      '@miniflare/shared': 2.11.0
+      '@miniflare/storage-memory': 2.11.0
+    dev: true
+
   /@miniflare/storage-memory/2.10.0:
     resolution: {integrity: sha512-ZATU+qZtJ9yG0umgTrOEUi9SU//YyDb8nYXMgqT4JHODYA3RTz1SyyiQSOOz589upJPdu1LN+0j8W24WGRwwxQ==}
     engines: {node: '>=16.13'}
     dependencies:
       '@miniflare/shared': 2.10.0
+    dev: true
+
+  /@miniflare/storage-memory/2.11.0:
+    resolution: {integrity: sha512-s0AhPww7fq/Jz80NbPb+ffhcVRKnfPi7H1dHTRTre2Ud23EVJjAWl2gat42x8NOT/Fu3/o/7A72DWQQJqfO98A==}
+    engines: {node: '>=16.13'}
+    dependencies:
+      '@miniflare/shared': 2.11.0
     dev: true
 
   /@miniflare/watcher/2.10.0:
