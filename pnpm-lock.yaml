@@ -67,7 +67,7 @@ importers:
       postcss: 8.4.18
       solid-js: 1.6.1
       solid-start: 0.2.2
-      solid-start-cloudflare-pages: 0.2.1
+      solid-start-cloudflare-pages: 0.2.2
       solid-start-cloudflare-workers: 0.2.1
       solid-start-node: 0.2.1
       tailwindcss: 3.2.1
@@ -88,7 +88,7 @@ importers:
       postcss: 8.4.18
       solid-js: 1.6.1
       solid-start: 0.2.2_pronwpnd5fhegqthg7enyrn3im
-      solid-start-cloudflare-pages: 0.2.1_u7jfn5mcy5pgrtvvkcawwpzirm
+      solid-start-cloudflare-pages: 0.2.2_u7jfn5mcy5pgrtvvkcawwpzirm
       solid-start-cloudflare-workers: 0.2.1_u7jfn5mcy5pgrtvvkcawwpzirm
       solid-start-node: 0.2.1_e6aoy3r4w2sdxfacsqkbndqgxq
       tailwindcss: 3.2.1_postcss@8.4.18
@@ -10273,23 +10273,23 @@ packages:
       solid-js: 1.6.1
     dev: true
 
-  /solid-start-cloudflare-pages/0.2.1_u7jfn5mcy5pgrtvvkcawwpzirm:
-    resolution: {integrity: sha512-DARmx637SkZMSqSipHSiJdFIaRvP7lwkZgXu/9NQSbVW/VDdgtbbCW+o+/XEWy7fZfJF3tuinpZGsQWxIR1fMg==}
+  /solid-start-cloudflare-pages/0.2.2_u7jfn5mcy5pgrtvvkcawwpzirm:
+    resolution: {integrity: sha512-59TKxQhfVqRF3hem+ll+3XXRImNS/UaAsZ3meAE60g6rz97425AesuvoPCPxe5KSD+b7zoBf5DIEtMaCimO0Kw==}
     peerDependencies:
       solid-start: '*'
       vite: '*'
     dependencies:
       '@cloudflare/kv-asset-handler': 0.2.0
       '@cloudflare/workers-types': 3.18.0
-      '@miniflare/core': 2.10.0
-      '@miniflare/http-server': 2.10.0
-      '@miniflare/shared': 2.10.0
-      '@miniflare/web-sockets': 2.10.0
+      '@miniflare/core': 2.11.0
+      '@miniflare/http-server': 2.11.0
+      '@miniflare/shared': 2.11.0
+      '@miniflare/web-sockets': 2.11.0
       '@rollup/plugin-commonjs': 22.0.2_rollup@2.79.1
       '@rollup/plugin-json': 4.1.0_rollup@2.79.1
       '@rollup/plugin-node-resolve': 13.3.0_rollup@2.79.1
       '@types/ws': 8.5.3
-      miniflare: 2.10.0
+      miniflare: 2.11.0
       rollup: 2.79.1
       solid-start: 0.2.2_pronwpnd5fhegqthg7enyrn3im
       terser: 5.15.1
