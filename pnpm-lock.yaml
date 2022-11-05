@@ -67,7 +67,7 @@ importers:
       postcss: 8.4.18
       solid-js: 1.6.1
       solid-start: 0.2.5
-      solid-start-cloudflare-pages: 0.2.2
+      solid-start-cloudflare-pages: 0.2.5
       solid-start-cloudflare-workers: 0.2.2
       solid-start-node: 0.2.2
       tailwindcss: 3.2.1
@@ -88,7 +88,7 @@ importers:
       postcss: 8.4.18
       solid-js: 1.6.1
       solid-start: 0.2.5_pronwpnd5fhegqthg7enyrn3im
-      solid-start-cloudflare-pages: 0.2.2_xsouepwyizogm5scdoutoukqgm
+      solid-start-cloudflare-pages: 0.2.5_xsouepwyizogm5scdoutoukqgm
       solid-start-cloudflare-workers: 0.2.2_xsouepwyizogm5scdoutoukqgm
       solid-start-node: 0.2.2_llhapitcqmjfe5watp6gsdfgny
       tailwindcss: 3.2.1_postcss@8.4.18
@@ -10277,8 +10277,8 @@ packages:
       solid-js: 1.6.1
     dev: true
 
-  /solid-start-cloudflare-pages/0.2.2_xsouepwyizogm5scdoutoukqgm:
-    resolution: {integrity: sha512-59TKxQhfVqRF3hem+ll+3XXRImNS/UaAsZ3meAE60g6rz97425AesuvoPCPxe5KSD+b7zoBf5DIEtMaCimO0Kw==}
+  /solid-start-cloudflare-pages/0.2.5_xsouepwyizogm5scdoutoukqgm:
+    resolution: {integrity: sha512-QrDMYTYMtlw1ZSYPHKNlgJFJJBkqvabxxYA0Pk14jSyhs1kwKC84aR2dp08ZiXyg73KW8uxwLa2rWq1OhOuqyw==}
     peerDependencies:
       solid-start: '*'
       vite: '*'
