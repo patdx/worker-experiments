@@ -26,7 +26,7 @@
     "@cloudflare/workers-types": "3.18.0",
     "@remix-run/dev": "1.7.4",
     "@remix-run/eslint-config": "1.7.4",
-    "@types/react": "18.0.24",
+    "@types/react": "18.0.25",
     "@types/react-dom": "18.0.8",
     "autoprefixer": "10.4.13",
     "concurrently": "7.5.0",
