@@ -1,6 +1,7 @@
-import type { FC, ReactElement, ReactNode } from 'react';
+import { createContext, FC, ReactElement, ReactNode, useContext } from 'react';
 import render from 'preact-render-to-string';
 import manifest from '../dist/manifest.json';
+import clsx from 'clsx';
 
 // const loadManifest = async () => {
 //   return import('../dist/manifest.json').then((m) => m.default);
@@ -14,10 +15,15 @@ export const htmlFragment = (node: ReactElement) => {
   });
 };
 
-export const htmlPage = async (node: ReactNode) => {
+export const htmlPage = async (request: Request, node: ReactNode) => {
   // const manifest = await loadManifest();
   return new Response(
-    '<!DOCTYPE html>' + render(<Page manifest={manifest}>{node}</Page>),
+    '<!DOCTYPE html>' +
+      render(
+        <UrlContext.Provider value={request.url}>
+          <Page manifest={manifest}>{node}</Page>
+        </UrlContext.Provider>
+      ),
     {
       headers: {
         'Content-Type': 'text/html',
@@ -25,6 +31,8 @@ export const htmlPage = async (node: ReactNode) => {
     }
   );
 };
+
+const UrlContext = createContext<string>(undefined as any);
 
 const Page: FC<{ children?: ReactNode; manifest: any }> = ({
   children,
@@ -42,9 +50,29 @@ const Page: FC<{ children?: ReactNode; manifest: any }> = ({
         content={JSON.stringify({ includeIndicatorStyles: false })}
       />
     </head>
-    <body>
+    <body hx-boost="true">
+      <div className="flex">
+        <NavLink href="/">Home</NavLink>
+        <NavLink href="/about">About</NavLink>
+      </div>
       {children}
       {/* <div id="app" dangerouslySetInnerHTML={{ __html: body }}></div> */}
     </body>
   </html>
 );
+
+const NavLink: FC<{ href?: string; children?: ReactNode }> = (props) => {
+  const url = new URL(useContext(UrlContext));
+
+  return (
+    <a
+      href={props.href}
+      className={clsx(
+        'hover:bg-gray-200 hover:underline active:bg-gray-300 active:underline transition p-2',
+        url.pathname === props.href && 'font-bold'
+      )}
+    >
+      {props.children}
+    </a>
+  );
+};

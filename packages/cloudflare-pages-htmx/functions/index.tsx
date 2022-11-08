@@ -8,6 +8,7 @@ import { Item } from '../lib/item';
 
 export const onRequest: PagesFunction = async (context) => {
   return htmlPage(
+    context.request,
     <>
       <div className="text-center text-8xl font-thin text-red-300">todos</div>
       <div className="mt-2 flex flex-col px-16 gap-2">
