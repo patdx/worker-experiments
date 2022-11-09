@@ -1,5 +1,5 @@
-import type { FC } from "react";
-import clsx from "clsx";
+import type { FC } from 'react';
+import clsx from 'clsx';
 
 export const LoadingIcon: FC<{ id?: string; className?: string }> = (props) => (
   <svg
@@ -7,7 +7,7 @@ export const LoadingIcon: FC<{ id?: string; className?: string }> = (props) => (
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     fill="currentColor"
-    className={clsx("w-6 h-6", props.className)}
+    className={clsx('w-6 h-6', props.className)}
   >
     <path
       fillRule="evenodd"

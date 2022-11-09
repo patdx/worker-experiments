@@ -1,9 +1,9 @@
 // POST = create next todo
 
-import { Form } from '../../lib/form';
+import { Form } from '../../lib/components/form';
 import { htmlFragment } from '../../lib/html';
-import { Item } from '../../lib/item';
-import { getUuid } from '../../lib/uuid';
+import { Item } from '../../lib/components/item';
+import { getUuid } from '../../lib/utils/uuid';
 
 export const onRequest: PagesFunction = async (context) => {
   // TODO: I guess ideally, we would want the site to work without

@@ -1,5 +1,5 @@
-import { FC } from 'react';
-import { HxProps } from './hx';
+import type { FC } from 'react';
+import type { HxProps } from '../utils/hx';
 
 export const Form: FC<HxProps> = (props) => (
   <form

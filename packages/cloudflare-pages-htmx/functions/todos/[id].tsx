@@ -1,5 +1,5 @@
 import { htmlFragment } from '../../lib/html';
-import { Item } from '../../lib/item';
+import { Item } from '../../lib/components/item';
 
 export const onRequest: PagesFunction = async (context) => {
   const json = await context.request.json<{

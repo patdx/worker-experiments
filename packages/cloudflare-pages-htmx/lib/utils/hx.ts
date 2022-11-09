@@ -12,6 +12,7 @@ export type HxProps = {
     | 'beforeend'
     | 'afterend'
     | 'none';
+  'hx-push-url'?: 'true';
 };
 
 export const hx = (props?: HxProps) => props;

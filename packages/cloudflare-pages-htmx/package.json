@@ -33,6 +33,8 @@
     "preact-render-to-string": "^5.2.6",
     "react": "npm:@preact/compat",
     "react-dom": "npm:@preact/compat",
-    "react-icons": "4.6.0"
+    "react-icons": "4.6.0",
+    "react-router": "6.4.3",
+    "react-router-dom": "6.4.3"
   }
 }

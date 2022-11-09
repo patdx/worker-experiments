@@ -1,11 +1,9 @@
-import { createContext, FC, ReactElement, ReactNode, useContext } from 'react';
 import render from 'preact-render-to-string';
+import type { FC, ReactElement } from 'react';
+import { matchRoutes, RouteMatch } from 'react-router';
 import manifest from '../dist/manifest.json';
-import clsx from 'clsx';
-
-// const loadManifest = async () => {
-//   return import('../dist/manifest.json').then((m) => m.default);
-// };
+import { App, ROUTES } from './app';
+import { AppContext } from './context';
 
 export const htmlFragment = (node: ReactElement) => {
   return new Response(render(node), {
@@ -15,14 +13,51 @@ export const htmlFragment = (node: ReactElement) => {
   });
 };
 
-export const htmlPage = async (request: Request, node: ReactNode) => {
+export const htmlPage = async (request: Request) => {
+  const hxCurrentUrl = request.headers.get('HX-Current-URL');
+
+  if (hxCurrentUrl) {
+    const change = diffRoutes(
+      new URL(hxCurrentUrl).pathname,
+      new URL(request.url).pathname
+    );
+
+    // TODO: can we automatically detect/generate the hx-target swap id
+    // is there some automatic way to update the parent route when a NavLink
+    // is included?
+
+    return new Response(
+      render(
+        <AppContext.Provider
+          value={{
+            url: request.url,
+            routes: change?.route ? [change.route] : [],
+          }}
+        >
+          <App />
+        </AppContext.Provider>
+      ),
+      {
+        headers: {
+          'Content-Type': 'text/html',
+        },
+      }
+    );
+  }
+
+  // node: ReactNode
   // const manifest = await loadManifest();
   return new Response(
     '<!DOCTYPE html>' +
       render(
-        <UrlContext.Provider value={request.url}>
-          <Page manifest={manifest}>{node}</Page>
-        </UrlContext.Provider>
+        <AppContext.Provider
+          value={{
+            url: request.url,
+            routes: ROUTES,
+          }}
+        >
+          <Document manifest={manifest} />
+        </AppContext.Provider>
       ),
     {
       headers: {
@@ -32,12 +67,34 @@ export const htmlPage = async (request: Request, node: ReactNode) => {
   );
 };
 
-const UrlContext = createContext<string>(undefined as any);
+const diffRoutes = (oldUrl: string, newUrl: string) => {
+  const oldRoutes = matchRoutes(ROUTES, oldUrl);
+  const newRoutes = matchRoutes(ROUTES, newUrl);
 
-const Page: FC<{ children?: ReactNode; manifest: any }> = ({
-  children,
-  manifest,
-}) => (
+  // console.log('OLD');
+  // console.log(oldRoutes);
+  // console.log('NEW');
+  // console.log(newRoutes);
+  // console.log(oldRoutes[0].route === newRoutes[0].route);
+
+  const changes: RouteMatch[] = [];
+
+  for (const match of newRoutes ?? []) {
+    if (oldRoutes?.some((oldMatch) => match.route === oldMatch.route)) {
+      // do nothing
+    } else {
+      changes.push(match);
+    }
+  }
+
+  console.log(`CHANGES`, changes);
+
+  return changes?.[0];
+
+  // debugger;
+};
+
+const Document: FC<{ manifest: any }> = ({ manifest }) => (
   <html lang="en">
     <head>
       <meta charSet="UTF-8" />
@@ -50,29 +107,9 @@ const Page: FC<{ children?: ReactNode; manifest: any }> = ({
         content={JSON.stringify({ includeIndicatorStyles: false })}
       />
     </head>
-    <body hx-boost="true">
-      <div className="flex">
-        <NavLink href="/">Home</NavLink>
-        <NavLink href="/about">About</NavLink>
-      </div>
-      {children}
-      {/* <div id="app" dangerouslySetInnerHTML={{ __html: body }}></div> */}
+    {/* hx-boost="true" */}
+    <body>
+      <App />
     </body>
   </html>
 );
-
-const NavLink: FC<{ href?: string; children?: ReactNode }> = (props) => {
-  const url = new URL(useContext(UrlContext));
-
-  return (
-    <a
-      href={props.href}
-      className={clsx(
-        'hover:bg-gray-200 hover:underline active:bg-gray-300 active:underline transition p-2',
-        url.pathname === props.href && 'font-bold'
-      )}
-    >
-      {props.children}
-    </a>
-  );
-};
