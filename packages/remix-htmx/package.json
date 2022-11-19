@@ -23,7 +23,7 @@
     "react-dom": "18.2.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "3.18.0",
+    "@cloudflare/workers-types": "4.20221111.1",
     "@remix-run/dev": "1.7.6",
     "@remix-run/eslint-config": "1.7.6",
     "@types/react": "18.0.25",
