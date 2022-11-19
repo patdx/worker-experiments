@@ -21,7 +21,7 @@ importers:
       '@tailwindcss/typography': 0.5.8
       '@types/node': 18.11.9
       '@types/react': 18.0.25
-      '@types/react-dom': 18.0.8
+      '@types/react-dom': 18.0.9
       autoprefixer: 10.4.13
       clsx: ^1.2.1
       htmx.org: ^1.8.4
@@ -53,7 +53,7 @@ importers:
       '@tailwindcss/typography': 0.5.8_tailwindcss@3.2.4
       '@types/node': 18.11.9
       '@types/react': 18.0.25
-      '@types/react-dom': 18.0.8
+      '@types/react-dom': 18.0.9
       autoprefixer: 10.4.13_postcss@8.4.19
       postcss: 8.4.19
       tailwindcss: 3.2.4_postcss@8.4.19
@@ -132,7 +132,7 @@ importers:
       '@remix-run/eslint-config': 1.7.5
       '@remix-run/react': 1.7.5
       '@types/react': 18.0.25
-      '@types/react-dom': 18.0.8
+      '@types/react-dom': 18.0.9
       autoprefixer: 10.4.13
       clsx: 1.2.1
       concurrently: 7.5.0
@@ -161,7 +161,7 @@ importers:
       '@remix-run/dev': 1.7.5_biqbaboplfbrettd7655fr4n2y
       '@remix-run/eslint-config': 1.7.5_u5s2ztivgin3yy4srvdhm3tgpm
       '@types/react': 18.0.25
-      '@types/react-dom': 18.0.8
+      '@types/react-dom': 18.0.9
       autoprefixer: 10.4.13_postcss@8.4.19
       concurrently: 7.5.0
       eslint: 8.27.0
@@ -2962,8 +2962,8 @@ packages:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
     dev: true
 
-  /@types/react-dom/18.0.8:
-    resolution: {integrity: sha512-C3GYO0HLaOkk9dDAz3Dl4sbe4AKUGTCfFIZsz3n/82dPNN8Du533HzKatDxeUYWu24wJgMP1xICqkWk1YOLOIw==}
+  /@types/react-dom/18.0.9:
+    resolution: {integrity: sha512-qnVvHxASt/H7i+XG1U1xMiY5t+IHcPGUK7TDMDzom08xa7e86eCeKOiLZezwCKVxJn6NEiiy2ekgX8aQssjIKg==}
     dependencies:
       '@types/react': 18.0.25
     dev: true
