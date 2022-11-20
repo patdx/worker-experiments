@@ -2,89 +2,89 @@ var manifest = {
 	"/(pages)": [
 	{
 		type: "script",
-		href: "/assets/(pages).b672a5a5.js"
+		href: "/assets/(pages).ca55c423.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.6b347fee.js"
+		href: "/assets/entry-client.f134b0c4.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client.cc032adb.css"
+		href: "/assets/entry-client.ab03752e.css"
 	}
 ],
 	"/(pages)/about": [
 	{
 		type: "script",
-		href: "/assets/about.d690925b.js"
+		href: "/assets/about.b0c81ae2.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.6b347fee.js"
+		href: "/assets/entry-client.f134b0c4.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client.cc032adb.css"
+		href: "/assets/entry-client.ab03752e.css"
 	},
 	{
 		type: "script",
-		href: "/assets/Counter.09b7599e.js"
+		href: "/assets/Counter.2954b003.js"
 	}
 ],
 	"/(pages)/": [
 	{
 		type: "script",
-		href: "/assets/index.899cbfe7.js"
+		href: "/assets/index.ed0ea5d1.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.6b347fee.js"
+		href: "/assets/entry-client.f134b0c4.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client.cc032adb.css"
+		href: "/assets/entry-client.ab03752e.css"
 	},
 	{
 		type: "script",
-		href: "/assets/Counter.09b7599e.js"
+		href: "/assets/Counter.2954b003.js"
 	}
 ],
 	"/(pages)/:profile/view": [
 	{
 		type: "script",
-		href: "/assets/view.4ec990af.js"
+		href: "/assets/view.1ac2bae1.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.6b347fee.js"
+		href: "/assets/entry-client.f134b0c4.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client.cc032adb.css"
+		href: "/assets/entry-client.ab03752e.css"
 	}
 ],
 	"/*404": [
 	{
 		type: "script",
-		href: "/assets/_...404_.83046882.js"
+		href: "/assets/_...404_.968445f5.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.6b347fee.js"
+		href: "/assets/entry-client.f134b0c4.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client.cc032adb.css"
+		href: "/assets/entry-client.ab03752e.css"
 	}
 ],
 	"entry-client": [
 	{
 		type: "script",
-		href: "/assets/entry-client.6b347fee.js"
+		href: "/assets/entry-client.f134b0c4.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client.cc032adb.css"
+		href: "/assets/entry-client.ab03752e.css"
 	}
 ],
 	"index.html": [
@@ -530,7 +530,7 @@ function writeProp(cur, accessor) {
               case undefined:
                 BUFFER.push("Object.assign(Object.create(null),");
                 writeObject(cur);
-                BUFFER.push("))");
+                BUFFER.push(")");
                 break;
               default:
                 return false;
@@ -1059,7 +1059,7 @@ function generateHydrationScript({
   eventNames = ["click", "input"],
   nonce
 } = {}) {
-  return `<script${nonce ? ` nonce="${nonce}"` : ""}>var e,t;e=window._$HY||(_$HY={events:[],completed:new WeakSet,r:{},fe(){},init(e,t){_$HY.r[e]=[new Promise(((e,o)=>t=e)),t]},set(e,t,o){(o=_$HY.r[e])&&o[1](t),_$HY.r[e]=[t]},unset(e){delete _$HY.r[e]},load:e=>_$HY.r[e]}),t=e=>e&&e.hasAttribute&&(e.hasAttribute("data-hk")?e:t(e.host&&e.host instanceof Node?e.host:e.parentNode)),["${eventNames.join('", "')}"].forEach((o=>document.addEventListener(o,(o=>{let s=o.composedPath&&o.composedPath()[0]||o.target,a=t(s);a&&!e.completed.has(a)&&e.events.push([a,o])}))));</script><!--xs-->`;
+  return `<script${nonce ? ` nonce="${nonce}"` : ""}>(e=>{let t=e=>e&&e.hasAttribute&&(e.hasAttribute("data-hk")?e:t(e.host&&e.host instanceof Node?e.host:e.parentNode));["${eventNames.join('", "')}"].forEach((o=>document.addEventListener(o,(o=>{let s=o.composedPath&&o.composedPath()[0]||o.target,a=t(s);a&&!e.completed.has(a)&&e.events.push([a,o])}))))})(window._$HY||(_$HY={events:[],completed:new WeakSet,r:{},fe(){},init(e,t){_$HY.r[e]=[new Promise((e=>t=e)),t]},set(e,t,o){(o=_$HY.r[e])&&o[1](t),_$HY.r[e]=[t]},unset(e){delete _$HY.r[e]},load:e=>_$HY.r[e]}));</script><!--xs-->`;
 }
 function NoHydration(props) {
   sharedConfig.context.noHydrate = true;
@@ -1175,6 +1175,9 @@ async function internalFetch(route, init) {
   let url = new URL(route, "http://internal");
   const request = new Request(url.href, init);
   const handler = getRouteMatches$1(apiRoutes$1, url.pathname, request.method.toUpperCase());
+  if (!handler) {
+    throw new Error(`No handler found for ${request.method} ${request.url}`);
+  }
   let apiEvent = Object.freeze({
     request,
     params: handler.params,
@@ -2041,130 +2044,27 @@ function ErrorMessage(props) {
   return ssr(_tmpl$$8, ssrHydrationKey(), "padding:" + "16px", "background-color:" + "rgba(252, 165, 165)" + (";color:" + "rgb(153, 27, 27)") + (";border-radius:" + "5px") + (";overflow:" + "scroll") + (";padding:" + "16px") + (";margin-bottom:" + "8px"), "font-weight:" + "bold", escape(props.error.message), "color:" + "rgba(252, 165, 165)" + (";background-color:" + "rgb(153, 27, 27)") + (";border-radius:" + "5px") + (";padding:" + "4px 8px"), "margin-top:" + "8px" + (";width:" + "100%"), escape(props.error.stack));
 }
 
-const _tmpl$$7 = ["<div", " class=\"shadow bg-gray-100 sticky top-0\"><!--#-->", "<!--/--><!--#-->", "<!--/--><a class=\"p-2 h-full inline-block transition-colors bg-gray-100 hover:bg-white\" href=\"/api/render-static-markup\">Render static markup</a></div>"];
-function PagesLayout() {
-  return [ssr(_tmpl$$7, ssrHydrationKey(), escape(createComponent(A, {
-    "class": "p-2 h-full inline-block transition-colors bg-gray-100 hover:bg-white",
-    href: "/",
-    children: "Index"
-  })), escape(createComponent(A, {
-    "class": "p-2 h-full inline-block transition-colors bg-gray-100 hover:bg-white",
-    href: "/about",
-    children: "About"
-  }))), createComponent(Outlet, {})];
-}
-
-const _tmpl$$6 = ["<button", " class=\"w-[200px] rounded-full bg-gray-100 border-2 border-gray-300 focus:border-gray-400 active:border-gray-400 px-[2rem] py-[1rem]\">Clicks: <!--#-->", "<!--/--></button>"];
-function Counter() {
-  const [count, setCount] = createSignal(0);
-  return ssr(_tmpl$$6, ssrHydrationKey(), escape(count()));
-}
-
-const _tmpl$$5 = ["<main", " class=\"text-center mx-auto text-gray-700 p-4\"><h1 class=\"max-6-xs text-6xl text-sky-700 font-thin uppercase my-16\">About Page</h1><!--#-->", "<!--/--><p class=\"mt-8\">Visit <!--#-->", "<!--/--> to learn how to build Solid apps.</p><p class=\"my-4\"><!--#-->", "<!--/--> - <span>About Page</span></p></main>"];
-function About() {
-  return ssr(_tmpl$$5, ssrHydrationKey(), escape(createComponent(Counter, {})), escape(createComponent(A, {
-    href: "https://solidjs.com",
-    target: "_blank",
-    "class": "text-sky-600 hover:underline",
-    children: "solidjs.com"
-  })), escape(createComponent(A, {
-    href: "/",
-    "class": "text-sky-600 hover:underline",
-    children: "Home"
-  })));
-}
-
-const _tmpl$$4 = ["<main", " class=\"text-center mx-auto text-gray-700 p-4\"><div class=\"flex gap-4 justify-center\"><h1 class=\"max-6-xs text-6xl text-sky-700 font-thin uppercase my-16\">Hello world!</h1><!--#-->", "<!--/--><!--#-->", "<!--/--><!--#-->", "<!--/--><div lang=\"ja\" style=\"", "\">\u30CF\u30ED\u30FC\u4E16\u754C</div></div><!--#-->", "<!--/--><p class=\"mt-8\">Visit <a href=\"https://solidjs.com\" target=\"_blank\" class=\"text-sky-600 hover:underline\">solidjs.com</a> to learn how to build Solid apps.</p><p class=\"my-4\"><span>Home</span> - <!--#-->", "<!--/--> </p></main>"];
-function Home() {
-  return ssr(_tmpl$$4, ssrHydrationKey(), escape(createComponent(Link, {
-    rel: "preconnect",
-    href: "https://fonts.googleapis.com"
-  })), escape(createComponent(Link, {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous"
-  })), escape(createComponent(Link, {
-    href: "https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500&display=swap",
-    rel: "stylesheet"
-  })), "writing-mode:" + "vertical-rl" + (";font-family:" + "'Noto Serif JP', serif"), escape(createComponent(Counter, {})), escape(createComponent(A, {
-    href: "/about",
-    "class": "text-sky-600 hover:underline",
-    children: "About Page"
-  })));
-}
-
-const _tmpl$$3 = ["<div", ">This is a special view <span>", "</span></div>"];
-function View() {
-  const params = useParams();
-  return ssr(_tmpl$$3, ssrHydrationKey(), escape(JSON.stringify(params)));
-}
-
-const _tmpl$$2 = ["<main", " class=\"text-center mx-auto text-gray-700 p-4\"><h1 class=\"max-6-xs text-6xl text-sky-700 font-thin uppercase my-16\">Not Found</h1><p class=\"mt-8\">Visit <!--#-->", "<!--/--> to learn how to build Solid apps.</p><p class=\"my-4\"><!--#-->", "<!--/--> - <!--#-->", "<!--/--></p></main>"];
-function NotFound() {
-  return ssr(_tmpl$$2, ssrHydrationKey(), escape(createComponent(A, {
-    href: "https://solidjs.com",
-    target: "_blank",
-    "class": "text-sky-600 hover:underline",
-    children: "solidjs.com"
-  })), escape(createComponent(A, {
-    href: "/",
-    "class": "text-sky-600 hover:underline",
-    children: "Home"
-  })), escape(createComponent(A, {
-    href: "/about",
-    "class": "text-sky-600 hover:underline",
-    children: "About Page"
-  })));
-}
-
-/// <reference path="../server/types.tsx" />
-const routesConfig = {
-  routes: [{
-    component: PagesLayout,
-    path: "",
-    children: [{
-      component: About,
-      path: "/about"
-    }, {
-      component: Home,
-      path: "/"
-    }, {
-      component: View,
-      path: "/:profile/view"
-    }]
-  }, {
-    component: NotFound,
-    path: "/*404"
-  }],
-  routeLayouts: {
-    "/about": {
-      "id": "/(pages)/about",
-      "layouts": ["/(pages)"]
-    },
-    "/": {
-      "id": "/(pages)/",
-      "layouts": ["/(pages)"]
-    },
-    "/:profile/view": {
-      "id": "/(pages)/:profile/view",
-      "layouts": ["/(pages)"]
-    },
-    "/*404": {
-      "id": "/*404",
-      "layouts": []
-    }
+// @ts-expect-error
+const routeLayouts = {
+  "/about": {
+    "id": "/(pages)/about",
+    "layouts": ["/(pages)"]
+  },
+  "/": {
+    "id": "/(pages)/",
+    "layouts": ["/(pages)"]
+  },
+  "/:profile/view": {
+    "id": "/(pages)/:profile/view",
+    "layouts": ["/(pages)"]
+  },
+  "/*404": {
+    "id": "/*404",
+    "layouts": []
   }
 };
 
-/**
- * Routes are the file system based routes, used by Solid App Router to show the current page according to the URL.
- */
-
-const FileRoutes = () => {
-  return routesConfig.routes;
-};
-
-const _tmpl$$1 = ["<link", " rel=\"stylesheet\"", ">"],
+const _tmpl$$7 = ["<link", " rel=\"stylesheet\"", ">"],
   _tmpl$2$1 = ["<link", " rel=\"modulepreload\"", ">"];
 function flattenIslands(match, manifest) {
   let result = [...match];
@@ -2182,7 +2082,7 @@ function getAssetsFromManifest(manifest, routerContext) {
   let match = routerContext.matches.reduce((memo, m) => {
     if (m.length) {
       const fullPath = m.reduce((previous, match) => previous + match.originalPath, "");
-      const route = routesConfig.routeLayouts[fullPath];
+      const route = routeLayouts[fullPath];
       if (route) {
         memo.push(...(manifest[route.id] || []));
         const layoutsManifestEntries = route.layouts.flatMap(manifestKey => manifest[manifestKey] || []);
@@ -2194,7 +2094,7 @@ function getAssetsFromManifest(manifest, routerContext) {
   match.push(...(manifest["entry-client"] || []));
   match = flattenIslands(match, manifest);
   const links = match.reduce((r, src) => {
-    r[src.href] = src.type === "style" ? ssr(_tmpl$$1, ssrHydrationKey(), ssrAttribute("href", escape(src.href, true), false)) : src.type === "script" ? ssr(_tmpl$2$1, ssrHydrationKey(), ssrAttribute("href", escape(src.href, true), false)) : undefined;
+    r[src.href] = src.type === "style" ? ssr(_tmpl$$7, ssrHydrationKey(), ssrAttribute("href", escape(src.href, true), false)) : src.type === "script" ? ssr(_tmpl$2$1, ssrHydrationKey(), ssrAttribute("href", escape(src.href, true), false)) : undefined;
     return r;
   }, {});
   return Object.values(links);
@@ -2207,12 +2107,14 @@ function getAssetsFromManifest(manifest, routerContext) {
 function Links() {
   const context = useContext(ServerContext);
   useAssets(() => getAssetsFromManifest(context.env.manifest, context.routerContext));
+  return null;
 }
 
 function Meta() {
   const context = useContext(ServerContext);
   // @ts-expect-error The ssr() types do not match the Assets child types
   useAssets(() => ssr(renderTags(context.tags)));
+  return null;
 }
 
 const _tmpl$4 = ["<script", " type=\"module\" async", "></script>"];
@@ -2242,6 +2144,109 @@ function Body(props) {
     return ssrElement("body", props, () => props.children , false);
   }
 }
+
+const _tmpl$$6 = ["<div", " class=\"shadow bg-gray-100 sticky top-0\"><!--#-->", "<!--/--><!--#-->", "<!--/--><a class=\"p-2 h-full inline-block transition-colors bg-gray-100 hover:bg-white\" href=\"/api/render-static-markup\">Render static markup</a></div>"];
+function PagesLayout() {
+  return [ssr(_tmpl$$6, ssrHydrationKey(), escape(createComponent(A, {
+    "class": "p-2 h-full inline-block transition-colors bg-gray-100 hover:bg-white",
+    href: "/",
+    children: "Index"
+  })), escape(createComponent(A, {
+    "class": "p-2 h-full inline-block transition-colors bg-gray-100 hover:bg-white",
+    href: "/about",
+    children: "About"
+  }))), createComponent(Outlet, {})];
+}
+
+const _tmpl$$5 = ["<button", " class=\"w-[200px] rounded-full bg-gray-100 border-2 border-gray-300 focus:border-gray-400 active:border-gray-400 px-[2rem] py-[1rem]\">Clicks: <!--#-->", "<!--/--></button>"];
+function Counter() {
+  const [count, setCount] = createSignal(0);
+  return ssr(_tmpl$$5, ssrHydrationKey(), escape(count()));
+}
+
+const _tmpl$$4 = ["<main", " class=\"text-center mx-auto text-gray-700 p-4\"><h1 class=\"max-6-xs text-6xl text-sky-700 font-thin uppercase my-16\">About Page</h1><!--#-->", "<!--/--><p class=\"mt-8\">Visit <!--#-->", "<!--/--> to learn how to build Solid apps.</p><p class=\"my-4\"><!--#-->", "<!--/--> - <span>About Page</span></p></main>"];
+function About() {
+  return ssr(_tmpl$$4, ssrHydrationKey(), escape(createComponent(Counter, {})), escape(createComponent(A, {
+    href: "https://solidjs.com",
+    target: "_blank",
+    "class": "text-sky-600 hover:underline",
+    children: "solidjs.com"
+  })), escape(createComponent(A, {
+    href: "/",
+    "class": "text-sky-600 hover:underline",
+    children: "Home"
+  })));
+}
+
+const _tmpl$$3 = ["<main", " class=\"text-center mx-auto text-gray-700 p-4\"><div class=\"flex gap-4 justify-center\"><h1 class=\"max-6-xs text-6xl text-sky-700 font-thin uppercase my-16\">Hello world!</h1><!--#-->", "<!--/--><!--#-->", "<!--/--><!--#-->", "<!--/--><div lang=\"ja\" style=\"", "\">\u30CF\u30ED\u30FC\u4E16\u754C</div></div><!--#-->", "<!--/--><p class=\"mt-8\">Visit <a href=\"https://solidjs.com\" target=\"_blank\" class=\"text-sky-600 hover:underline\">solidjs.com</a> to learn how to build Solid apps.</p><p class=\"my-4\"><span>Home</span> - <!--#-->", "<!--/--> </p></main>"];
+function Home() {
+  return ssr(_tmpl$$3, ssrHydrationKey(), escape(createComponent(Link, {
+    rel: "preconnect",
+    href: "https://fonts.googleapis.com"
+  })), escape(createComponent(Link, {
+    rel: "preconnect",
+    href: "https://fonts.gstatic.com",
+    crossOrigin: "anonymous"
+  })), escape(createComponent(Link, {
+    href: "https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500&display=swap",
+    rel: "stylesheet"
+  })), "writing-mode:" + "vertical-rl" + (";font-family:" + "'Noto Serif JP', serif"), escape(createComponent(Counter, {})), escape(createComponent(A, {
+    href: "/about",
+    "class": "text-sky-600 hover:underline",
+    children: "About Page"
+  })));
+}
+
+const _tmpl$$2 = ["<div", ">This is a special view <span>", "</span></div>"];
+function View() {
+  const params = useParams();
+  return ssr(_tmpl$$2, ssrHydrationKey(), escape(JSON.stringify(params)));
+}
+
+const _tmpl$$1 = ["<main", " class=\"text-center mx-auto text-gray-700 p-4\"><h1 class=\"max-6-xs text-6xl text-sky-700 font-thin uppercase my-16\">Not Found</h1><p class=\"mt-8\">Visit <!--#-->", "<!--/--> to learn how to build Solid apps.</p><p class=\"my-4\"><!--#-->", "<!--/--> - <!--#-->", "<!--/--></p></main>"];
+function NotFound() {
+  return ssr(_tmpl$$1, ssrHydrationKey(), escape(createComponent(A, {
+    href: "https://solidjs.com",
+    target: "_blank",
+    "class": "text-sky-600 hover:underline",
+    children: "solidjs.com"
+  })), escape(createComponent(A, {
+    href: "/",
+    "class": "text-sky-600 hover:underline",
+    children: "Home"
+  })), escape(createComponent(A, {
+    href: "/about",
+    "class": "text-sky-600 hover:underline",
+    children: "About Page"
+  })));
+}
+
+/// <reference path="../server/types.tsx" />
+const fileRoutes = [{
+  component: PagesLayout,
+  path: "",
+  children: [{
+    component: About,
+    path: "/about"
+  }, {
+    component: Home,
+    path: "/"
+  }, {
+    component: View,
+    path: "/:profile/view"
+  }]
+}, {
+  component: NotFound,
+  path: "/*404"
+}];
+
+/**
+ * Routes are the file system based routes, used by Solid App Router to show the current page according to the URL.
+ */
+
+const FileRoutes = () => {
+  return fileRoutes;
+};
 
 function Root() {
   return createComponent(Html, {
@@ -2622,12 +2627,14 @@ const inlineServerFunctions = ({ forward }) => {
         formRequestBody = new Request(event.request.url, {
           body: read2,
           headers: event.request.headers,
-          method: event.request.method
+          method: event.request.method,
+          duplex: "half"
         });
         event.request = new Request(event.request.url, {
           body: read1,
           headers: event.request.headers,
-          method: event.request.method
+          method: event.request.method,
+          duplex: "half"
         });
       }
       let serverFunctionEvent = Object.freeze({
@@ -2693,6 +2700,8 @@ function StartServer({
 }) {
   const parsed = new URL(event.request.url);
   const path = parsed.pathname + parsed.search;
+
+  // @ts-ignore
   sharedConfig.context.requestContext = event;
   return createComponent(ServerContext.Provider, {
     value: event,
@@ -2712,9 +2721,7 @@ function StartServer({
               return event.prevUrl;
             },
             data: dataFn,
-            get routes() {
-              return routesConfig.routes;
-            },
+            routes: fileRoutes,
             get children() {
               return [docType, createComponent(Root, {})];
             }
