@@ -110,13 +110,24 @@ export const SettingsPage = () => (
 export const settingsDatabasePageLoader = async (args: LoaderFunctionArgs) => {
   const context = SERVER_CONTEXT.get(args.request);
 
-  const migrations = await listMigrations(context!.env.DB);
+  let migrations;
+  let error = '';
 
-  return migrations;
+  try {
+    migrations = await listMigrations(context!.env.DB);
+  } catch (e: Error) {
+    migrations = [] as any[];
+    error = JSON.stringify({
+      message: e.message,
+      cause: e.cause.message,
+    });
+  }
+
+  return { migrations, error };
 };
 
 export const SettingsPageDatabase = () => {
-  const migrations = useLoaderData() as Awaited<
+  const { migrations, error } = useLoaderData() as Awaited<
     ReturnType<typeof settingsDatabasePageLoader>
   >;
 
@@ -124,6 +135,7 @@ export const SettingsPageDatabase = () => {
     <div className="p-2">
       <h3>Migration status</h3>
       <p>This is connected to a real Cloudflare D1 Database.</p>
+      <pre>{error}</pre>
       <button
         type="button"
         className="bg-gray-200 p-1 hover:bg-gray-300"
