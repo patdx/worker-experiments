@@ -2,11 +2,11 @@ var manifest = {
 	"/(pages)": [
 	{
 		type: "script",
-		href: "/assets/(pages).ca55c423.js"
+		href: "/assets/(pages).586e6a24.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.f134b0c4.js"
+		href: "/assets/entry-client.88af2856.js"
 	},
 	{
 		type: "style",
@@ -16,11 +16,11 @@ var manifest = {
 	"/(pages)/about": [
 	{
 		type: "script",
-		href: "/assets/about.b0c81ae2.js"
+		href: "/assets/about.f3f35e41.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.f134b0c4.js"
+		href: "/assets/entry-client.88af2856.js"
 	},
 	{
 		type: "style",
@@ -28,17 +28,17 @@ var manifest = {
 	},
 	{
 		type: "script",
-		href: "/assets/Counter.2954b003.js"
+		href: "/assets/Counter.78596350.js"
 	}
 ],
 	"/(pages)/": [
 	{
 		type: "script",
-		href: "/assets/index.ed0ea5d1.js"
+		href: "/assets/index.30e951b4.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.f134b0c4.js"
+		href: "/assets/entry-client.88af2856.js"
 	},
 	{
 		type: "style",
@@ -46,17 +46,17 @@ var manifest = {
 	},
 	{
 		type: "script",
-		href: "/assets/Counter.2954b003.js"
+		href: "/assets/Counter.78596350.js"
 	}
 ],
 	"/(pages)/:profile/view": [
 	{
 		type: "script",
-		href: "/assets/view.1ac2bae1.js"
+		href: "/assets/view.60d15905.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.f134b0c4.js"
+		href: "/assets/entry-client.88af2856.js"
 	},
 	{
 		type: "style",
@@ -66,11 +66,11 @@ var manifest = {
 	"/*404": [
 	{
 		type: "script",
-		href: "/assets/_...404_.968445f5.js"
+		href: "/assets/_...404_.87308ba4.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.f134b0c4.js"
+		href: "/assets/entry-client.88af2856.js"
 	},
 	{
 		type: "style",
@@ -80,7 +80,7 @@ var manifest = {
 	"entry-client": [
 	{
 		type: "script",
-		href: "/assets/entry-client.f134b0c4.js"
+		href: "/assets/entry-client.88af2856.js"
 	},
 	{
 		type: "style",
@@ -1450,9 +1450,42 @@ function staticIntegration(obj) {
     };
 }
 
+function createBeforeLeave() {
+    let listeners = new Set();
+    function subscribe(listener) {
+        listeners.add(listener);
+        return () => listeners.delete(listener);
+    }
+    let ignore = false;
+    function confirm(to, options) {
+        if (ignore)
+            return !(ignore = false);
+        const e = {
+            to,
+            options,
+            defaultPrevented: false,
+            preventDefault: () => (e.defaultPrevented = true)
+        };
+        for (const l of listeners)
+            l.listener({
+                ...e,
+                from: l.location,
+                retry: (force) => {
+                    force && (ignore = true);
+                    l.navigate(to, options);
+                }
+            });
+        return !e.defaultPrevented;
+    }
+    return {
+        subscribe,
+        confirm
+    };
+}
+
 const hasSchemeRegex = /^(?:[a-z0-9]+:)?\/\//i;
 const trimPathRegex = /^\/+|\/+$/g;
-function normalize(path, omitSlash = false) {
+function normalizePath(path, omitSlash = false) {
     const s = path.replace(trimPathRegex, "");
     return s ? (omitSlash || /^[?#]/.test(s) ? s : "/" + s) : "";
 }
@@ -1460,8 +1493,8 @@ function resolvePath(base, path, from) {
     if (hasSchemeRegex.test(path)) {
         return undefined;
     }
-    const basePath = normalize(base);
-    const fromPath = from && normalize(from);
+    const basePath = normalizePath(base);
+    const fromPath = from && normalizePath(from);
     let result = "";
     if (!fromPath || path.startsWith("/")) {
         result = basePath;
@@ -1472,7 +1505,7 @@ function resolvePath(base, path, from) {
     else {
         result = fromPath;
     }
-    return (result || "/") + normalize(path, !result);
+    return (result || "/") + normalizePath(path, !result);
 }
 function invariant(value, message) {
     if (value == null) {
@@ -1481,7 +1514,7 @@ function invariant(value, message) {
     return value;
 }
 function joinPaths(from, to) {
-    return normalize(from).replace(/\/*(\*.*)?$/g, "") + normalize(to);
+    return normalizePath(from).replace(/\/*(\*.*)?$/g, "") + normalizePath(to);
 }
 function extractSearchParams(url) {
     const params = {};
@@ -1652,7 +1685,8 @@ function createBranches(routeDef, base = "", fallback, stack = [], branches = []
             const routes = createRoutes(def, base, fallback);
             for (const route of routes) {
                 stack.push(route);
-                if (def.children) {
+                const isEmptyArray = Array.isArray(def.children) && def.children.length === 0;
+                if (def.children && !isEmptyArray) {
                     createBranches(def.children, route.pattern, fallback, stack, branches);
                 }
                 else {
@@ -1714,6 +1748,7 @@ function createRouterContext(integration, base = "", data, out) {
     const { signal: [source, setSource], utils = {} } = normalizeIntegration(integration);
     const parsePath = utils.parsePath || (p => p);
     const renderPath = utils.renderPath || (p => p);
+    const beforeLeave = utils.beforeLeave || createBeforeLeave();
     const basePath = resolvePath("", base);
     const output = out
         ? Object.assign(out, {
@@ -1770,7 +1805,7 @@ function createRouterContext(integration, base = "", data, out) {
             if (typeof to === "number") {
                 if (!to) ;
                 else if (utils.go) {
-                    utils.go(to);
+                    beforeLeave.confirm(to, options) && utils.go(to);
                 }
                 else {
                     console.warn("Router integration does not support relative routing");
@@ -1825,7 +1860,8 @@ function createRouterContext(integration, base = "", data, out) {
         isRouting,
         renderPath,
         parsePath,
-        navigatorFactory
+        navigatorFactory,
+        beforeLeave
     };
 }
 function createRouteContext(router, parent, child, match) {
@@ -1956,15 +1992,15 @@ function A$1(props) {
     inactiveClass: "inactive",
     activeClass: "active"
   }, props);
-  const [, rest] = splitProps(props, ["href", "state", "activeClass", "inactiveClass", "end"]);
+  const [, rest] = splitProps(props, ["href", "state", "class", "activeClass", "inactiveClass", "end"]);
   const to = useResolvedPath(() => props.href);
   const href = useHref(to);
   const location = useLocation();
   const isActive = createMemo(() => {
     const to_ = to();
     if (to_ === undefined) return false;
-    const path = to_.split(/[?#]/, 1)[0].toLowerCase();
-    const loc = location.pathname.toLowerCase();
+    const path = normalizePath(to_.split(/[?#]/, 1)[0]).toLowerCase();
+    const loc = normalizePath(location.pathname).toLowerCase();
     return props.end ? path === loc : loc.startsWith(path);
   });
   return ssrElement("a", () => ({
@@ -1973,6 +2009,9 @@ function A$1(props) {
     "href": href() || props.href,
     "state": JSON.stringify(props.state),
     "classList": {
+      ...(props.class && {
+        [props.class]: true
+      }),
       [props.inactiveClass]: !isActive(),
       [props.activeClass]: isActive(),
       ...rest.classList

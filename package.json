@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "nx run-many --target=build"
+    "build": "nx run-many --target=build",
+    "do-update": "pnpm update -iLr"
   },
   "keywords": [],
   "author": "",
