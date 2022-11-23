@@ -2,6 +2,7 @@ export type HxProps = {
   'hx-swap-oob'?: 'true';
   'hx-target'?: string;
   'hx-post'?: string;
+  'hx-delete'?: string;
   'hx-get'?: string;
   'hx-trigger'?: string;
   'hx-swap'?:

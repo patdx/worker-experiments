@@ -1,13 +1,18 @@
 import { useContext } from 'react';
 import { RouteObject, useRoutes } from 'react-router';
-import { StaticRouter } from 'react-router-dom/server';
+import {
+  StaticRouter,
+  unstable_createStaticRouter,
+} from 'react-router-dom/server';
 import { AppContext } from './context';
 import {
   AboutPage,
   IndexPage,
   Layout,
+  settingsDatabasePageLoader,
   SettingsPage,
   SettingsPageAudio,
+  SettingsPageDatabase,
   SettingsPageGraphics,
 } from './pages';
 
@@ -35,6 +40,11 @@ export const ROUTES: RouteObject[] = [
         element: <SettingsPage />,
         children: [
           {
+            path: '/settings/database',
+            loader: settingsDatabasePageLoader,
+            element: <SettingsPageDatabase />,
+          },
+          {
             path: '/settings/graphics',
             element: <SettingsPageGraphics />,
           },
@@ -47,18 +57,3 @@ export const ROUTES: RouteObject[] = [
     ],
   },
 ];
-
-const MyRoutes = () => {
-  const routes = useRoutes(useContext(AppContext).routes);
-  return routes;
-};
-
-export const App = () => {
-  const url = new URL(useContext(AppContext).url).pathname;
-
-  return (
-    <StaticRouter location={url}>
-      <MyRoutes />
-    </StaticRouter>
-  );
-};

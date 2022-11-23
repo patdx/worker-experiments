@@ -1,9 +1,15 @@
 import render from 'preact-render-to-string';
-import type { FC, ReactElement } from 'react';
-import { matchRoutes, RouteMatch } from 'react-router';
+import type { FC, ReactElement, ReactNode } from 'react';
+import { matchRoutes, RouteMatch, RouteObject } from 'react-router';
 import manifest from '../dist/manifest.json';
-import { App, ROUTES } from './app';
-import { AppContext } from './context';
+import { ROUTES } from './app';
+import { AppContext, SERVER_CONTEXT } from './context';
+import {
+  unstable_createStaticRouter as createStaticRouter,
+  unstable_StaticRouterProvider as StaticRouterProvider,
+} from 'react-router-dom/server';
+import { unstable_createStaticHandler as createStaticHandler } from '@remix-run/router';
+import type { Env } from './env';
 
 export const htmlFragment = (node: ReactElement) => {
   return new Response(render(node), {
@@ -13,52 +19,87 @@ export const htmlFragment = (node: ReactElement) => {
   });
 };
 
-export const htmlPage = async (request: Request) => {
+// https://github.com/remix-run/react-router/blob/4d915e3305df5b01f51abdeb1c01bf442453522e/examples/ssr-data-router/src/entry.server.tsx
+
+export const htmlPage = async (
+  eventContext: EventContext<unknown, any, Record<string, unknown>>
+) => {
+  const request = eventContext.request;
   const hxCurrentUrl = request.headers.get('HX-Current-URL');
 
-  if (hxCurrentUrl) {
+  // set server context to use in loader
+  // in proper remix there is a getLoaderContext API?
+  SERVER_CONTEXT.set(request, eventContext as any);
+
+  let isFragment: boolean;
+  let routes: RouteObject[];
+
+  if (!hxCurrentUrl) {
+    isFragment = false;
+    routes = ROUTES;
+  } else {
     const change = diffRoutes(
       new URL(hxCurrentUrl).pathname,
       new URL(request.url).pathname
     );
 
+    routes = change?.route ? [change.route] : [];
+    isFragment = true;
+
     // TODO: can we automatically detect/generate the hx-target swap id
     // is there some automatic way to update the parent route when a NavLink
     // is included?
-
-    return new Response(
-      render(
-        <AppContext.Provider
-          value={{
-            url: request.url,
-            routes: change?.route ? [change.route] : [],
-          }}
-        >
-          <App />
-        </AppContext.Provider>
-      ),
-      {
-        headers: {
-          'Content-Type': 'text/html',
-        },
-      }
-    );
   }
 
-  // node: ReactNode
-  // const manifest = await loadManifest();
+  console.log(routes);
+
+  let { query } = createStaticHandler(routes);
+  let context = await query(request);
+
+  if (context instanceof Response) {
+    throw context;
+  }
+
+  let router = createStaticRouter(routes, context);
+
   return new Response(
-    '<!DOCTYPE html>' +
-      render(
-        <AppContext.Provider
-          value={{
-            url: request.url,
-            routes: ROUTES,
-          }}
-        >
-          <Document manifest={manifest} />
-        </AppContext.Provider>
-      ),
+    isFragment
+      ? // fragment render:
+        render(
+          <AppContext.Provider
+            value={{
+              url: request.url,
+              router,
+              context,
+            }}
+          >
+            {/* no <Document> in this case */}
+            <StaticRouterProvider
+              router={router}
+              context={context}
+              nonce="the-nonce"
+            />
+          </AppContext.Provider>
+        )
+      : // full page render:
+        '<!DOCTYPE html>' +
+        render(
+          <AppContext.Provider
+            value={{
+              url: request.url,
+              router,
+              context,
+            }}
+          >
+            <Document manifest={manifest}>
+              <StaticRouterProvider
+                router={router}
+                context={context}
+                nonce="the-nonce"
+              />
+            </Document>
+          </AppContext.Provider>
+        ),
     {
       headers: {
         'Content-Type': 'text/html',
@@ -94,7 +135,10 @@ const diffRoutes = (oldUrl: string, newUrl: string) => {
   // debugger;
 };
 
-const Document: FC<{ manifest: any }> = ({ manifest }) => (
+const Document: FC<{ manifest: any; children?: ReactNode }> = ({
+  manifest,
+  children,
+}) => (
   <html lang="en">
     <head>
       <meta charSet="UTF-8" />
@@ -108,8 +152,6 @@ const Document: FC<{ manifest: any }> = ({ manifest }) => (
       />
     </head>
     {/* hx-boost="true" */}
-    <body>
-      <App />
-    </body>
+    <body>{children}</body>
   </html>
 );

@@ -2,11 +2,19 @@
 // https://github.com/rajasegar/todomvc-htmx/blob/main/views/index.pug
 
 import type { FC, ReactNode } from 'react';
-import { Outlet } from 'react-router';
+import {
+  LoaderFunction,
+  LoaderFunctionArgs,
+  Outlet,
+  useLoaderData,
+} from 'react-router';
 import { Form } from './components/form';
 import { Item } from './components/item';
 import { NavLink } from './components/nav-link';
+import { SERVER_CONTEXT } from './context';
 import { TODOS } from './db';
+import { listMigrations } from './migrate';
+import { hx } from './utils/hx';
 
 export const Layout: FC<{ children?: ReactNode }> = ({ children }) => (
   <>
@@ -61,11 +69,16 @@ export const SettingsPage = () => (
   <>
     <div className="text-center text-8xl font-thin text-red-300">settings</div>
     <div className="mt-2 mx-auto max-w-md">
-      <div className="prose max-w-none">
-        <p>This is a fake settings page</p>
-      </div>
       <div className="border">
         <div className="flex border-b rounded">
+          <NavLink
+            // TODO: can we generate this "target" id automatically?
+            hx-target="#settings-sub-page"
+            className="border-r"
+            href="/settings/database"
+          >
+            Database
+          </NavLink>
           <NavLink
             // TODO: can we generate this "target" id automatically?
             hx-target="#settings-sub-page"
@@ -93,6 +106,79 @@ export const SettingsPage = () => (
     </div>
   </>
 );
+
+export const settingsDatabasePageLoader = async (args: LoaderFunctionArgs) => {
+  const context = SERVER_CONTEXT.get(args.request);
+
+  const migrations = await listMigrations(context!.env.DB);
+
+  return migrations;
+};
+
+export const SettingsPageDatabase = () => {
+  const migrations = useLoaderData() as Awaited<
+    ReturnType<typeof settingsDatabasePageLoader>
+  >;
+
+  return (
+    <div className="p-2">
+      <h3>Migration status</h3>
+      <p>This is connected to a real Cloudflare D1 Database.</p>
+      <button
+        type="button"
+        className="bg-gray-200 p-1 hover:bg-gray-300"
+        {...hx({
+          'hx-post': '/api/do-migrate',
+        })}
+      >
+        Run all migrations
+      </button>
+      <table>
+        <thead>
+          <tr>
+            <th className="border">Name</th>
+            <th className="border">Applied at</th>
+            <th className="border"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {migrations.map((migration) => (
+            <tr>
+              <td className="border">{migration.name}</td>
+              <td className="border">
+                {migration.created_at ?? 'Not applied'}
+              </td>
+              <td>
+                <button
+                  type="button"
+                  className="bg-gray-200 p-1 hover:bg-gray-300"
+                  {...hx({
+                    'hx-post': `/api/migration/${encodeURIComponent(
+                      migration.name
+                    )}`,
+                  })}
+                >
+                  Apply
+                </button>
+                <button
+                  type="button"
+                  className="bg-gray-200 p-1 hover:bg-gray-300"
+                  {...hx({
+                    'hx-delete': `/api/migration/${encodeURIComponent(
+                      migration.name
+                    )}`,
+                  })}
+                >
+                  Revert
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
 export const SettingsPageGraphics = () => {
   return <div>Graphics settings</div>;
