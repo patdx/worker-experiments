@@ -34,6 +34,8 @@ export const MIGRATIONS: Migration[] = [
 ];
 
 export const listMigrations = async (db: D1Database) => {
+  // TODO: prepare migrations table first
+
   const dbResult = await db
     .prepare(
       `

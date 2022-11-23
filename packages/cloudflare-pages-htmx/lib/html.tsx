@@ -96,6 +96,7 @@ export const htmlPage = async (
                 router={router}
                 context={context}
                 nonce="the-nonce"
+                hydrate={false}
               />
             </Document>
           </AppContext.Provider>
