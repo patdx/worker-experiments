@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nx dev",
+    "x-dev": "nx dev",
+    "dev": "pnpm build && wrangler pages dev ./dist --d1=DB --persist",
     "build": "vite build --emptyOutDir",
     "deploy": "vite build --emptyOutDir && wrangler pages publish ./dist --project-name cloudflare-pages-htmx"
   },

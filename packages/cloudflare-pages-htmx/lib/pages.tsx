@@ -1,13 +1,14 @@
 // Some inspiration was taken from here:
 // https://github.com/rajasegar/todomvc-htmx/blob/main/views/index.pug
 
-import type { FC, ReactNode } from 'react';
+import { FC, useContext } from 'react';
 import {
-  LoaderFunction,
   LoaderFunctionArgs,
   Outlet,
+  UNSAFE_RouteContext,
   useLoaderData,
 } from 'react-router';
+import { Button, ButtonGroup } from './components/button';
 import { Form } from './components/form';
 import { Item } from './components/item';
 import { NavLink } from './components/nav-link';
@@ -16,29 +17,35 @@ import { TODOS } from './db';
 import { listMigrations } from './migrate';
 import { hx } from './utils/hx';
 
-export const Layout: FC<{ children?: ReactNode }> = ({ children }) => (
-  <>
-    <div className="flex">
-      <NavLink hx-target="#main-page" href="/">
-        Home
-      </NavLink>
-      <NavLink hx-target="#main-page" href="/about">
-        About
-      </NavLink>
-      <NavLink hx-target="#main-page" href="/settings">
-        Settings
-      </NavLink>
-    </div>
-    <div id="main-page">
+export const HtmxOutlet: FC<{ className?: string }> = ({ className }) => {
+  // TODO: see if there is an official hook
+  // that can be used instead
+  const context = useContext(UNSAFE_RouteContext);
+  const lastMatch = context.matches[context.matches.length - 1];
+  return (
+    <div id={`outlet-${lastMatch.route.id}`} className={className}>
       <Outlet />
     </div>
+  );
+};
+
+export const Layout: FC = () => (
+  <>
+    <div className="flex">
+      <NavLink href="/" exact>
+        Home
+      </NavLink>
+      <NavLink href="/about">About</NavLink>
+      <NavLink href="/settings">Settings</NavLink>
+    </div>
+    <HtmxOutlet className="p-2" />
   </>
 );
 
 export const IndexPage = () => (
   <>
     <div className="text-center text-8xl font-thin text-red-300">todos</div>
-    <div className="mt-2 flex flex-col px-16 gap-2">
+    <div className="mt-2 flex flex-col gap-2">
       <Form />
       <ul id="todo-list" className="flex flex-col gap-2">
         {TODOS.map(({ id, text }) => (
@@ -68,40 +75,21 @@ export const AboutPage = () => (
 export const SettingsPage = () => (
   <>
     <div className="text-center text-8xl font-thin text-red-300">settings</div>
-    <div className="mt-2 mx-auto max-w-md">
+    <div className="mt-2 mx-auto">
       <div className="border">
         <div className="flex border-b rounded">
-          <NavLink
-            // TODO: can we generate this "target" id automatically?
-            hx-target="#settings-sub-page"
-            className="border-r"
-            href="/settings/database"
-          >
+          <NavLink className="border-r" href="/settings/database">
             Database
           </NavLink>
-          <NavLink
-            // TODO: can we generate this "target" id automatically?
-            hx-target="#settings-sub-page"
-            className="border-r"
-            href="/settings/graphics"
-          >
+          <NavLink className="border-r" href="/settings/graphics">
             Graphics
           </NavLink>
-          <NavLink
-            hx-target="#settings-sub-page"
-            className="border-r"
-            href="/settings/audio"
-          >
+          <NavLink className="border-r" href="/settings/audio">
             Audio
           </NavLink>
         </div>
-        <div
-          // TODO: can we generate this "target" id automatically?
-          id="settings-sub-page"
-          className="min-h-[10rem]"
-        >
-          <Outlet />
-        </div>
+
+        <HtmxOutlet className="min-h-[10rem]" />
       </div>
     </div>
   </>
@@ -115,7 +103,7 @@ export const settingsDatabasePageLoader = async (args: LoaderFunctionArgs) => {
 
   try {
     migrations = await listMigrations(context!.env.DB);
-  } catch (e: Error) {
+  } catch (e: any) {
     migrations = [] as any[];
     error = JSON.stringify({
       message: e.message,
@@ -136,15 +124,23 @@ export const SettingsPageDatabase = () => {
       <h3>Migration status</h3>
       <p>This is connected to a real Cloudflare D1 Database.</p>
       <pre>{error}</pre>
-      <button
-        type="button"
-        className="bg-gray-200 p-1 hover:bg-gray-300"
-        {...hx({
-          'hx-post': '/api/do-migrate',
-        })}
-      >
-        Run all migrations
-      </button>
+      <ButtonGroup className="py-2">
+        <Button
+          {...hx({
+            'hx-post': '/api/do-migrate',
+          })}
+        >
+          Run all pending migrations
+        </Button>
+        <Button
+          color="red"
+          {...hx({
+            'hx-post': '/api/do-migrate',
+          })}
+        >
+          Revert all migrations
+        </Button>
+      </ButtonGroup>
       <table>
         <thead>
           <tr>
@@ -154,35 +150,50 @@ export const SettingsPageDatabase = () => {
           </tr>
         </thead>
         <tbody>
+          <tr>
+            <td className="border p-2"></td>
+            <td className="border p-2"></td>
+            <td className="border p-2">
+              <Button>Down to here</Button>
+            </td>
+          </tr>
           {migrations.map((migration) => (
             <tr>
-              <td className="border">{migration.name}</td>
-              <td className="border">
+              <td className="border p-2">{migration.name}</td>
+              <td className="border p-2">
                 {migration.created_at ?? 'Not applied'}
               </td>
-              <td>
-                <button
-                  type="button"
-                  className="bg-gray-200 p-1 hover:bg-gray-300"
-                  {...hx({
-                    'hx-post': `/api/migration/${encodeURIComponent(
-                      migration.name
-                    )}`,
-                  })}
-                >
-                  Apply
-                </button>
-                <button
-                  type="button"
-                  className="bg-gray-200 p-1 hover:bg-gray-300"
-                  {...hx({
-                    'hx-delete': `/api/migration/${encodeURIComponent(
-                      migration.name
-                    )}`,
-                  })}
-                >
-                  Revert
-                </button>
+              <td className="border p-2 flex flex-col gap-1">
+                <ButtonGroup>
+                  <Button>Up to here</Button>
+                  <Button>Down to here</Button>
+                </ButtonGroup>
+                <hr />
+                <ButtonGroup>
+                  <Button
+                    {...hx({
+                      'hx-post': `/api/migration/${encodeURIComponent(
+                        migration.name
+                      )}`,
+                    })}
+                  >
+                    Apply this migration
+                  </Button>
+                  <Button
+                    {...hx({
+                      'hx-delete': `/api/migration/${encodeURIComponent(
+                        migration.name
+                      )}`,
+                    })}
+                  >
+                    Roll back this migration
+                  </Button>
+                </ButtonGroup>
+                <hr />
+                <ButtonGroup>
+                  <Button>Mark applied</Button>
+                  <Button>Mark rolled back</Button>
+                </ButtonGroup>
               </td>
             </tr>
           ))}
@@ -193,9 +204,9 @@ export const SettingsPageDatabase = () => {
 };
 
 export const SettingsPageGraphics = () => {
-  return <div>Graphics settings</div>;
+  return <div className="p-2">Graphics settings</div>;
 };
 
 export const SettingsPageAudio = () => {
-  return <div>Audio settings</div>;
+  return <div className="p-2">Audio settings</div>;
 };

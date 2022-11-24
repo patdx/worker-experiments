@@ -1,15 +1,14 @@
+import { unstable_createStaticHandler as createStaticHandler } from '@remix-run/router';
 import render from 'preact-render-to-string';
 import type { FC, ReactElement, ReactNode } from 'react';
 import { matchRoutes, RouteMatch, RouteObject } from 'react-router';
-import manifest from '../dist/manifest.json';
-import { ROUTES } from './app';
-import { AppContext, SERVER_CONTEXT } from './context';
 import {
   unstable_createStaticRouter as createStaticRouter,
   unstable_StaticRouterProvider as StaticRouterProvider,
 } from 'react-router-dom/server';
-import { unstable_createStaticHandler as createStaticHandler } from '@remix-run/router';
-import type { Env } from './env';
+import manifest from '../dist/manifest.json';
+import { ROUTES } from './app';
+import { SERVER_CONTEXT } from './context';
 
 export const htmlFragment = (node: ReactElement) => {
   return new Response(render(node), {
@@ -22,10 +21,20 @@ export const htmlFragment = (node: ReactElement) => {
 // https://github.com/remix-run/react-router/blob/4d915e3305df5b01f51abdeb1c01bf442453522e/examples/ssr-data-router/src/entry.server.tsx
 
 export const htmlPage = async (
-  eventContext: EventContext<unknown, any, Record<string, unknown>>
+  eventContext: EventContext<unknown, any, Record<string, unknown>>,
+  options?: {
+    /** if true will just refresh the section for API */
+    apiRefresh?: boolean;
+  }
 ) => {
-  const request = eventContext.request;
+  let request = eventContext.request;
+
   const hxCurrentUrl = request.headers.get('HX-Current-URL');
+
+  if (options?.apiRefresh) {
+    if (!hxCurrentUrl) throw new Error(`Missing hx-current-url header`);
+    request = new Request(hxCurrentUrl, { method: 'GET' });
+  }
 
   // set server context to use in loader
   // in proper remix there is a getLoaderContext API?
@@ -38,9 +47,11 @@ export const htmlPage = async (
     isFragment = false;
     routes = ROUTES;
   } else {
+    const nextUrl = request.url;
+
     const change = diffRoutes(
       new URL(hxCurrentUrl).pathname,
-      new URL(request.url).pathname
+      new URL(nextUrl).pathname
     );
 
     routes = change?.route ? [change.route] : [];
@@ -51,55 +62,46 @@ export const htmlPage = async (
     // is included?
   }
 
-  console.log(routes);
+  const { query } = createStaticHandler(routes);
 
-  let { query } = createStaticHandler(routes);
-  let context = await query(request);
+  const context = await query(request);
 
   if (context instanceof Response) {
-    throw context;
+    // eg, a redirect
+    return context;
+    // throw context;
   }
 
-  let router = createStaticRouter(routes, context);
+  const router = createStaticRouter(routes, context);
 
   return new Response(
     isFragment
       ? // fragment render:
         render(
-          <AppContext.Provider
-            value={{
-              url: request.url,
-              router,
-              context,
-            }}
+          // {/* no <Document> in this case */}
+          <div
+            // TODO: figure out the parent parent id more correctly
+            id={`outlet-${routes[0].id}`.slice(0, -2)}
+            data-route={routes[0].path}
+            hx-swap-oob="innerHTML"
           >
-            {/* no <Document> in this case */}
             <StaticRouterProvider
               router={router}
               context={context}
-              nonce="the-nonce"
+              hydrate={false}
             />
-          </AppContext.Provider>
+          </div>
         )
       : // full page render:
         '<!DOCTYPE html>' +
         render(
-          <AppContext.Provider
-            value={{
-              url: request.url,
-              router,
-              context,
-            }}
-          >
-            <Document manifest={manifest}>
-              <StaticRouterProvider
-                router={router}
-                context={context}
-                nonce="the-nonce"
-                hydrate={false}
-              />
-            </Document>
-          </AppContext.Provider>
+          <Document manifest={manifest}>
+            <StaticRouterProvider
+              router={router}
+              context={context}
+              hydrate={false}
+            />
+          </Document>
         ),
     {
       headers: {
@@ -110,8 +112,8 @@ export const htmlPage = async (
 };
 
 const diffRoutes = (oldUrl: string, newUrl: string) => {
-  const oldRoutes = matchRoutes(ROUTES, oldUrl);
-  const newRoutes = matchRoutes(ROUTES, newUrl);
+  const oldMatches = matchRoutes(ROUTES, oldUrl) ?? [];
+  const newMatches = matchRoutes(ROUTES, newUrl) ?? [];
 
   // console.log('OLD');
   // console.log(oldRoutes);
@@ -119,21 +121,35 @@ const diffRoutes = (oldUrl: string, newUrl: string) => {
   // console.log(newRoutes);
   // console.log(oldRoutes[0].route === newRoutes[0].route);
 
+  console.log(
+    [
+      'OLD: ' + oldMatches?.map((match) => match.route.id).join(' -> '),
+      'NEW: ' + newMatches?.map((match) => match.route.id).join(' -> '),
+    ].join('\n')
+  );
+
   const changes: RouteMatch[] = [];
 
-  for (const match of newRoutes ?? []) {
-    if (oldRoutes?.some((oldMatch) => match.route === oldMatch.route)) {
-      // do nothing
-    } else {
-      changes.push(match);
-    }
+  // find the index of the first change so we can bump from one level up
+
+  let firstChangeIndex = newMatches.findIndex((newMatch, index) => {
+    const oldMatch = oldMatches[index];
+    if (!oldMatch) return true; // entered a deeper route
+    return newMatch.route.id !== oldMatch.route.id;
+  });
+
+  if (firstChangeIndex === -1) {
+    // in case of no change just re-render the deepest route
+    firstChangeIndex = newMatches.length;
   }
 
-  console.log(`CHANGES`, changes);
+  console.log(`First change at index ${firstChangeIndex}`);
 
-  return changes?.[0];
+  const renderFromIndex = Math.max(0, firstChangeIndex - 1);
 
-  // debugger;
+  console.log(`Start rendering from index ${renderFromIndex}`);
+
+  return newMatches[renderFromIndex];
 };
 
 const Document: FC<{ manifest: any; children?: ReactNode }> = ({

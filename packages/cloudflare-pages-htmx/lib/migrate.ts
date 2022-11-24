@@ -4,6 +4,8 @@ type Migration = {
   down?: (db: D1Database) => D1PreparedStatement[];
 };
 
+const sql = String.raw;
+
 type MigrationRow = {
   name: string;
   created_at?: string;
@@ -14,21 +16,36 @@ export const MIGRATIONS: Migration[] = [
     name: '0001-initial',
     up(db) {
       return [
-        db.prepare(`drop table if exists comments`),
-        db.prepare(`create table comments (
-         id integer primary key autoincrement,
-         author text not null,
-         body text not null,
-         post_slug text not null
-       )`),
-        db.prepare(`create index idx_comments_post_id on comments (post_slug)`),
+        db.prepare(sql`
+          DROP TABLE
+            IF EXISTS comments
+        `),
+        db.prepare(sql`
+          CREATE TABLE
+            comments (
+              id integer PRIMARY KEY AUTOINCREMENT,
+              author text NOT NULL,
+              body text NOT NULL,
+              post_slug text NOT NULL
+            )
+        `),
+        db.prepare(
+          sql`
+            CREATE INDEX idx_comments_post_id ON comments (post_slug)
+          `
+        ),
       ];
     },
   },
   {
     name: '0002-test',
     up(db) {
-      return [db.prepare(`select date()`)];
+      return [
+        db.prepare(sql`
+          SELECT
+            DATE()
+        `),
+      ];
     },
   },
 ];
@@ -38,14 +55,15 @@ export const listMigrations = async (db: D1Database) => {
 
   const dbResult = await db
     .prepare(
+      sql`
+        SELECT
+          name,
+          created_at
+        FROM
+          migrations
+        ORDER BY
+          name ASC
       `
-      SELECT
-        name,
-        created_at
-      FROM
-        migrations
-      ORDER BY
-        name ASC`
     )
     .all<MigrationRow>();
 
@@ -69,11 +87,11 @@ export const listMigrations = async (db: D1Database) => {
 
 export const migrate = async (db: D1Database) => {
   const [, migrationStatus] = await db.batch<MigrationRow>([
-    db.prepare(`create table if not exists migrations (
-      name text primary key,
-      created_at text not null
-    )`),
-    db.prepare(`
+    db.prepare(sql`
+      CREATE TABLE
+        IF NOT EXISTS migrations (name text PRIMARY KEY, created_at text NOT NULL)
+    `),
+    db.prepare(sql`
       SELECT
         name,
         created_at
@@ -101,10 +119,12 @@ export const runMigration = async (db: D1Database, migration: Migration) => {
     ...migration.up(db),
     db
       .prepare(
+        sql`
+          INSERT INTO
+            migrations (name, created_at)
+          VALUES
+            (?, ?)
         `
-        insert into migrations (name, created_at)
-        values (?, ?)
-      `
       )
       .bind(migration.name, new Date().toJSON()),
   ]);
@@ -118,10 +138,12 @@ export const revertMigration = async (db: D1Database, migration: Migration) => {
     ...(migration.down?.(db) ?? []),
     db
       .prepare(
+        sql`
+          DELETE FROM
+            migrations
+          WHERE
+            name = ?
         `
-      delete from migrations
-      where name = ?
-    `
       )
       .bind(migration.name),
   ]);
