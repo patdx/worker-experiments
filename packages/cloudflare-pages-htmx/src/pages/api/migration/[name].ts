@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { Env } from '../../../lib/env';
-import { htmlPage } from '../../../lib/html';
+import type { Env } from '../../../../lib/env';
+import { htmlPage } from '../../../../lib/render-page';
 import {
   MIGRATIONS,
   revertMigration,
   runMigration,
-} from '../../../lib/migrate';
+} from '../../../../lib/migrate';
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const name = context.params.name as string;

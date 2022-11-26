@@ -1,10 +1,21 @@
-import type { Env } from '../../lib/env';
-import { htmlPage } from '../../lib/html';
-import { migrate } from '../../lib/migrate';
+import type { ActionFunction, LoaderFunction } from 'react-router';
+import { SERVER_CONTEXT } from '../../../lib/context';
+import type { Env } from '../../../lib/env';
+import { renderPage } from '../../entry-server';
 
 const sql = String.raw;
 
-export const onRequestPost: PagesFunction<Env> = async (context) => {
+export const action: ActionFunction = (args) => {
+  const context = SERVER_CONTEXT.get(args.request);
+
+  const db = context!.env.DB;
+
+  if (args.request.method === 'POST') {
+    return onRequestPost(context);
+  }
+};
+
+const onRequestPost: PagesFunction<Env> = async (context) => {
   const formData = await context.request.formData();
   const author = formData.get('author');
   const body = formData.get('body');
@@ -27,7 +38,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     .run()
     .catch((err) => console.log(err.cause));
 
-  return htmlPage(context, {
+  return renderPage(context, {
     apiRefresh: true,
   });
 };
