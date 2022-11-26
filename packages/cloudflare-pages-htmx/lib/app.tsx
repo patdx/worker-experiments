@@ -2,6 +2,8 @@ import { Navigate, redirect, RouteObject } from 'react-router';
 import { SERVER_CONTEXT } from './context';
 import {
   AboutPage,
+  CommentsPage,
+  commentsPageLoader,
   HtmxOutlet,
   IndexPage,
   Layout,
@@ -32,6 +34,11 @@ const ROUTES: RouteObject[] = [
             // path: '/',
             index: true,
             element: <IndexPage />,
+          },
+          {
+            path: '/comments',
+            element: <CommentsPage />,
+            loader: commentsPageLoader,
           },
           {
             path: '/about',

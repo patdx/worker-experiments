@@ -12,10 +12,13 @@ import { Button, ButtonGroup } from './components/button';
 import { Form } from './components/form';
 import { Item } from './components/item';
 import { NavLink } from './components/nav-link';
+import { SimpleTable } from './components/simple-table';
 import { SERVER_CONTEXT } from './context';
 import { TODOS } from './db';
 import { listMigrations } from './migrate';
 import { hx } from './utils/hx';
+
+const sql = String.raw;
 
 export const HtmxOutlet: FC<{ className?: string }> = ({ className }) => {
   // TODO: see if there is an official hook
@@ -35,6 +38,7 @@ export const Layout: FC = () => (
       <NavLink href="/" exact>
         Home
       </NavLink>
+      <NavLink href="/comments">Comments</NavLink>
       <NavLink href="/about">About</NavLink>
       <NavLink href="/settings">Settings</NavLink>
     </div>
@@ -55,6 +59,63 @@ export const IndexPage = () => (
     </div>
   </>
 );
+
+export const commentsPageLoader = async (args: LoaderFunctionArgs) => {
+  const context = SERVER_CONTEXT.get(args.request);
+
+  const db = context!.env.DB;
+
+  const comments = await db
+    .prepare(
+      sql`
+        SELECT
+          *
+        FROM
+          comments
+      `
+    )
+    .all<{
+      id: number;
+      author: string;
+      body: string;
+      post_slug: string;
+    }>();
+
+  return {
+    comments: comments.results,
+  };
+};
+
+export const CommentsPage = () => {
+  const { comments } = useLoaderData() as Awaited<
+    ReturnType<typeof commentsPageLoader>
+  >;
+
+  return (
+    <>
+      <div className="text-center text-8xl font-thin text-red-300">
+        comments
+      </div>
+      <form hx-post="/api/comment">
+        <label className="block">Author</label>
+        <input name="author" className="border block"></input>
+        <label className="block">Body</label>
+        <input name="body" className="border block"></input>
+        <button type="submit" className="border p-1 block">
+          Submit
+        </button>
+      </form>
+      {/* <div className="flex flex-col gap-2"> */}
+      {comments?.map((comment) => (
+        <div className="p-2">
+          <span className="font-bold">{comment.author}</span> {comment.body}
+        </div>
+      ))}
+      {/* </div> */}
+      {/* <SimpleTable data={comments} /> */}
+    </>
+  );
+};
 
 export const AboutPage = () => (
   <>
@@ -98,11 +159,39 @@ export const SettingsPage = () => (
 export const settingsDatabasePageLoader = async (args: LoaderFunctionArgs) => {
   const context = SERVER_CONTEXT.get(args.request);
 
+  const db = context!.env.DB;
+
   let migrations;
   let error = '';
+  const tables = await db
+    .prepare(
+      sql`
+        PRAGMA table_list
+      `
+    )
+    .all<{
+      schema: string;
+      name: string;
+      type: string;
+      ncol: number;
+      wr: number;
+      strict: number;
+    }>();
+
+  const tableInfos = await Promise.all(
+    (tables.results ?? []).map((table) =>
+      db
+        .prepare(`PRAGMA ${table.schema}.table_info(${table.name})`)
+        .all()
+        .then((result) => ({
+          name: table.name,
+          info: result.results,
+        }))
+    )
+  );
 
   try {
-    migrations = await listMigrations(context!.env.DB);
+    migrations = await listMigrations(db);
   } catch (e: any) {
     migrations = [] as any[];
     error = JSON.stringify({
@@ -111,16 +200,26 @@ export const settingsDatabasePageLoader = async (args: LoaderFunctionArgs) => {
     });
   }
 
-  return { migrations, error };
+  tables.meta;
+
+  return { migrations, error, tables: tables.results ?? [], tableInfos };
 };
 
 export const SettingsPageDatabase = () => {
-  const { migrations, error } = useLoaderData() as Awaited<
+  const { migrations, error, tables, tableInfos } = useLoaderData() as Awaited<
     ReturnType<typeof settingsDatabasePageLoader>
   >;
 
   return (
     <div className="p-2">
+      <h3>Tables</h3>
+      <SimpleTable data={tables} />
+      {tableInfos.map((info) => (
+        <>
+          <h4>{info.name}</h4>
+          <SimpleTable data={info.info} />
+        </>
+      ))}
       <h3>Migration status</h3>
       <p>This is connected to a real Cloudflare D1 Database.</p>
       <pre>{error}</pre>
