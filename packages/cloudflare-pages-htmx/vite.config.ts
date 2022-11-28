@@ -3,6 +3,8 @@
 import { defineConfig } from 'vite';
 import type {} from '@vavite/multibuild/vite-config';
 import preact from '@preact/preset-vite';
+import remixRoutes from 'vite-plugin-remix-routes';
+import path from 'path';
 
 // pnpm vavite
 
@@ -54,5 +56,11 @@ export default defineConfig({
       // exclude: ['generouted', 'generouted/react-router'],
     },
   },
-  plugins: [preact({})],
+  plugins: [
+    preact(),
+    remixRoutes({
+      appDirectory: path.resolve('./src'),
+      dataRouterCompatible: true,
+    }),
+  ],
 });

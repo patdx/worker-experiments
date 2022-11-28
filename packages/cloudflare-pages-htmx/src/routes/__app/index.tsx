@@ -1,6 +1,6 @@
-import { Form } from '../../lib/components/form';
-import { Item } from '../../lib/components/item';
-import { TODOS } from '../../lib/db';
+import { Form } from '../../../lib/components/form';
+import { Item } from '../../../lib/components/item';
+import { TODOS } from '../../../lib/db';
 
 const IndexPage = () => (
   <>

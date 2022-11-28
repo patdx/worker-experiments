@@ -3,26 +3,17 @@ import { SERVER_CONTEXT } from '../../../lib/context';
 import type { Env } from '../../../lib/env';
 import { renderPage } from '../../entry-server';
 
+export default null;
+
 const sql = String.raw;
 
-export const action: ActionFunction = (args) => {
-  const context = SERVER_CONTEXT.get(args.request);
+export const action: ActionFunction = async (args) => {
+  console.log('Comment action!');
+  const context = SERVER_CONTEXT.get(args.request)!;
 
-  const db = context!.env.DB;
-
-  if (args.request.method === 'POST') {
-    return onRequestPost(context);
-  }
-};
-
-const onRequestPost: PagesFunction<Env> = async (context) => {
   const formData = await context.request.formData();
   const author = formData.get('author');
   const body = formData.get('body');
-  // const { author, body } = await context.request.f<{
-  //   author: string;
-  //   body: string;
-  // }>();
 
   console.log({ author, body });
 

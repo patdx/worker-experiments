@@ -1,10 +1,10 @@
 import { type LoaderFunctionArgs, useLoaderData } from 'react-router';
-import { ButtonGroup, Button } from '../../../lib/components/button';
-import { SimpleTable } from '../../../lib/components/simple-table';
-import { SERVER_CONTEXT } from '../../../lib/context';
-import { listMigrations } from '../../../lib/migrate';
-import { sql } from '../../../lib/sql';
-import { hx } from '../../../lib/utils/hx';
+import { ButtonGroup, Button } from '../../../../lib/components/button';
+import { SimpleTable } from '../../../../lib/components/simple-table';
+import { SERVER_CONTEXT } from '../../../../lib/context';
+import { listMigrations } from '../../../../lib/migrate';
+import { sql } from '../../../../lib/sql';
+import { hx } from '../../../../lib/utils/hx';
 
 export const loader = async (args: LoaderFunctionArgs) => {
   const context = SERVER_CONTEXT.get(args.request);
@@ -60,6 +60,12 @@ const SettingsPageDatabase = () => {
     ReturnType<typeof loader>
   >;
 
+  // API ideas:
+  // api/migrate?direction=up&target=all
+  // api/migrate?direction=down&step=1
+  // api/migrate?direction=up&id={{id}}&confirm=1 (dry run by default)
+  // api/migrate?direction=up&id={{id}}&confirm=1&meta-only=1
+
   return (
     <div className="p-2">
       <h3>Tables</h3>
@@ -76,7 +82,7 @@ const SettingsPageDatabase = () => {
       <ButtonGroup className="py-2">
         <Button
           {...hx({
-            'hx-post': '/api/do-migrate',
+            'hx-post': '/api/do_migrate',
           })}
         >
           Run all pending migrations
@@ -84,7 +90,7 @@ const SettingsPageDatabase = () => {
         <Button
           color="red"
           {...hx({
-            'hx-post': '/api/do-migrate',
+            'hx-post': '/api/do_migrate',
           })}
         >
           Revert all migrations

@@ -1,6 +1,6 @@
 import { type LoaderFunctionArgs, useLoaderData } from 'react-router';
-import { SERVER_CONTEXT } from '../../lib/context';
-import { sql } from '../../lib/sql';
+import { SERVER_CONTEXT } from '../../../lib/context';
+import { sql } from '../../../lib/sql';
 
 export const loader = async (args: LoaderFunctionArgs) => {
   const context = SERVER_CONTEXT.get(args.request);
@@ -38,9 +38,9 @@ const CommentsPage = () => {
       </div>
       <form hx-post="/api/comment">
         <label className="block">Author</label>
-        <input name="author" className="border block"></input>
+        <input name="author" className="border block p-2"></input>
         <label className="block">Body</label>
-        <input name="body" className="border block"></input>
+        <input name="body" className="border block p-2"></input>
         <button type="submit" className="border p-1 block">
           Submit
         </button>

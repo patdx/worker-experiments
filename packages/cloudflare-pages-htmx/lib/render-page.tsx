@@ -1,4 +1,7 @@
-import { unstable_createStaticHandler as createStaticHandler } from '@remix-run/router';
+import {
+  matchRoutes,
+  unstable_createStaticHandler as createStaticHandler,
+} from '@remix-run/router';
 import render from 'preact-render-to-string';
 import type { RouteObject } from 'react-router';
 import {
@@ -6,14 +9,11 @@ import {
   unstable_StaticRouterProvider as StaticRouterProvider,
 } from 'react-router-dom/server';
 import manifest from '../dist/client/manifest.json';
+import { ALL_ROUTES } from './all-routes';
 import { Document } from './components/document';
 
 import { SERVER_CONTEXT } from './context';
 import { diffRoutes } from './diff-routes';
-import { allRoutes } from './generouted/react-router';
-import { prepareRoutes } from './prepare-routes';
-
-prepareRoutes(allRoutes, 'route-');
 
 // https://github.com/remix-run/react-router/blob/4d915e3305df5b01f51abdeb1c01bf442453522e/examples/ssr-data-router/src/entry.server.tsx
 
@@ -42,12 +42,12 @@ export const renderPage = async (
 
   if (!hxCurrentUrl) {
     isFragment = false;
-    routes = allRoutes;
+    routes = ALL_ROUTES;
   } else {
     const nextUrl = request.url;
 
     const change = diffRoutes(
-      allRoutes,
+      ALL_ROUTES,
       new URL(hxCurrentUrl).pathname,
       new URL(nextUrl).pathname
     );
@@ -60,9 +60,19 @@ export const renderPage = async (
     // is included?
   }
 
-  const { query } = createStaticHandler(routes);
+  const matches = matchRoutes(ALL_ROUTES, new URL(request.url).pathname);
+  const deepestMatch = matches && matches[matches.length - 1];
+  const isApiRoute = deepestMatch && !deepestMatch.route.element;
 
-  const context = await query(request);
+  const { query, queryRoute } = createStaticHandler(routes);
+
+  let context;
+
+  if (isApiRoute) {
+    context = await queryRoute(request, deepestMatch.route.id);
+  } else {
+    context = await query(request);
+  }
 
   if (context instanceof Response) {
     // eg, a redirect
