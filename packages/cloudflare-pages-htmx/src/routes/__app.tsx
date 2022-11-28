@@ -11,6 +11,8 @@ const Layout: FC = () => (
       <NavLink href="/comments">Comments</NavLink>
       <NavLink href="/about">About</NavLink>
       <NavLink href="/settings">Settings</NavLink>
+      <div className="flex-1"></div>
+      <NavLink href="/login">Login</NavLink>
     </div>
     <HtmxOutlet className="p-2" />
   </>

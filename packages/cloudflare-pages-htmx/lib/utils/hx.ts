@@ -14,6 +14,9 @@ export type HxProps = {
     | 'afterend'
     | 'none';
   'hx-push-url'?: 'true';
+  'hx-ext'?: 'json-enc';
+  /** json stringified string */
+  'hx-vals'?: string;
 };
 
 export const hx = (props?: HxProps) => props;

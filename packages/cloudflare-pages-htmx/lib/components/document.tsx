@@ -23,6 +23,8 @@ export const Document: FC<{ manifest: any; children?: ReactNode }> = ({
       />
     </head>
     {/* hx-boost="true" */}
-    <body>{children}</body>
+    <body>
+      <div id="app">{children}</div>
+    </body>
   </html>
 );

@@ -1,3 +1,5 @@
+import { Item } from './components/item';
+
 type Migration = {
   name: string;
   up: (db: D1Database) => D1PreparedStatement[];
@@ -6,9 +8,11 @@ type Migration = {
 
 const sql = String.raw;
 
-type MigrationRow = {
+type MigrationStatus = {
   name: string;
   created_at?: string;
+  missing?: boolean;
+  migration?: Migration;
 };
 
 export const MIGRATIONS: Migration[] = [
@@ -24,9 +28,17 @@ export const MIGRATIONS: Migration[] = [
           CREATE TABLE
             comments (
               id integer PRIMARY KEY AUTOINCREMENT,
-              author text NOT NULL,
+              author text,
               body text NOT NULL
             )
+        `),
+      ];
+    },
+    down(db) {
+      return [
+        db.prepare(sql`
+          DROP TABLE
+            comments
         `),
       ];
     },
@@ -59,19 +71,24 @@ export const listMigrations = async (db: D1Database) => {
           name ASC
       `
     )
-    .all<MigrationRow>();
+    .all<MigrationStatus>();
 
-  const rows: MigrationRow[] = [];
+  const rows: MigrationStatus[] = [];
 
   for (const migration of MIGRATIONS) {
     const dbRow = dbResult.results?.find(
       (item) => item.name === migration.name
     );
     if (dbRow) {
-      rows.push(dbRow);
+      rows.push({
+        ...dbRow,
+        migration,
+      });
     } else {
       rows.push({
         name: migration.name,
+        migration,
+        // missing: true, // actually, missing should mark in database but no script
       });
     }
   }
@@ -79,32 +96,107 @@ export const listMigrations = async (db: D1Database) => {
   return rows;
 };
 
-export const migrate = async (db: D1Database) => {
-  const [, migrationStatus] = await db.batch<MigrationRow>([
-    db.prepare(sql`
-      CREATE TABLE
-        IF NOT EXISTS migrations (name text PRIMARY KEY, created_at text NOT NULL)
-    `),
-    db.prepare(sql`
-      SELECT
-        name,
-        created_at
-      FROM
-        migrations
-      ORDER BY
-        name ASC
-    `),
-  ]);
+export type MigrationCommand = {
+  direction: 'up' | 'down';
+  /** from current to id or all */
+  to?: 'all' | string;
+  /** one specific migration */
+  id?: string;
+  step?: number;
+};
 
-  const appliedMigrations = migrationStatus.results?.map((r) => r.name) ?? [];
+export const migrate = async (db: D1Database, command?: MigrationCommand) => {
+  await db
+    .prepare(
+      sql`
+        CREATE TABLE
+          IF NOT EXISTS migrations (name text PRIMARY KEY, created_at text NOT NULL)
+      `
+    )
+    .run();
 
-  console.log(`Applied migrations: ${appliedMigrations}`);
+  if (!command) return;
 
-  for (const migration of MIGRATIONS) {
-    if (!appliedMigrations.includes(migration.name)) {
-      await runMigration(db, migration);
+  const migrations = await listMigrations(db).then((list) =>
+    list.filter(
+      (item) =>
+        // ignore missing for now
+        !item.missing
+    )
+  );
+
+  if (command.direction === 'down') migrations.reverse();
+
+  const availableMigrationsForDirection =
+    command.direction === 'down'
+      ? migrations.filter((item) => item.created_at)
+      : migrations.filter((item) => !item.created_at);
+
+  console.log(migrations.length, availableMigrationsForDirection.length);
+
+  const pendingMigrationSteps: MigrationStatus[] = [];
+
+  if (command.to) {
+    if (command.to === 'all') {
+      pendingMigrationSteps.push(...availableMigrationsForDirection);
+    } else {
+      if (
+        !availableMigrationsForDirection.some(
+          (item) => item.name === command.to
+        )
+      ) {
+        // TODO: filter the range based on "to" before filtering out already applied/etc
+        console.warn(`Not possible to apply migration to ${command.to}`);
+      } else {
+        // stop at a certain id
+        for (const step of availableMigrationsForDirection) {
+          if (step.name === command.to) {
+            break;
+          }
+          pendingMigrationSteps.push(step);
+        }
+      }
     }
   }
+
+  if (command.id) {
+    const found = availableMigrationsForDirection.find(
+      (item) => item.name === command.id
+    );
+    if (found) {
+      pendingMigrationSteps.push(found);
+    } else {
+      console.log(
+        `Could not find ${command.id} or already applied in this direction`
+      );
+    }
+  }
+
+  if (command.step) {
+    for (
+      let index = 0;
+      index < Math.min(command.step, availableMigrationsForDirection.length);
+      index++
+    ) {
+      pendingMigrationSteps.push(availableMigrationsForDirection[index]);
+    }
+  }
+
+  console.log(
+    `doing ${command.direction} on ${pendingMigrationSteps.join(',')}`
+  );
+
+  for (const step of pendingMigrationSteps) {
+    if (command.direction === 'up') {
+      runMigration(db, step.migration!);
+    } else {
+      revertMigration(db, step.migration!);
+    }
+  }
+
+  console.log(
+    `finished doing ${command.direction} on ${pendingMigrationSteps.join(',')}`
+  );
 };
 
 export const runMigration = async (db: D1Database, migration: Migration) => {

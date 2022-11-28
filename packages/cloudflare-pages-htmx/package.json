@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "x-dev": "nx dev",
-    "dev": "pnpm build && wrangler pages dev ./dist/client --d1=DB --persist",
+    "dev": "nx dev",
+    "x-dev": "pnpm build && wrangler pages dev ./dist/client --d1=DB --persist",
     "build": "vavite",
     "deploy": "vavite && wrangler pages publish ./dist/client --project-name cloudflare-pages-htmx"
   },
@@ -26,6 +26,7 @@
     "autoprefixer": "10.4.13",
     "better-sqlite3": "8.0.0",
     "json5": "2.2.1",
+    "open-cli": "7.1.0",
     "postcss": "8.4.19",
     "tailwindcss": "3.2.4",
     "typescript": "4.9.3",

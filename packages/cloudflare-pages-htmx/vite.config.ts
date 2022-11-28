@@ -10,28 +10,16 @@ import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  // plugins: [react()],
   buildSteps: [
     {
       name: 'client',
-      config: {
-        build: {
-          outDir: 'dist/client',
-          manifest: true,
-          rollupOptions: {
-            input: 'src/entry-client.ts',
-          },
-        },
-      },
+      config: {},
     },
     {
       name: 'server',
       config: {
         build: {
-          // Server entry
-          ssr: 'src/entry-server.ts',
-          outDir: 'dist/server',
-          copyPublicDir: false,
+          ssr: true,
         },
       },
     },
@@ -46,14 +34,11 @@ export default defineConfig({
     // emptyOutDir: false, // avoid issue with wrangler
   },
   ssr: {
-    // target: 'webworker',
-    noExternal: ['generouted'],
     optimizeDeps: {
       esbuildOptions: {
         jsx: 'automatic',
         jsxImportSource: 'preact',
       },
-      // exclude: ['generouted', 'generouted/react-router'],
     },
   },
   plugins: [
@@ -62,5 +47,34 @@ export default defineConfig({
       appDirectory: path.resolve('./src'),
       dataRouterCompatible: true,
     }),
+    {
+      name: 'app-config',
+      config(config, env) {
+        if (env.ssrBuild) {
+          return {
+            build: {
+              emptyOutDir: false,
+              rollupOptions: {
+                input: 'src/entry-server.ts',
+              },
+              outDir: 'dist/server',
+              copyPublicDir: false,
+            },
+          };
+        } else {
+          return {
+            build: {
+              emptyOutDir: false,
+
+              outDir: 'dist/client',
+              manifest: true,
+              rollupOptions: {
+                input: 'src/entry-client.ts',
+              },
+            },
+          };
+        }
+      },
+    },
   ],
 });

@@ -1,6 +1,12 @@
-import { type LoaderFunctionArgs, useLoaderData } from 'react-router';
+import {
+  type LoaderFunctionArgs,
+  useLoaderData,
+  ActionFunctionArgs,
+} from 'react-router';
 import { SERVER_CONTEXT } from '../../../lib/context';
-import { sql } from '../../../lib/sql';
+import { renderPage } from '../../../lib/render-page';
+
+const sql = String.raw;
 
 export const loader = async (args: LoaderFunctionArgs) => {
   const context = SERVER_CONTEXT.get(args.request);
@@ -28,6 +34,33 @@ export const loader = async (args: LoaderFunctionArgs) => {
   };
 };
 
+export const action = async (args: ActionFunctionArgs) => {
+  console.log('Comment action!');
+  const context = SERVER_CONTEXT.get(args.request)!;
+
+  const formData = await context.request.formData();
+  const author = formData.get('author');
+  const body = formData.get('body');
+
+  console.log({ author, body });
+
+  await context.env.DB.prepare(
+    sql`
+      INSERT INTO
+        comments (author, body)
+      VALUES
+        (?, ?)
+    `
+  )
+    .bind(author, body)
+    .run()
+    .catch((err) => console.log(err.cause));
+
+  return renderPage(context, {
+    apiRefresh: true,
+  });
+};
+
 const CommentsPage = () => {
   const { comments } = useLoaderData() as Awaited<ReturnType<typeof loader>>;
 
@@ -36,7 +69,8 @@ const CommentsPage = () => {
       <div className="text-center text-8xl font-thin text-red-300">
         comments
       </div>
-      <form hx-post="/api/comment">
+      {/* hx-post="/api/comment" */}
+      <form hx-post="/comments">
         <label className="block">Author</label>
         <input name="author" className="border block p-2"></input>
         <label className="block">Body</label>

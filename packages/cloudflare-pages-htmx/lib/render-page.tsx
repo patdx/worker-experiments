@@ -9,7 +9,7 @@ import {
   unstable_StaticRouterProvider as StaticRouterProvider,
 } from 'react-router-dom/server';
 import manifest from '../dist/client/manifest.json';
-import { ALL_ROUTES } from './all-routes';
+import { ALL_ROUTES, PARENT_ROUTES } from './all-routes';
 import { Document } from './components/document';
 
 import { SERVER_CONTEXT } from './context';
@@ -37,10 +37,19 @@ export const renderPage = async (
   // in proper remix there is a getLoaderContext API?
   SERVER_CONTEXT.set(request, eventContext as any);
 
+  const matches = matchRoutes(ALL_ROUTES, new URL(request.url).pathname);
+  const deepestMatch = matches && matches[matches.length - 1];
+  const isApiRoute =
+    deepestMatch &&
+    (!deepestMatch.route.element ||
+      (request.method !== 'GET' && request.method !== 'HEAD'));
+
+  // console.log('api route?', request.method, isApiRoute, deepestMatch);
+
   let isFragment: boolean;
   let routes: RouteObject[];
 
-  if (!hxCurrentUrl) {
+  if (isApiRoute || !hxCurrentUrl) {
     isFragment = false;
     routes = ALL_ROUTES;
   } else {
@@ -60,10 +69,6 @@ export const renderPage = async (
     // is included?
   }
 
-  const matches = matchRoutes(ALL_ROUTES, new URL(request.url).pathname);
-  const deepestMatch = matches && matches[matches.length - 1];
-  const isApiRoute = deepestMatch && !deepestMatch.route.element;
-
   const { query, queryRoute } = createStaticHandler(routes);
 
   let context;
@@ -82,39 +87,48 @@ export const renderPage = async (
 
   const router = createStaticRouter(routes, context);
 
-  return new Response(
-    isFragment
-      ? // fragment render:
-        render(
-          // {/* no <Document> in this case */}
-          <div
-            // TODO: figure out the parent parent id more correctly
-            id={`outlet-${routes[0].id}`.slice(0, -2)}
-            data-route={routes[0].path}
-            hx-swap-oob="innerHTML"
-          >
-            <StaticRouterProvider
-              router={router}
-              context={context}
-              hydrate={false}
-            />
-          </div>
-        )
-      : // full page render:
-        '<!DOCTYPE html>' +
-        render(
-          <Document manifest={manifest}>
-            <StaticRouterProvider
-              router={router}
-              context={context}
-              hydrate={false}
-            />
-          </Document>
-        ),
-    {
-      headers: {
-        'Content-Type': 'text/html',
-      },
-    }
-  );
+  let outputString: string;
+
+  if (isFragment) {
+    // fragment render, no <Document>
+
+    const parentId = PARENT_ROUTES.get(routes[0].id!);
+
+    const outletId = parentId ? `outlet-${parentId}` : 'app';
+
+    console.log(routes[0].id, parentId, outletId);
+
+    outputString = render(
+      <div
+        // TODO: figure out the parent parent id more correctly
+        id={outletId}
+        data-route={routes[0].path}
+        hx-swap-oob="innerHTML"
+      >
+        <StaticRouterProvider
+          router={router}
+          context={context}
+          hydrate={false}
+        />
+      </div>
+    );
+  } else {
+    outputString = // full page render:
+      '<!DOCTYPE html>' +
+      render(
+        <Document manifest={manifest}>
+          <StaticRouterProvider
+            router={router}
+            context={context}
+            hydrate={false}
+          />
+        </Document>
+      );
+  }
+
+  return new Response(outputString, {
+    headers: {
+      'Content-Type': 'text/html',
+    },
+  });
 };

@@ -5,9 +5,12 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "vite build --watch",
-          "wrangler pages dev ./dist --d1=DB --persist"
+          "pnpm vite build --watch",
+          "pnpm vite build --ssr --watch",
+          "wrangler pages dev ./dist/client --d1=DB --persist",
+          "open-cli http://127.0.0.1:8788/"
         ],
+        "parallel": true,
         "cwd": "packages/cloudflare-pages-htmx"
       }
     }

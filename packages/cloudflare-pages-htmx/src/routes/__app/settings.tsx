@@ -10,8 +10,8 @@ const SettingsPage = () => (
           <NavLink className="border-r" href="/settings/database">
             Database
           </NavLink>
-          <NavLink className="border-r" href="/settings/graphics">
-            Graphics
+          <NavLink className="border-r" href="/settings/routes">
+            Routes
           </NavLink>
           <NavLink className="border-r" href="/settings/audio">
             Audio
