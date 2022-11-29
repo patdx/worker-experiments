@@ -1,13 +1,18 @@
 import type { FC } from 'react';
 
 export const SimpleTable: FC<{
-  data?: Record<string, any>[];
-}> = ({ data }) => {
+  data?: any[];
+  hideColumns?: string[];
+}> = ({ data, hideColumns }) => {
   const columns = new Set<string>();
 
   for (const row of data ?? []) {
     for (const col of Object.keys(row)) {
-      columns.add(col);
+      if (hideColumns?.includes(col)) {
+        // do nothing
+      } else {
+        columns.add(col);
+      }
     }
   }
 

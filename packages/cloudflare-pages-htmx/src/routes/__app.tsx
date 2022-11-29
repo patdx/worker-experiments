@@ -8,6 +8,7 @@ const Layout: FC = () => (
       <NavLink href="/" exact>
         Home
       </NavLink>
+      <NavLink href="/bookings">Bookings</NavLink>
       <NavLink href="/comments">Comments</NavLink>
       <NavLink href="/about">About</NavLink>
       <NavLink href="/settings">Settings</NavLink>

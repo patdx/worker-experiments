@@ -21,16 +21,12 @@ export const MIGRATIONS: Migration[] = [
     up(db) {
       return [
         db.prepare(sql`
-          DROP TABLE
-            IF EXISTS comments
-        `),
-        db.prepare(sql`
           CREATE TABLE
             comments (
-              id integer PRIMARY KEY AUTOINCREMENT,
-              author text,
-              body text NOT NULL
-            )
+              id text PRIMARY KEY,
+              message text NOT NULL,
+              created_at text NOT NULL DEFAULT CURRENT_TIMESTAMP
+            ) STRICT
         `),
       ];
     },
@@ -44,12 +40,26 @@ export const MIGRATIONS: Migration[] = [
     },
   },
   {
-    name: '0002-test',
+    name: '0002-bookings',
     up(db) {
       return [
         db.prepare(sql`
-          SELECT
-            DATE()
+          CREATE TABLE
+            bookings (
+              id text PRIMARY KEY,
+              name text NOT NULL,
+              day text NOT NULL,
+              hour integer NOT NULL,
+              created_at text NOT NULL DEFAULT CURRENT_TIMESTAMP
+            ) STRICT
+        `),
+      ];
+    },
+    down(db) {
+      return [
+        db.prepare(sql`
+          DROP TABLE
+            comments
         `),
       ];
     },

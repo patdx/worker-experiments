@@ -13,9 +13,6 @@ const SettingsPage = () => (
           <NavLink className="border-r" href="/settings/routes">
             Routes
           </NavLink>
-          <NavLink className="border-r" href="/settings/audio">
-            Audio
-          </NavLink>
         </div>
 
         <HtmxOutlet className="min-h-[10rem]" />

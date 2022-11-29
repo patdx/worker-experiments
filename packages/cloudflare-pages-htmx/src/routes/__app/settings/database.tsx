@@ -44,6 +44,7 @@ export const loader = async (args: LoaderFunctionArgs) => {
         .all()
         .then((result) => ({
           name: table.name,
+          schema: table.schema,
           info: result.results,
         }))
     )
@@ -91,15 +92,6 @@ const SettingsPageDatabase = () => {
 
   return (
     <div className="p-2">
-      <h3>Tables</h3>
-      <SimpleTable data={tables} />
-      {tableInfos.map((info) => (
-        <>
-          <h4>{info.name}</h4>
-          <SimpleTable data={info.info} />
-        </>
-      ))}
-      <h3>Migration status</h3>
       <p>This is connected to a real Cloudflare D1 Database.</p>
       <pre>{error}</pre>
       <ButtonGroup className="py-2">
@@ -208,6 +200,18 @@ const SettingsPageDatabase = () => {
           ))}
         </tbody>
       </table>
+      <h3 className="font-bold text-xl py-1">Tables</h3>
+      {/* <SimpleTable data={tables} /> */}
+      <div className="grid md:grid-cols-2">
+        {tableInfos.map((info) => (
+          <div>
+            <h4 className="font-bold text-lg py-1">
+              {info.schema}.{info.name}
+            </h4>
+            <SimpleTable data={info.info} hideColumns={['cid']} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
