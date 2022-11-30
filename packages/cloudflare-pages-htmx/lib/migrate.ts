@@ -69,8 +69,14 @@ export const MIGRATIONS: Migration[] = [
 export const listMigrations = async (db: D1Database) => {
   // TODO: prepare migrations table first
 
-  const dbResult = await db
-    .prepare(
+  const [, dbResult] = await db.batch<MigrationStatus>([
+    db.prepare(
+      sql`
+        CREATE TABLE
+          IF NOT EXISTS migrations (name text PRIMARY KEY, created_at text NOT NULL)
+      `
+    ),
+    db.prepare(
       sql`
         SELECT
           name,
@@ -80,8 +86,10 @@ export const listMigrations = async (db: D1Database) => {
         ORDER BY
           name ASC
       `
-    )
-    .all<MigrationStatus>();
+    ),
+  ]);
+
+  // .<MigrationStatus>();
 
   const rows: MigrationStatus[] = [];
 

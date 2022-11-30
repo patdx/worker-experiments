@@ -5,9 +5,9 @@ import { HtmxOutlet } from '../../lib/htmx-outlet';
 const Layout: FC = () => (
   <>
     <div className="flex">
-      <NavLink href="/" exact>
+      {/* <NavLink href="/" exact>
         Home
-      </NavLink>
+      </NavLink> */}
       <NavLink href="/bookings">Bookings</NavLink>
       <NavLink href="/comments">Comments</NavLink>
       <NavLink href="/about">About</NavLink>

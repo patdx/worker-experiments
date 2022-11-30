@@ -107,6 +107,8 @@ export const action = async (args: ActionFunctionArgs) => {
   const hour = formData.get('hour');
   const name = formData.get('name');
 
+  const id = getUuid();
+
   await context.env.DB.prepare(
     sql`
       INSERT INTO
@@ -115,13 +117,19 @@ export const action = async (args: ActionFunctionArgs) => {
         (?, ?, ?, ?)
     `
   )
-    .bind(getUuid(), name, day, hour)
+    .bind(id, name, day, hour)
     .run()
     .catch((err) => console.log(err, err.cause));
 
-  return renderPage(context, {
-    apiRefresh: true,
+  return new Response(undefined, {
+    headers: {
+      'HX-Redirect': `/bookings/${id}`,
+    },
   });
+
+  // return renderPage(context, {
+  //   apiRefresh: true,
+  // });
 };
 
 const BookingsPage = () => {
@@ -145,7 +153,7 @@ const BookingsPage = () => {
       </div>
 
       <div className="overflow-x-auto relative">
-        <table>
+        <table className="mx-auto">
           <thead>
             <tr>
               <th className="border p-2"></th>
@@ -168,6 +176,10 @@ const BookingsPage = () => {
                       (slot) => slot.hour === hour
                     );
 
+                    const isSelected =
+                      searchParams.get('hour') === String(hour) &&
+                      searchParams.get('day') === schedule.day;
+
                     const taken = slot?.taken ?? 0;
 
                     const displayType =
@@ -182,7 +194,12 @@ const BookingsPage = () => {
                     const remaining = MAX_BOOKINGS_PER_SLOT - taken;
 
                     return (
-                      <td className="border p-2">
+                      <td
+                        className={clsx(
+                          'p-2',
+                          isSelected ? 'border-2 bg-gray-200' : 'border'
+                        )}
+                      >
                         {displayType ? (
                           <a
                             href={`?day=${schedule.day}&hour=${hour}`}
@@ -219,10 +236,10 @@ const BookingsPage = () => {
       {selectedDay && selectedHour ? (
         <form
           hx-post="/bookings"
-          className="flex flex-col gap-2 border rounded my-2"
+          className="flex flex-col gap-2 border-2 rounded my-2 p-4 shadow bg-white sticky bottom-0"
         >
           <p>
-            Make a booking for {selectedDay} at {selectedHour}:00
+            Make a booking for {selectedDay} at {selectedHour}:00?
           </p>
           <input type="hidden" name="day" value={selectedDay} />
           <input type="hidden" name="hour" value={selectedHour} />
