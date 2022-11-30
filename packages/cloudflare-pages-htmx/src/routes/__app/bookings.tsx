@@ -144,71 +144,77 @@ const BookingsPage = () => {
         </NavLink>
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th className="border p-2"></th>
-            {schedules.map((schedule) => (
-              <th className="border p-2">{schedule.day}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {getAllBookingTimes().map((hour) => {
-            return (
-              <tr>
-                <td className="border p-2">{hour}:00</td>
-                {schedules.map((schedule) => {
-                  const slot = schedule.slots.find(
-                    (slot) => slot.hour === hour
-                  );
+      <div className="overflow-x-auto relative">
+        <table>
+          <thead>
+            <tr>
+              <th className="border p-2"></th>
+              {schedules.map((schedule) => (
+                <th className="border p-2 sticky top-0">
+                  {schedule.day.slice(5)}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {getAllBookingTimes().map((hour) => {
+              return (
+                <tr>
+                  <td className="border p-2 sticky left-0 bg-white">
+                    {hour}:00
+                  </td>
+                  {schedules.map((schedule) => {
+                    const slot = schedule.slots.find(
+                      (slot) => slot.hour === hour
+                    );
 
-                  const taken = slot?.taken ?? 0;
+                    const taken = slot?.taken ?? 0;
 
-                  const displayType =
-                    taken === 0
-                      ? 'book-now'
-                      : taken <= 2
-                      ? 'remaining'
-                      : taken < MAX_BOOKINGS_PER_SLOT
-                      ? 'few-remaining'
-                      : undefined;
+                    const displayType =
+                      taken === 0
+                        ? 'book-now'
+                        : taken <= 2
+                        ? 'remaining'
+                        : taken < MAX_BOOKINGS_PER_SLOT
+                        ? 'few-remaining'
+                        : undefined;
 
-                  const remaining = MAX_BOOKINGS_PER_SLOT - taken;
+                    const remaining = MAX_BOOKINGS_PER_SLOT - taken;
 
-                  return (
-                    <td className="border p-2">
-                      {displayType ? (
-                        <a
-                          href={`?day=${schedule.day}&hour=${hour}`}
-                          hx-get={`?day=${schedule.day}&hour=${hour}`}
-                          {...hx({
-                            'hx-swap': 'none',
-                            'hx-push-url': 'true',
-                          })}
-                          className={clsx(
-                            'underline',
-                            displayType === 'book-now' && 'text-green-500',
-                            displayType === 'remaining' && 'text-orange-500',
-                            displayType === 'few-remaining' && 'text-red-500'
-                          )}
-                        >
-                          {displayType === 'book-now' && 'Open'}
-                          {displayType === 'remaining' && `${remaining} left`}
-                          {displayType === 'few-remaining' &&
-                            `Only ${remaining} left`}
-                        </a>
-                      ) : (
-                        'Full'
-                      )}
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                    return (
+                      <td className="border p-2">
+                        {displayType ? (
+                          <a
+                            href={`?day=${schedule.day}&hour=${hour}`}
+                            hx-get={`?day=${schedule.day}&hour=${hour}`}
+                            {...hx({
+                              'hx-swap': 'none',
+                              'hx-push-url': 'true',
+                            })}
+                            className={clsx(
+                              'underline',
+                              displayType === 'book-now' && 'text-green-500',
+                              displayType === 'remaining' && 'text-orange-500',
+                              displayType === 'few-remaining' && 'text-red-500'
+                            )}
+                          >
+                            {displayType === 'book-now' && 'Open'}
+                            {displayType === 'remaining' && `${remaining} left`}
+                            {displayType === 'few-remaining' &&
+                              `Only ${remaining} left`}
+                          </a>
+                        ) : (
+                          'Full'
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
 
       {selectedDay && selectedHour ? (
         <form

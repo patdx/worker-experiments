@@ -18,6 +18,8 @@
     "@typescript-eslint/eslint-plugin": "5.44.0",
     "@typescript-eslint/parser": "5.44.0",
     "eslint": "8.28.0",
-    "eslint-plugin-sql-formatter": "1.0.5"
+    "eslint-plugin-sql-formatter": "1.0.5",
+    "open-cli": "7.1.0",
+    "wrangler": "2.4.4"
   }
 }

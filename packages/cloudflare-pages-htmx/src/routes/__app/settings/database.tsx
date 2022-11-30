@@ -55,12 +55,10 @@ export const loader = async (args: LoaderFunctionArgs) => {
   } catch (e: any) {
     migrations = [] as any[];
     error = JSON.stringify({
-      message: e.message,
-      cause: e.cause.message,
+      message: e?.message,
+      cause: e?.cause?.message,
     });
   }
-
-  tables.meta;
 
   return { migrations, error, tables: tables.results ?? [], tableInfos };
 };
