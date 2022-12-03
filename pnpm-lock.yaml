@@ -40,7 +40,7 @@ importers:
       '@vavite/multibuild': 1.5.1
       '@vavite/multibuild-cli': 1.5.1
       autoprefixer: 10.4.13
-      better-sqlite3: 8.0.0
+      better-sqlite3: 8.0.1
       clsx: 1.2.1
       generouted: 1.6.0
       htmx.org: 1.8.4
@@ -86,7 +86,7 @@ importers:
       '@vavite/multibuild': 1.5.1_vite@3.2.4
       '@vavite/multibuild-cli': 1.5.1_vite@3.2.4
       autoprefixer: 10.4.13_postcss@8.4.19
-      better-sqlite3: 8.0.0
+      better-sqlite3: 8.0.1
       json5: 2.2.1
       open-cli: 7.1.0
       postcss: 8.4.19
@@ -4429,8 +4429,8 @@ packages:
   /base64-js/1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
 
-  /better-sqlite3/8.0.0:
-    resolution: {integrity: sha512-DhIPmhV+F3NBb9oGCNqNON8Cg4nP3/7NOwx412SL6JJUclYjAKmqNtbL6xBfG2RcG0uZWUS/TEHRy4AFLeq5Zg==}
+  /better-sqlite3/8.0.1:
+    resolution: {integrity: sha512-JhTZjpyapA1icCEjIZB4TSSgkGdFgpWZA2Wszg7Cf4JwJwKQmbvuNnJBeR+EYG/Z29OXvR4G//Rbg31BW/Z7Yg==}
     requiresBuild: true
     dependencies:
       bindings: 1.5.0
