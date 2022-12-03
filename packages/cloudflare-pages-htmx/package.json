@@ -25,7 +25,7 @@
     "@vavite/multibuild": "1.5.1",
     "@vavite/multibuild-cli": "1.5.1",
     "autoprefixer": "10.4.13",
-    "better-sqlite3": "8.0.0",
+    "better-sqlite3": "8.0.1",
     "json5": "2.2.1",
     "open-cli": "7.1.0",
     "postcss": "8.4.19",
