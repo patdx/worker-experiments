@@ -19,7 +19,7 @@
     "@tailwindcss/forms": "0.5.3",
     "@tailwindcss/typography": "0.5.8",
     "@types/luxon": "3.1.0",
-    "@types/node": "18.11.9",
+    "@types/node": "18.11.18",
     "@types/react": "18.0.25",
     "@types/react-dom": "18.0.9",
     "@vavite/multibuild": "1.5.1",
