@@ -110,7 +110,7 @@ importers:
       solid-js: 1.6.2
       solid-start: 0.2.5
       solid-start-cloudflare-pages: 0.2.5
-      solid-start-cloudflare-workers: 0.2.5
+      solid-start-cloudflare-workers: 0.2.11
       solid-start-node: 0.2.5
       tailwindcss: 3.2.4
       typescript: 4.9.3
@@ -131,7 +131,7 @@ importers:
       solid-js: 1.6.2
       solid-start: 0.2.5_i2cnpwj3ojjdnkycik5yjsstli
       solid-start-cloudflare-pages: 0.2.5_pwel2bd237mbr7ooh5pghdxziu
-      solid-start-cloudflare-workers: 0.2.5_pwel2bd237mbr7ooh5pghdxziu
+      solid-start-cloudflare-workers: 0.2.11_pwel2bd237mbr7ooh5pghdxziu
       solid-start-node: 0.2.5_qabr3fxsam3mjpsvjg5c7ynjou
       tailwindcss: 3.2.4_postcss@8.4.19
       typescript: 4.9.3
@@ -2429,7 +2429,7 @@ packages:
       kleur: 4.1.5
       selfsigned: 2.1.1
       undici: 5.9.1
-      ws: 8.9.0
+      ws: 8.11.0
       youch: 2.2.2
     transitivePeerDependencies:
       - bufferutil
@@ -2614,7 +2614,7 @@ packages:
       '@miniflare/core': 2.11.0
       '@miniflare/shared': 2.11.0
       undici: 5.9.1
-      ws: 8.9.0
+      ws: 8.11.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -3175,12 +3175,43 @@ packages:
       rollup: 2.79.1
     dev: true
 
+  /@rollup/plugin-commonjs/24.0.0_rollup@2.79.1:
+    resolution: {integrity: sha512-0w0wyykzdyRRPHOb0cQt14mIBLujfAv6GgP6g8nvg/iBxEm112t3YPPq+Buqe2+imvElTka+bjNlJ/gB56TD8g==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^2.68.0||^3.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+    dependencies:
+      '@rollup/pluginutils': 5.0.2_rollup@2.79.1
+      commondir: 1.0.1
+      estree-walker: 2.0.2
+      glob: 8.0.3
+      is-reference: 1.2.1
+      magic-string: 0.27.0
+      rollup: 2.79.1
+    dev: true
+
   /@rollup/plugin-json/4.1.0_rollup@2.79.1:
     resolution: {integrity: sha512-yfLbTdNS6amI/2OpmbiBoW12vngr5NW2jCJVZSBEz+H5KfUJZ2M7sDjk0U6GOOdCWFVScShte29o9NezJ53TPw==}
     peerDependencies:
       rollup: ^1.20.0 || ^2.0.0
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.79.1
+      rollup: 2.79.1
+    dev: true
+
+  /@rollup/plugin-json/6.0.0_rollup@2.79.1:
+    resolution: {integrity: sha512-i/4C5Jrdr1XUarRhVu27EEwjt4GObltD7c+MkCIpO2QIbojw8MUs+CCTqOphQi3Qtg1FLmYt+l+6YeoIf51J7w==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0||^3.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+    dependencies:
+      '@rollup/pluginutils': 5.0.2_rollup@2.79.1
       rollup: 2.79.1
     dev: true
 
@@ -3192,6 +3223,24 @@ packages:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.79.1
       '@types/resolve': 1.17.1
+      deepmerge: 4.2.2
+      is-builtin-module: 3.2.0
+      is-module: 1.0.0
+      resolve: 1.22.1
+      rollup: 2.79.1
+    dev: true
+
+  /@rollup/plugin-node-resolve/15.0.1_rollup@2.79.1:
+    resolution: {integrity: sha512-ReY88T7JhJjeRVbfCyNj+NXAG3IIsVMsX9b5/9jC98dRP8/yxlZdz7mHZbHk5zHr24wZZICS5AcXsFZAXYUQEg==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^2.78.0||^3.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+    dependencies:
+      '@rollup/pluginutils': 5.0.2_rollup@2.79.1
+      '@types/resolve': 1.20.2
       deepmerge: 4.2.2
       is-builtin-module: 3.2.0
       is-module: 1.0.0
@@ -3217,6 +3266,21 @@ packages:
     dependencies:
       estree-walker: 2.0.2
       picomatch: 2.3.1
+    dev: true
+
+  /@rollup/pluginutils/5.0.2_rollup@2.79.1:
+    resolution: {integrity: sha512-pTd9rIsP92h+B6wWwFbW8RkZv4hiR/xKsqre4SIuAOaOEQRxi0lqLke9k2/7WegC85GgUs9pjmOjCUi3In4vwA==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0||^3.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+    dependencies:
+      '@types/estree': 1.0.0
+      estree-walker: 2.0.2
+      picomatch: 2.3.1
+      rollup: 2.79.1
     dev: true
 
   /@rushstack/eslint-patch/1.2.0:
@@ -3522,6 +3586,10 @@ packages:
     resolution: {integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==}
     dependencies:
       '@types/node': 18.11.9
+    dev: true
+
+  /@types/resolve/1.20.2:
+    resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
     dev: true
 
   /@types/responselike/1.0.0:
@@ -7247,6 +7315,17 @@ packages:
       path-is-absolute: 1.0.1
     dev: true
 
+  /glob/8.0.3:
+    resolution: {integrity: sha512-ull455NHSHI/Y1FqGaaYFaLGkNMMJbavMrEGFXG/PGrg6y7sutWHUHrz6gy6WEBH6akM1M414dWKCNs+IhKdiQ==}
+    engines: {node: '>=12'}
+    dependencies:
+      fs.realpath: 1.0.0
+      inflight: 1.0.6
+      inherits: 2.0.4
+      minimatch: 5.1.0
+      once: 1.4.0
+    dev: true
+
   /globals/11.12.0:
     resolution: {integrity: sha512-WOBp/EEGUiIsJSp7wcv/y6MO+lV9UoncWqxuFfm8eBwzWNgyfBd6Gz+IeKQ9jCmyhoH99g15M3T+QaVHFjizVA==}
     engines: {node: '>=4'}
@@ -8825,6 +8904,13 @@ packages:
     resolution: {integrity: sha512-RmF0AsMzgt25qzqqLc1+MbHmhdx0ojF2Fvs4XnOqz2ZOBXzzkEwc/dJQZCYHAn7v1jbVOjAZfK8msRn4BxO4VQ==}
     dependencies:
       sourcemap-codec: 1.4.8
+    dev: true
+
+  /magic-string/0.27.0:
+    resolution: {integrity: sha512-8UnnX2PeRAPZuN12svgR9j7M1uWMovg/CEnIwIG0LFkXSJJe4PdfUGiTGl8V9bsBHFUtfVINcSyYxd7q+kx9fA==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
 
   /make-dir/2.1.0:
@@ -11432,8 +11518,8 @@ packages:
       - utf-8-validate
     dev: true
 
-  /solid-start-cloudflare-workers/0.2.5_pwel2bd237mbr7ooh5pghdxziu:
-    resolution: {integrity: sha512-M+ue8dvSeBDWSXvSXbFJfm/yqrpeHqaEoFBTPYSTQf4LNwVKjF0JBq7zQAh2zlyzQbQUVn12BfU3rCG40JaHgg==}
+  /solid-start-cloudflare-workers/0.2.11_pwel2bd237mbr7ooh5pghdxziu:
+    resolution: {integrity: sha512-RrncXsRW1+GyKohHPsCche+khk+MVwmCqC/CB0f9Cdy/PVJOUg1geAiL2cFzDD0XwEg7gqXiRxVvL/32K7iSiQ==}
     peerDependencies:
       solid-start: '*'
       vite: '*'
@@ -11444,16 +11530,16 @@ packages:
       '@miniflare/http-server': 2.11.0
       '@miniflare/shared': 2.11.0
       '@miniflare/web-sockets': 2.11.0
-      '@rollup/plugin-commonjs': 22.0.2_rollup@2.79.1
-      '@rollup/plugin-json': 4.1.0_rollup@2.79.1
-      '@rollup/plugin-node-resolve': 13.3.0_rollup@2.79.1
+      '@rollup/plugin-commonjs': 24.0.0_rollup@2.79.1
+      '@rollup/plugin-json': 6.0.0_rollup@2.79.1
+      '@rollup/plugin-node-resolve': 15.0.1_rollup@2.79.1
       '@types/ws': 8.5.3
       miniflare: 2.11.0
       rollup: 2.79.1
       solid-start: 0.2.5_i2cnpwj3ojjdnkycik5yjsstli
       terser: 5.15.1
       vite: 3.2.4
-      ws: 8.9.0
+      ws: 8.11.0
     transitivePeerDependencies:
       - '@miniflare/storage-redis'
       - bufferutil
