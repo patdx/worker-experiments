@@ -35,7 +35,7 @@ importers:
       '@tailwindcss/typography': 0.5.8
       '@types/luxon': 3.1.0
       '@types/node': 18.11.9
-      '@types/react': 18.0.25
+      '@types/react': 18.0.27
       '@types/react-dom': 18.0.9
       '@vavite/multibuild': 1.5.1
       '@vavite/multibuild-cli': 1.5.1
@@ -81,7 +81,7 @@ importers:
       '@tailwindcss/typography': 0.5.8_tailwindcss@3.2.4
       '@types/luxon': 3.1.0
       '@types/node': 18.11.9
-      '@types/react': 18.0.25
+      '@types/react': 18.0.27
       '@types/react-dom': 18.0.9
       '@vavite/multibuild': 1.5.1_vite@3.2.4
       '@vavite/multibuild-cli': 1.5.1_vite@3.2.4
@@ -167,7 +167,7 @@ importers:
       '@remix-run/dev': 1.7.6
       '@remix-run/eslint-config': 1.7.6
       '@remix-run/react': 1.7.6
-      '@types/react': 18.0.25
+      '@types/react': 18.0.27
       '@types/react-dom': 18.0.9
       autoprefixer: 10.4.13
       clsx: 1.2.1
@@ -195,7 +195,7 @@ importers:
       '@cloudflare/workers-types': 4.20221111.1
       '@remix-run/dev': 1.7.6_biqbaboplfbrettd7655fr4n2y
       '@remix-run/eslint-config': 1.7.6_tty5jzdb2vdusfh2ebxkvntpay
-      '@types/react': 18.0.25
+      '@types/react': 18.0.27
       '@types/react-dom': 18.0.9
       autoprefixer: 10.4.13_postcss@8.4.19
       eslint: 8.28.0
@@ -3507,11 +3507,11 @@ packages:
   /@types/react-dom/18.0.9:
     resolution: {integrity: sha512-qnVvHxASt/H7i+XG1U1xMiY5t+IHcPGUK7TDMDzom08xa7e86eCeKOiLZezwCKVxJn6NEiiy2ekgX8aQssjIKg==}
     dependencies:
-      '@types/react': 18.0.25
+      '@types/react': 18.0.27
     dev: true
 
-  /@types/react/18.0.25:
-    resolution: {integrity: sha512-xD6c0KDT4m7n9uD4ZHi02lzskaiqcBxf4zi+tXZY98a04wvc0hi/TcCPC2FOESZi51Nd7tlUeOJY8RofL799/g==}
+  /@types/react/18.0.27:
+    resolution: {integrity: sha512-3vtRKHgVxu3Jp9t718R9BuzoD4NcQ8YJ5XRzsSKxNDiDonD2MXIT1TmSkenxuCycZJoQT5d2vE8LwWJxBC1gmA==}
     dependencies:
       '@types/prop-types': 15.7.5
       '@types/scheduler': 0.16.2
