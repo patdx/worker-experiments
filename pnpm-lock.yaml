@@ -42,7 +42,7 @@ importers:
       autoprefixer: 10.4.13
       better-sqlite3: 8.0.0
       clsx: 1.2.1
-      generouted: 1.6.0
+      generouted: 1.7.2
       htmx.org: 1.8.4
       json5: 2.2.1
       luxon: 3.1.1
@@ -64,7 +64,7 @@ importers:
     dependencies:
       '@remix-run/router': 1.0.3
       clsx: 1.2.1
-      generouted: 1.6.0_vite@3.2.4
+      generouted: 1.7.2_vite@3.2.4
       htmx.org: 1.8.4
       luxon: 3.1.1
       preact: 10.11.3
@@ -7103,8 +7103,8 @@ packages:
     resolution: {integrity: sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==}
     dev: true
 
-  /generouted/1.6.0_vite@3.2.4:
-    resolution: {integrity: sha512-KtB0lB5ffmR4Be5NwmpnhDupC/sXfB4FZPwaDABkUIQXss9wlwB4u49+IMKAqiN17WblHn6gTXNL4gKxSn3eRg==}
+  /generouted/1.7.2_vite@3.2.4:
+    resolution: {integrity: sha512-/ZNeuhhKMAvPn+TIyH4Xd3KGW9nIXPC+gKxsfo91VhtGdscytpGQEpfW7WMJrFBxTm+9F59kkiyTVFI2Bt6ftA==}
     peerDependencies:
       vite: '>=3'
     dependencies:
