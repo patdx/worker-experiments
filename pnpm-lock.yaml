@@ -30,7 +30,7 @@ importers:
     specifiers:
       '@cloudflare/workers-types': 4.20221111.1
       '@preact/preset-vite': 2.4.0
-      '@remix-run/router': 1.0.3
+      '@remix-run/router': 1.3.1
       '@tailwindcss/forms': 0.5.3
       '@tailwindcss/typography': 0.5.8
       '@types/luxon': 3.1.0
@@ -53,8 +53,8 @@ importers:
       react: npm:@preact/compat
       react-dom: npm:@preact/compat
       react-icons: 4.6.0
-      react-router: 6.4.3
-      react-router-dom: 6.4.3
+      react-router: 6.8.0
+      react-router-dom: 6.8.0
       tailwindcss: 3.2.4
       typescript: 4.9.3
       vavite: 1.5.1
@@ -62,7 +62,7 @@ importers:
       vite-plugin-remix-routes: 0.4.1
       wrangler: 2.4.4
     dependencies:
-      '@remix-run/router': 1.0.3
+      '@remix-run/router': 1.3.1
       clsx: 1.2.1
       generouted: 1.6.0_vite@3.2.4
       htmx.org: 1.8.4
@@ -72,8 +72,8 @@ importers:
       react: /@preact/compat/17.1.2_preact@10.11.3
       react-dom: /@preact/compat/17.1.2_preact@10.11.3
       react-icons: 4.6.0_@preact+compat@17.1.2
-      react-router: 6.4.3_@preact+compat@17.1.2
-      react-router-dom: 6.4.3_ive3jjn476xyi3ikfsqwmh5x74
+      react-router: 6.8.0_@preact+compat@17.1.2
+      react-router-dom: 6.8.0_ive3jjn476xyi3ikfsqwmh5x74
     devDependencies:
       '@cloudflare/workers-types': 4.20221111.1
       '@preact/preset-vite': 2.4.0_preact@10.11.3+vite@3.2.4
@@ -94,7 +94,7 @@ importers:
       typescript: 4.9.3
       vavite: 1.5.1_vite@3.2.4
       vite: 3.2.4_@types+node@18.11.9
-      vite-plugin-remix-routes: 0.4.1_n6kzb4shrktrwiyeykhbm72kuq
+      vite-plugin-remix-routes: 0.4.1_2qnnjzektfkx2frpc46u3ykfye
       wrangler: 2.4.4
 
   packages/cloudflare-solid-app:
@@ -3122,8 +3122,8 @@ packages:
       react-router-dom: 6.3.0_biqbaboplfbrettd7655fr4n2y
     dev: false
 
-  /@remix-run/router/1.0.3:
-    resolution: {integrity: sha512-ceuyTSs7PZ/tQqi19YZNBc5X7kj1f8p+4DIyrcIYFY9h+hd1OKm4RqtiWldR9eGEvIiJfsqwM4BsuCtRIuEw6Q==}
+  /@remix-run/router/1.3.1:
+    resolution: {integrity: sha512-+eun1Wtf72RNRSqgU7qM2AMX/oHp+dnx7BHk1qhK5ZHzdHTUU4LA1mGG1vT+jMc8sbhG3orvsfOmryjzx2PzQw==}
     engines: {node: '>=14'}
 
   /@remix-run/server-runtime/1.7.6_biqbaboplfbrettd7655fr4n2y:
@@ -10676,17 +10676,17 @@ packages:
       react-router: 6.3.0_@preact+compat@17.1.2
     dev: true
 
-  /react-router-dom/6.4.3_ive3jjn476xyi3ikfsqwmh5x74:
-    resolution: {integrity: sha512-MiaYQU8CwVCaOfJdYvt84KQNjT78VF0TJrA17SIQgNHRvLnXDJO6qsFqq8F/zzB1BWZjCFIrQpu4QxcshitziQ==}
+  /react-router-dom/6.8.0_ive3jjn476xyi3ikfsqwmh5x74:
+    resolution: {integrity: sha512-hQouduSTywGJndE86CXJ2h7YEy4HYC6C/uh19etM+79FfQ6cFFFHnHyDlzO4Pq0eBUI96E4qVE5yUjA00yJZGQ==}
     engines: {node: '>=14'}
     peerDependencies:
       react: '>=16.8'
       react-dom: '>=16.8'
     dependencies:
-      '@remix-run/router': 1.0.3
+      '@remix-run/router': 1.3.1
       react: /@preact/compat/17.1.2_preact@10.11.3
       react-dom: /@preact/compat/17.1.2_preact@10.11.3
-      react-router: 6.4.3_@preact+compat@17.1.2
+      react-router: 6.8.0_@preact+compat@17.1.2
 
   /react-router/6.3.0_@preact+compat@17.1.2:
     resolution: {integrity: sha512-7Wh1DzVQ+tlFjkeo+ujvjSqSJmkt1+8JO+T5xklPlgrh70y7ogx75ODRW0ThWhY7S+6yEDks8TYrtQe/aoboBQ==}
@@ -10705,13 +10705,13 @@ packages:
       history: 5.3.0
       react: 18.2.0
 
-  /react-router/6.4.3_@preact+compat@17.1.2:
-    resolution: {integrity: sha512-BT6DoGn6aV1FVP5yfODMOiieakp3z46P1Fk0RNzJMACzE7C339sFuHebfvWtnB4pzBvXXkHP2vscJzWRuUjTtA==}
+  /react-router/6.8.0_@preact+compat@17.1.2:
+    resolution: {integrity: sha512-760bk7y3QwabduExtudhWbd88IBbuD1YfwzpuDUAlJUJ7laIIcqhMvdhSVh1Fur1PE8cGl84L0dxhR3/gvHF7A==}
     engines: {node: '>=14'}
     peerDependencies:
       react: '>=16.8'
     dependencies:
-      '@remix-run/router': 1.0.3
+      '@remix-run/router': 1.3.1
       react: /@preact/compat/17.1.2_preact@10.11.3
 
   /react/18.2.0:
@@ -12561,7 +12561,7 @@ packages:
       - supports-color
     dev: true
 
-  /vite-plugin-remix-routes/0.4.1_n6kzb4shrktrwiyeykhbm72kuq:
+  /vite-plugin-remix-routes/0.4.1_2qnnjzektfkx2frpc46u3ykfye:
     resolution: {integrity: sha512-PgQEaoELGGo0YqTYOsBwaPrnf8eDiMd8c/mOetwxM3NDa39H3L5VbDvEngeqflAiAXNwHRN2SWJEOifA5wKptA==}
     peerDependencies:
       react: '>=16.6'
@@ -12569,7 +12569,7 @@ packages:
     dependencies:
       '@remix-run/dev': 1.7.6_ive3jjn476xyi3ikfsqwmh5x74
       react: /@preact/compat/17.1.2_preact@10.11.3
-      react-router-dom: 6.4.3_ive3jjn476xyi3ikfsqwmh5x74
+      react-router-dom: 6.8.0_ive3jjn476xyi3ikfsqwmh5x74
     transitivePeerDependencies:
       - '@remix-run/serve'
       - bluebird
