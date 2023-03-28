@@ -1,17 +1,13 @@
-import {
-  matchRoutes,
-  unstable_createStaticHandler as createStaticHandler,
-} from '@remix-run/router';
+import { matchRoutes, createStaticHandler } from '@remix-run/router';
 import render from 'preact-render-to-string';
 import type { RouteObject } from 'react-router';
 import {
-  unstable_createStaticRouter as createStaticRouter,
-  unstable_StaticRouterProvider as StaticRouterProvider,
+  createStaticRouter,
+  StaticRouterProvider,
 } from 'react-router-dom/server';
 import manifest from '../dist/client/manifest.json';
 import { ALL_ROUTES, PARENT_ROUTES } from './all-routes';
 import { Document } from './components/document';
-
 import { SERVER_CONTEXT } from './context';
 import { diffRoutes } from './diff-routes';
 
@@ -74,7 +70,9 @@ export const renderPage = async (
   let context;
 
   if (isApiRoute) {
-    context = await queryRoute(request, deepestMatch.route.id);
+    context = await queryRoute(request, {
+      routeId: deepestMatch.route.id,
+    });
   } else {
     context = await query(request);
   }

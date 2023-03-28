@@ -1,6 +1,5 @@
 import type { RouteObject } from 'react-router';
 import ALL_ROUTES from 'virtual:remix-routes';
-import { HtmxOutlet } from './htmx-outlet';
 
 import { prepareRoutes } from './prepare-routes';
 
@@ -14,6 +13,7 @@ import { prepareRoutes } from './prepare-routes';
 prepareRoutes(ALL_ROUTES, 'route-', '');
 
 export { ALL_ROUTES };
+export { PARENT_ROUTES };
 
 const lines: string[] = [];
 
@@ -52,5 +52,3 @@ const logParentsRoutes = (
 logParentsRoutes(ALL_ROUTES);
 
 console.log(PARENT_ROUTES);
-
-export { PARENT_ROUTES };
