@@ -1,20 +1,27 @@
+------formdata-undici-015483279375
+Content-Disposition: form-data; name="metadata"
+
+{"main_module":"functionsWorker-0.3315995574144015.js"}
+------formdata-undici-015483279375
+Content-Disposition: form-data; name="functionsWorker-0.3315995574144015.js"; filename="functionsWorker-0.3315995574144015.js"
+Content-Type: application/javascript+module
+
+// _worker.js
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => {
   __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-
-// [[path]].js
 var manifest = {
   "/(pages)": [
     {
       type: "script",
-      href: "/assets/(pages).586e6a24.js"
+      href: "/assets/(pages).75acdc4e.js"
     },
     {
       type: "script",
-      href: "/assets/entry-client.88af2856.js"
+      href: "/assets/entry-client.e97cee11.js"
     },
     {
       type: "style",
@@ -24,11 +31,11 @@ var manifest = {
   "/(pages)/about": [
     {
       type: "script",
-      href: "/assets/about.f3f35e41.js"
+      href: "/assets/about.f6c7d0eb.js"
     },
     {
       type: "script",
-      href: "/assets/entry-client.88af2856.js"
+      href: "/assets/entry-client.e97cee11.js"
     },
     {
       type: "style",
@@ -36,17 +43,17 @@ var manifest = {
     },
     {
       type: "script",
-      href: "/assets/Counter.78596350.js"
+      href: "/assets/Counter.3def4b2e.js"
     }
   ],
   "/(pages)/": [
     {
       type: "script",
-      href: "/assets/index.30e951b4.js"
+      href: "/assets/index.6ce4d3e2.js"
     },
     {
       type: "script",
-      href: "/assets/entry-client.88af2856.js"
+      href: "/assets/entry-client.e97cee11.js"
     },
     {
       type: "style",
@@ -54,17 +61,17 @@ var manifest = {
     },
     {
       type: "script",
-      href: "/assets/Counter.78596350.js"
+      href: "/assets/Counter.3def4b2e.js"
     }
   ],
   "/(pages)/:profile/view": [
     {
       type: "script",
-      href: "/assets/view.60d15905.js"
+      href: "/assets/view.f123e806.js"
     },
     {
       type: "script",
-      href: "/assets/entry-client.88af2856.js"
+      href: "/assets/entry-client.e97cee11.js"
     },
     {
       type: "style",
@@ -74,11 +81,11 @@ var manifest = {
   "/*404": [
     {
       type: "script",
-      href: "/assets/_...404_.87308ba4.js"
+      href: "/assets/_...404_.18fff6e6.js"
     },
     {
       type: "script",
-      href: "/assets/entry-client.88af2856.js"
+      href: "/assets/entry-client.e97cee11.js"
     },
     {
       type: "style",
@@ -88,7 +95,7 @@ var manifest = {
   "entry-client": [
     {
       type: "script",
-      href: "/assets/entry-client.88af2856.js"
+      href: "/assets/entry-client.e97cee11.js"
     },
     {
       type: "style",
@@ -795,7 +802,7 @@ function renderToStream(code, options = {}) {
   };
   const writeTasks = () => {
     if (tasks.length && !completed && firstFlushed) {
-      buffer.write(`<script${nonce ? ` nonce="${nonce}"` : ""}>${tasks}<\/script>`);
+      buffer.write(`<script${nonce ? ` nonce="${nonce}"` : ""}>${tasks}</script>`);
       tasks = "";
     }
     scheduled = false;
@@ -1147,7 +1154,7 @@ function generateHydrationScript({
   eventNames = ["click", "input"],
   nonce
 } = {}) {
-  return `<script${nonce ? ` nonce="${nonce}"` : ""}>(e=>{let t=e=>e&&e.hasAttribute&&(e.hasAttribute("data-hk")?e:t(e.host&&e.host instanceof Node?e.host:e.parentNode));["${eventNames.join('", "')}"].forEach((o=>document.addEventListener(o,(o=>{let s=o.composedPath&&o.composedPath()[0]||o.target,a=t(s);a&&!e.completed.has(a)&&e.events.push([a,o])}))))})(window._$HY||(_$HY={events:[],completed:new WeakSet,r:{},fe(){},init(e,t){_$HY.r[e]=[new Promise((e=>t=e)),t]},set(e,t,o){(o=_$HY.r[e])&&o[1](t),_$HY.r[e]=[t]},unset(e){delete _$HY.r[e]},load:e=>_$HY.r[e]}));<\/script><!--xs-->`;
+  return `<script${nonce ? ` nonce="${nonce}"` : ""}>(e=>{let t=e=>e&&e.hasAttribute&&(e.hasAttribute("data-hk")?e:t(e.host&&e.host instanceof Node?e.host:e.parentNode));["${eventNames.join('", "')}"].forEach((o=>document.addEventListener(o,(o=>{let s=o.composedPath&&o.composedPath()[0]||o.target,a=t(s);a&&!e.completed.has(a)&&e.events.push([a,o])}))))})(window._$HY||(_$HY={events:[],completed:new WeakSet,r:{},fe(){},init(e,t){_$HY.r[e]=[new Promise((e=>t=e)),t]},set(e,t,o){(o=_$HY.r[e])&&o[1](t),_$HY.r[e]=[t]},unset(e){delete _$HY.r[e]},load:e=>_$HY.r[e]}));</script><!--xs-->`;
 }
 function NoHydration(props) {
   sharedConfig.context.noHydrate = true;
@@ -1162,7 +1169,7 @@ function injectAssets(assets, html) {
   return html.replace(`</head>`, out + `</head>`);
 }
 function injectScripts(html, scripts, nonce) {
-  const tag = `<script${nonce ? ` nonce="${nonce}"` : ""}>${scripts}<\/script>`;
+  const tag = `<script${nonce ? ` nonce="${nonce}"` : ""}>${scripts}</script>`;
   const index = html.indexOf("<!--xs-->");
   if (index > -1) {
     return html.slice(0, index) + tag + html.slice(index);
@@ -2193,7 +2200,7 @@ function Meta() {
   useAssets(() => ssr(renderTags(context.tags)));
   return null;
 }
-var _tmpl$4 = ["<script", ' type="module" async', "><\/script>"];
+var _tmpl$4 = ["<script", ' type="module" async', "></script>"];
 var isDev = false;
 var isIslands = false;
 function Scripts() {
@@ -2838,8 +2845,6 @@ async function onRequestPatch({ request, env }) {
     env
   });
 }
-
-// ../../../../../../../var/folders/q1/qh2qmc0s7k10mvj49jsm71gh0000gn/T/functionsRoutes-0.5630592504676106.mjs
 var routes = [
   {
     routePath: "/:path*",
@@ -2877,8 +2882,6 @@ var routes = [
     modules: [onRequestPost]
   }
 ];
-
-// ../../../node_modules/.pnpm/path-to-regexp@6.2.1/node_modules/path-to-regexp/dist.es2015/index.js
 function lexer(str) {
   var tokens = [];
   var i = 0;
@@ -3169,8 +3172,6 @@ function pathToRegexp(path, keys, options) {
     return arrayToRegexp(path, keys, options);
   return stringToRegexp(path, keys, options);
 }
-
-// ../../../node_modules/.pnpm/wrangler@2.4.4/node_modules/wrangler/templates/pages-template-worker.ts
 var escapeRegex = /[.+?^${}()|[\]\\]/g;
 function* executeRequest(request) {
   const requestPath = new URL(request.url).pathname;
@@ -3280,3 +3281,5 @@ var cloneResponse = (response) => new Response(
 export {
   pages_template_worker_default as default
 };
+
+------formdata-undici-015483279375--

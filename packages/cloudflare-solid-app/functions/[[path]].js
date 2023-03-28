@@ -2,89 +2,89 @@ var manifest = {
 	"/(pages)": [
 	{
 		type: "script",
-		href: "/assets/(pages).586e6a24.js"
+		href: "/assets/(pages)-a740722f.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.88af2856.js"
+		href: "/assets/entry-client-f1f18f84.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client.ab03752e.css"
-	}
-],
-	"/(pages)/about": [
-	{
-		type: "script",
-		href: "/assets/about.f3f35e41.js"
-	},
-	{
-		type: "script",
-		href: "/assets/entry-client.88af2856.js"
-	},
-	{
-		type: "style",
-		href: "/assets/entry-client.ab03752e.css"
-	},
-	{
-		type: "script",
-		href: "/assets/Counter.78596350.js"
-	}
-],
-	"/(pages)/": [
-	{
-		type: "script",
-		href: "/assets/index.30e951b4.js"
-	},
-	{
-		type: "script",
-		href: "/assets/entry-client.88af2856.js"
-	},
-	{
-		type: "style",
-		href: "/assets/entry-client.ab03752e.css"
-	},
-	{
-		type: "script",
-		href: "/assets/Counter.78596350.js"
+		href: "/assets/entry-client-143d1697.css"
 	}
 ],
 	"/(pages)/:profile/view": [
 	{
 		type: "script",
-		href: "/assets/view.60d15905.js"
+		href: "/assets/view-086959bb.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.88af2856.js"
+		href: "/assets/entry-client-f1f18f84.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client.ab03752e.css"
+		href: "/assets/entry-client-143d1697.css"
+	}
+],
+	"/(pages)/about": [
+	{
+		type: "script",
+		href: "/assets/about-e0dfe55a.js"
+	},
+	{
+		type: "script",
+		href: "/assets/entry-client-f1f18f84.js"
+	},
+	{
+		type: "style",
+		href: "/assets/entry-client-143d1697.css"
+	},
+	{
+		type: "script",
+		href: "/assets/Counter-9d0c58a2.js"
+	}
+],
+	"/(pages)/": [
+	{
+		type: "script",
+		href: "/assets/index-8c25ac51.js"
+	},
+	{
+		type: "script",
+		href: "/assets/entry-client-f1f18f84.js"
+	},
+	{
+		type: "style",
+		href: "/assets/entry-client-143d1697.css"
+	},
+	{
+		type: "script",
+		href: "/assets/Counter-9d0c58a2.js"
 	}
 ],
 	"/*404": [
 	{
 		type: "script",
-		href: "/assets/_...404_.87308ba4.js"
+		href: "/assets/_...404_-79fe3970.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client.88af2856.js"
+		href: "/assets/entry-client-f1f18f84.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client.ab03752e.css"
+		href: "/assets/entry-client-143d1697.css"
 	}
 ],
 	"entry-client": [
 	{
 		type: "script",
-		href: "/assets/entry-client.88af2856.js"
+		href: "/assets/entry-client-f1f18f84.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client.ab03752e.css"
+		href: "/assets/entry-client-143d1697.css"
 	}
 ],
 	"index.html": [
@@ -92,7 +92,6 @@ var manifest = {
 };
 
 const ERROR = Symbol("error");
-const BRANCH = Symbol("branch");
 function castError(err) {
   if (err instanceof Error || typeof err === "string") return err;
   return new Error("Unknown error");
@@ -105,20 +104,35 @@ function handleError(err) {
 }
 const UNOWNED = {
   context: null,
-  owner: null
+  owner: null,
+  owned: null,
+  cleanups: null
 };
 let Owner = null;
-function createRoot(fn, detachedOwner) {
-  detachedOwner && (Owner = detachedOwner);
-  const owner = Owner,
-        root = fn.length === 0 ? UNOWNED : {
+function createOwner() {
+  const o = {
+    owner: Owner,
     context: null,
-    owner
+    owned: null,
+    cleanups: null
   };
+  if (Owner) {
+    if (!Owner.owned) Owner.owned = [o];else Owner.owned.push(o);
+  }
+  return o;
+}
+function createRoot(fn, detachedOwner) {
+  const owner = Owner,
+    root = fn.length === 0 ? UNOWNED : {
+      context: null,
+      owner: detachedOwner === undefined ? owner : detachedOwner,
+      owned: null,
+      cleanups: null
+    };
   Owner = root;
   let result;
   try {
-    result = fn(() => {});
+    result = fn(fn.length === 0 ? () => {} : () => cleanNode(root));
   } catch (err) {
     handleError(err);
   } finally {
@@ -132,10 +146,7 @@ function createSignal(value, options) {
   }];
 }
 function createComputed(fn, value) {
-  Owner = {
-    owner: Owner,
-    context: null
-  };
+  Owner = createOwner();
   try {
     fn(value);
   } catch (err) {
@@ -146,10 +157,7 @@ function createComputed(fn, value) {
 }
 const createRenderEffect = createComputed;
 function createMemo(fn, value) {
-  Owner = {
-    owner: Owner,
-    context: null
-  };
+  Owner = createOwner();
   let v;
   try {
     v = fn(value);
@@ -178,16 +186,19 @@ function on(deps, fn, options = {}) {
   };
 }
 function onCleanup(fn) {
-  let node;
-  if (Owner && (node = lookup(Owner, BRANCH))) {
-    if (!node.cleanups) node.cleanups = [fn];else node.cleanups.push(fn);
+  if (Owner) {
+    if (!Owner.cleanups) Owner.cleanups = [fn];else Owner.cleanups.push(fn);
   }
   return fn;
 }
 function cleanNode(node) {
+  if (node.owned) {
+    for (let i = 0; i < node.owned.length; i++) cleanNode(node.owned[i]);
+    node.owned = null;
+  }
   if (node.cleanups) {
     for (let i = 0; i < node.cleanups.length; i++) node.cleanups[i]();
-    node.cleanups = undefined;
+    node.cleanups = null;
   }
 }
 function onError(fn) {
@@ -275,7 +286,8 @@ function setHydrateContext(context) {
   sharedConfig.context = context;
 }
 function nextHydrateContext() {
-  return sharedConfig.context ? { ...sharedConfig.context,
+  return sharedConfig.context ? {
+    ...sharedConfig.context,
     id: `${sharedConfig.context.id}${sharedConfig.context.count++}-`,
     count: 0
   } : undefined;
@@ -300,23 +312,39 @@ function mergeProps(...sources) {
   for (let i = 0; i < sources.length; i++) {
     let source = sources[i];
     if (typeof source === "function") source = source();
-    if (source) Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+    if (source) {
+      const descriptors = Object.getOwnPropertyDescriptors(source);
+      for (const key in descriptors) {
+        if (key in target) continue;
+        Object.defineProperty(target, key, {
+          enumerable: true,
+          get() {
+            for (let i = sources.length - 1; i >= 0; i--) {
+              let s = sources[i] || {};
+              if (typeof s === "function") s = s();
+              const v = s[key];
+              if (v !== undefined) return v;
+            }
+          }
+        });
+      }
+    }
   }
   return target;
 }
 function splitProps(props, ...keys) {
   const descriptors = Object.getOwnPropertyDescriptors(props),
-        split = k => {
-    const clone = {};
-    for (let i = 0; i < k.length; i++) {
-      const key = k[i];
-      if (descriptors[key]) {
-        Object.defineProperty(clone, key, descriptors[key]);
-        delete descriptors[key];
+    split = k => {
+      const clone = {};
+      for (let i = 0; i < k.length; i++) {
+        const key = k[i];
+        if (descriptors[key]) {
+          Object.defineProperty(clone, key, descriptors[key]);
+          delete descriptors[key];
+        }
       }
-    }
-    return clone;
-  };
+      return clone;
+    };
   return keys.map(split).concat(split(Object.keys(descriptors)));
 }
 function Show(props) {
@@ -325,15 +353,16 @@ function Show(props) {
 }
 function ErrorBoundary$1(props) {
   let error,
-      res,
-      clean,
-      sync = true;
+    res,
+    clean,
+    sync = true;
   const ctx = sharedConfig.context;
   const id = ctx.id + ctx.count;
   function displayFallback() {
     cleanNode(clean);
     ctx.writeResource(id, error, true);
-    setHydrateContext({ ...ctx,
+    setHydrateContext({
+      ...ctx,
       count: 0
     });
     const f = props.fallback;
@@ -344,11 +373,8 @@ function ErrorBoundary$1(props) {
     !sync && ctx.replace("e" + id, displayFallback);
     sync = true;
   });
-  onCleanup(() => cleanNode(clean));
   createMemo(() => {
-    Owner.context = {
-      [BRANCH]: clean = {}
-    };
+    clean = Owner;
     return res = props.children;
   });
   if (error) return displayFallback();
@@ -369,15 +395,9 @@ function startTransition(fn) {
 }
 function Suspense(props) {
   let done;
-  let clean;
   const ctx = sharedConfig.context;
   const id = ctx.id + ctx.count;
-  const o = Owner;
-  if (o) {
-    if (o.context) o.context[BRANCH] = clean = {};else o.context = {
-      [BRANCH]: clean = {}
-    };
-  }
+  const o = createOwner();
   const value = ctx.suspense[id] || (ctx.suspense[id] = {
     resources: new Map(),
     completed: () => {
@@ -388,14 +408,15 @@ function Suspense(props) {
     }
   });
   function runSuspense() {
-    setHydrateContext({ ...ctx,
+    setHydrateContext({
+      ...ctx,
       count: 0
     });
+    cleanNode(o);
     return runWithOwner(o, () => {
       return createComponent(SuspenseContext.Provider, {
         value,
         get children() {
-          clean && cleanNode(clean);
           return props.children;
         }
       });
@@ -403,29 +424,33 @@ function Suspense(props) {
   }
   const res = runSuspense();
   if (suspenseComplete(value)) return res;
-  onError(err => {
-    if (!done || !done(undefined, err)) {
-      if (o) runWithOwner(o.owner, () => {
-        throw err;
-      });else throw err;
-    }
+  runWithOwner(o, () => {
+    onError(err => {
+      if (!done || !done(undefined, err)) {
+        runWithOwner(o.owner, () => {
+          throw err;
+        });
+      }
+    });
   });
   done = ctx.async ? ctx.registerFragment(id) : undefined;
   if (ctx.async) {
-    setHydrateContext({ ...ctx,
+    setHydrateContext({
+      ...ctx,
       count: 0,
-      id: ctx.id + "0.f",
+      id: ctx.id + "0-f",
       noHydrate: true
     });
     const res = {
-      t: `<span id="pl-${id}">${resolveSSRNode$1(props.fallback)}</span>`
+      t: `<template id="pl-${id}"></template>${resolveSSRNode$1(props.fallback)}<!pl-${id}>`
     };
     setHydrateContext(ctx);
     return res;
   }
-  setHydrateContext({ ...ctx,
+  setHydrateContext({
+    ...ctx,
     count: 0,
-    id: ctx.id + "0.f"
+    id: ctx.id + "0-f"
   });
   ctx.writeResource(id, "$$f");
   return props.fallback;
@@ -433,7 +458,6 @@ function Suspense(props) {
 
 const booleans = ["allowfullscreen", "async", "autofocus", "autoplay", "checked", "controls", "default", "disabled", "formnovalidate", "hidden", "indeterminate", "ismap", "loop", "multiple", "muted", "nomodule", "novalidate", "open", "playsinline", "readonly", "required", "reversed", "seamless", "selected"];
 const BooleanAttributes = /*#__PURE__*/new Set(booleans);
-/*#__PURE__*/new Set(["className", "value", "readOnly", "formNoValidate", "isMap", "noModule", "playsInline", ...booleans]);
 const ChildProperties = /*#__PURE__*/new Set(["innerHTML", "textContent", "innerText", "children"]);
 const Aliases = /*#__PURE__*/Object.assign(Object.create(null), {
   className: "class",
@@ -690,13 +714,15 @@ function toRefParam(index) {
   return ref;
 }
 
-const REPLACE_SCRIPT = `function $df(e,t,d,l){d=document.getElementById(e),(l=document.getElementById("pl-"+e))&&l.replaceWith(...d.childNodes),d.remove(),_$HY.set(e,t),_$HY.fe(e)}`;
+const VOID_ELEMENTS = /^(?:area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)$/i;
+const REPLACE_SCRIPT = `function $df(e,n,t,o,d){if(t=document.getElementById(e),o=document.getElementById("pl-"+e)){for(;o&&8!==o.nodeType&&o.nodeValue!=="pl-"+e;)d=o.nextSibling,o.remove(),o=d;_$HY.done?o.remove():o.replaceWith(t.content)}t.remove(),_$HY.set(e,n),_$HY.fe(e)}`;
 function renderToString(code, options = {}) {
   let scripts = "";
   sharedConfig.context = {
     id: options.renderId || "",
     count: 0,
     suspense: {},
+    lazy: {},
     assets: [],
     nonce: options.nonce,
     writeResource(id, p, error) {
@@ -705,7 +731,10 @@ function renderToString(code, options = {}) {
       scripts += `_$HY.set("${id}", ${stringify(p)});`;
     }
   };
-  let html = resolveSSRNode(escape(code()));
+  let html = createRoot(d => {
+    setTimeout(d);
+    return resolveSSRNode(escape(code()));
+  });
   sharedConfig.context.noHydrate = true;
   html = injectAssets(sharedConfig.context.assets, html);
   if (scripts.length) html = injectScripts(html, scripts, options.nonce);
@@ -731,6 +760,7 @@ function renderToStream(code, options = {}) {
     onCompleteAll,
     renderId
   } = options;
+  let dispose;
   const blockingResources = [];
   const registry = new Map();
   const dedupe = new WeakMap();
@@ -744,6 +774,7 @@ function renderToStream(code, options = {}) {
       });
       writable && writable.end();
       completed = true;
+      setTimeout(dispose);
     }
   };
   const pushTask = task => {
@@ -778,6 +809,7 @@ function renderToStream(code, options = {}) {
     count: 0,
     async: true,
     resources: {},
+    lazy: {},
     suspense: {},
     assets: [],
     nonce,
@@ -819,7 +851,7 @@ function renderToStream(code, options = {}) {
               Promise.resolve().then(() => html = replacePlaceholder(html, key, value !== undefined ? value : ""));
               error && pushTask(serializeSet(dedupe, key, error, serializeError));
             } else {
-              buffer.write(`<div hidden id="${key}">${value !== undefined ? value : " "}</div>`);
+              buffer.write(`<template id="${key}">${value !== undefined ? value : " "}</template>`);
               pushTask(`${keys.length ? keys.map(k => `_$HY.unset("${k}")`).join(";") + ";" : ""}$df("${key}"${error ? "," + serializeError(error) : ""})${!scriptFlushed ? ";" + REPLACE_SCRIPT : ""}`);
               scriptFlushed = true;
             }
@@ -830,7 +862,10 @@ function renderToStream(code, options = {}) {
       };
     }
   };
-  let html = resolveSSRNode(escape(code()));
+  let html = createRoot(d => {
+    dispose = d;
+    return resolveSSRNode(escape(code()));
+  });
   function doShell() {
     sharedConfig.context = context;
     context.noHydrate = true;
@@ -922,13 +957,13 @@ function ssr(t, ...nodes) {
 function ssrClassList(value) {
   if (!value) return "";
   let classKeys = Object.keys(value),
-      result = "";
+    result = "";
   for (let i = 0, len = classKeys.length; i < len; i++) {
     const key = classKeys[i],
-          classValue = !!value[key];
+      classValue = !!value[key];
     if (!key || key === "undefined" || !classValue) continue;
     i && (result += " ");
-    result += key;
+    result += escape(key);
   }
   return result;
 }
@@ -949,13 +984,14 @@ function ssrStyle(value) {
 }
 function ssrElement(tag, props, children, needsId) {
   let result = `<${tag}${needsId ? ssrHydrationKey() : ""} `;
+  const skipChildren = VOID_ELEMENTS.test(tag);
   if (props == null) props = {};else if (typeof props === "function") props = props();
   const keys = Object.keys(props);
   let classResolved;
   for (let i = 0; i < keys.length; i++) {
     const prop = keys[i];
     if (ChildProperties.has(prop)) {
-      if (children === undefined) children = prop === "innerHTML" ? props[prop] : escape(props[prop]);
+      if (children === undefined && !skipChildren) children = prop === "innerHTML" ? props[prop] : escape(props[prop]);
       continue;
     }
     const value = props[prop];
@@ -964,7 +1000,7 @@ function ssrElement(tag, props, children, needsId) {
     } else if (prop === "class" || prop === "className" || prop === "classList") {
       if (classResolved) continue;
       let n;
-      result += `class="${(n = props.class) ? n + " " : ""}${(n = props.className) ? n + " " : ""}${ssrClassList(props.classList)}"`;
+      result += `class="${escape(((n = props.class) ? n + " " : "") + ((n = props.className) ? n + " " : ""), true) + ssrClassList(props.classList)}"`;
       classResolved = true;
     } else if (BooleanAttributes.has(prop)) {
       if (value) result += prop;else continue;
@@ -974,6 +1010,11 @@ function ssrElement(tag, props, children, needsId) {
       result += `${Aliases[prop] || prop}="${escape(value, true)}"`;
     }
     if (i !== keys.length - 1) result += " ";
+  }
+  if (skipChildren) {
+    return {
+      t: result + "/>"
+    };
   }
   return {
     t: result + `>${resolveSSRNode(children)}</${tag}>`
@@ -989,13 +1030,10 @@ function ssrHydrationKey() {
 function escape(s, attr) {
   const t = typeof s;
   if (t !== "string") {
-    if (!attr && t === "function") return escape(s(), attr);
+    if (!attr && t === "function") return escape(s());
     if (!attr && Array.isArray(s)) {
-      let r = "";
-      for (let i = 0; i < s.length; i++) r += resolveSSRNode(escape(s[i], attr));
-      return {
-        t: r
-      };
+      for (let i = 0; i < s.length; i++) s[i] = escape(s[i]);
+      return s;
     }
     if (attr && t === "boolean") return String(s);
     return s;
@@ -1006,7 +1044,7 @@ function escape(s, attr) {
   let iAmp = s.indexOf("&");
   if (iDelim < 0 && iAmp < 0) return s;
   let left = 0,
-      out = "";
+    out = "";
   while (iDelim >= 0 && iAmp >= 0) {
     if (iDelim < iAmp) {
       if (left < iDelim) out += s.substring(left, iDelim);
@@ -1040,8 +1078,12 @@ function resolveSSRNode(node) {
   if (t === "string") return node;
   if (node == null || t === "boolean") return "";
   if (Array.isArray(node)) {
+    let prev = {};
     let mapped = "";
-    for (let i = 0, len = node.length; i < len; i++) mapped += resolveSSRNode(node[i]);
+    for (let i = 0, len = node.length; i < len; i++) {
+      if (typeof prev !== "object" && typeof node[i] !== "object") mapped += `<!--!-->`;
+      mapped += resolveSSRNode(prev = node[i]);
+    }
     return mapped;
   }
   if (t === "object") return node.t;
@@ -1110,21 +1152,12 @@ function serializeSet(registry, key, value, serializer = stringify) {
   return `_$HY.set("${key}", ${serializer(value)})`;
 }
 function replacePlaceholder(html, key, value) {
-  const nextRegex = /(<[/]?span[^>]*>)/g;
-  const marker = `<span id="pl-${key}">`;
+  const marker = `<template id="pl-${key}">`;
+  const close = `<!pl-${key}>`;
   const first = html.indexOf(marker);
   if (first === -1) return html;
-  nextRegex.lastIndex = first + marker.length;
-  let match;
-  let open = 0,
-      close = 0;
-  while (match = nextRegex.exec(html)) {
-    if (match[0][1] === "/") {
-      close++;
-      if (close > open) break;
-    } else open++;
-  }
-  return html.slice(0, first) + value + html.slice(nextRegex.lastIndex);
+  const last = html.indexOf(close, first + marker.length);
+  return html.slice(0, first) + value + html.slice(last + close.length);
 }
 
 const isServer = true;
@@ -1181,13 +1214,45 @@ async function internalFetch(route, init) {
   let apiEvent = Object.freeze({
     request,
     params: handler.params,
+    clientAddress: "127.0.0.1",
     env: {},
+    locals: {},
     $type: FETCH_EVENT,
     fetch: internalFetch
   });
   const response = await handler.handler(apiEvent);
   return response;
 }
+
+const _tmpl$$8 = ["<div", "><span>", "</span><strong>", "</strong></div>"],
+  _tmpl$2$1 = "<head><title>Static text</title></head>",
+  _tmpl$3 = ["<html", ">", "<body><div>Hello world <strong>this is a test</strong></div><!--#-->", "<!--/--><!--#-->", "<!--/--></body></html>"];
+const Plus = props => ssr(_tmpl$$8, ssrHydrationKey(), `${escape(props.a)} + ${escape(props.b)} = `, escape(props.a) + escape(props.b));
+const GET = async ctx => {
+  const response = new Response('<!DOCTYPE html>' + renderToString(() => createComponent(NoHydration, {
+    get children() {
+      return ssr(_tmpl$3, ssrHydrationKey(), createComponent(NoHydration, {
+        get children() {
+          return ssr(_tmpl$2$1);
+        }
+      }), escape(createComponent(Plus, {
+        a: 1,
+        b: 2
+      })), escape(createComponent(Plus, {
+        a: 2,
+        b: 3
+      })));
+    }
+  })), {
+    headers: {
+      'content-type': 'text/html'
+    }
+  });
+  response.headers.append('set-cookie', 'cookie1=abc');
+  response.headers.append('set-cookie', 'cookie2=123');
+  console.log(response);
+  return response;
+};
 
 const XSolidStartLocationHeader = "x-solidstart-location";
 const LocationHeader = "Location";
@@ -1219,13 +1284,6 @@ function isRedirectResponse(response) {
   return response && response instanceof Response && redirectStatusCodes.has(response.status);
 }
 class ResponseError extends Error {
-  status;
-  headers;
-  name = "ResponseError";
-  ok;
-  statusText;
-  redirected;
-  url;
   constructor(response) {
     let message = JSON.stringify({
       $type: "response",
@@ -1234,6 +1292,7 @@ class ResponseError extends Error {
       headers: [...response.headers.entries()]
     });
     super(message);
+    this.name = "ResponseError";
     this.status = response.status;
     this.headers = new Map([...response.headers.entries()]);
     this.url = response.url;
@@ -1244,15 +1303,12 @@ class ResponseError extends Error {
     this.type = response.type;
     this.response = () => response;
   }
-  response;
-  type;
   clone() {
     return this.response();
   }
   get body() {
     return this.response().body;
   }
-  bodyUsed;
   async arrayBuffer() {
     return await this.response().arrayBuffer();
   }
@@ -1270,167 +1326,116 @@ class ResponseError extends Error {
   }
 }
 
-function renderAsync(fn, options) {
-  return () => async (event) => {
-    let pageEvent = createPageEvent(event);
-    let markup = await renderToStringAsync(() => fn(pageEvent), options);
-    if (pageEvent.routerContext.url) {
-      return redirect(pageEvent.routerContext.url, {
-        headers: pageEvent.responseHeaders
+const api = [
+  {
+    GET: "skip",
+    path: "/*404"
+  },
+  {
+    GET: "skip",
+    path: "/about"
+  },
+  {
+    GET: "skip",
+    path: "/"
+  },
+  {
+    GET: GET,
+    path: "/api/render-static-markup"
+  },
+  {
+    GET: "skip",
+    path: "/:profile/view"
+  }
+];
+function expandOptionals$1(pattern) {
+  let match = /(\/?\:[^\/]+)\?/.exec(pattern);
+  if (!match)
+    return [pattern];
+  let prefix = pattern.slice(0, match.index);
+  let suffix = pattern.slice(match.index + match[0].length);
+  const prefixes = [prefix, prefix += match[1]];
+  while (match = /^(\/\:[^\/]+)\?/.exec(suffix)) {
+    prefixes.push(prefix += match[1]);
+    suffix = suffix.slice(match[0].length);
+  }
+  return expandOptionals$1(suffix).reduce(
+    (results, expansion) => [...results, ...prefixes.map((p) => p + expansion)],
+    []
+  );
+}
+function routeToMatchRoute(route) {
+  const segments = route.path.split("/").filter(Boolean);
+  const params = [];
+  const matchSegments = [];
+  let score = route.path.endsWith("/") ? 4 : 0;
+  let wildcard = false;
+  for (const [index, segment] of segments.entries()) {
+    if (segment[0] === ":") {
+      const name = segment.slice(1);
+      score += 3;
+      params.push({
+        type: ":",
+        name,
+        index
       });
+      matchSegments.push(null);
+    } else if (segment[0] === "*") {
+      params.push({
+        type: "*",
+        name: segment.slice(1),
+        index
+      });
+      wildcard = true;
+    } else {
+      score += 4;
+      matchSegments.push(segment);
     }
-    markup = handleIslandsRouting(pageEvent, markup);
-    return new Response(markup, {
-      status: pageEvent.getStatusCode(),
-      headers: pageEvent.responseHeaders
-    });
+  }
+  return {
+    ...route,
+    score,
+    params,
+    matchSegments,
+    wildcard
   };
 }
-function createPageEvent(event) {
-  let responseHeaders = new Headers({
-    "Content-Type": "text/html"
-  });
-  const prevPath = event.request.headers.get("x-solid-referrer");
-  let statusCode = 200;
-  function setStatusCode(code) {
-    statusCode = code;
-  }
-  function getStatusCode() {
-    return statusCode;
-  }
-  const pageEvent = Object.freeze({
-    request: event.request,
-    prevUrl: prevPath,
-    routerContext: {},
-    tags: [],
-    env: event.env,
-    $type: FETCH_EVENT,
-    responseHeaders,
-    setStatusCode,
-    getStatusCode,
-    fetch: internalFetch
-  });
-  return pageEvent;
-}
-function handleIslandsRouting(pageEvent, markup) {
-  return markup;
+const allRoutes = api.flatMap((route) => {
+  const paths = expandOptionals$1(route.path);
+  return paths.map((path) => ({ ...route, path }));
+}).map(routeToMatchRoute).sort((a, b) => b.score - a.score);
+registerApiRoutes(allRoutes);
+function getApiHandler(url, method) {
+  return getRouteMatches$1(allRoutes, url.pathname, method.toUpperCase());
 }
 
-const MetaContext = createContext();
-const cascadingTags = ["title", "meta"];
-const getTagType = tag => tag.tag + (tag.name ? `.${tag.name}"` : "");
-const MetaProvider = props => {
-  const cascadedTagInstances = new Map();
-  const actions = {
-    addClientTag: tag => {
-      let tagType = getTagType(tag);
-      if (cascadingTags.indexOf(tag.tag) !== -1) {
-        //  only cascading tags need to be kept as singletons
-        if (!cascadedTagInstances.has(tagType)) {
-          cascadedTagInstances.set(tagType, []);
+const apiRoutes = ({ forward }) => {
+  return async (event) => {
+    let apiHandler = getApiHandler(new URL(event.request.url), event.request.method);
+    if (apiHandler) {
+      let apiEvent = Object.freeze({
+        request: event.request,
+        clientAddress: event.clientAddress,
+        locals: event.locals,
+        params: apiHandler.params,
+        env: event.env,
+        $type: FETCH_EVENT,
+        fetch: internalFetch
+      });
+      try {
+        return await apiHandler.handler(apiEvent);
+      } catch (error) {
+        if (error instanceof Response) {
+          return error;
         }
-        let instances = cascadedTagInstances.get(tagType);
-        let index = instances.length;
-        instances = [...instances, tag];
-        // track indices synchronously
-        cascadedTagInstances.set(tagType, instances);
-        return index;
-      }
-      return -1;
-    },
-    removeClientTag: (tag, index) => {
-      const tagName = getTagType(tag);
-      if (tag.ref) {
-        const t = cascadedTagInstances.get(tagName);
-        if (t) {
-          if (tag.ref.parentNode) {
-            tag.ref.parentNode.removeChild(tag.ref);
-            for (let i = index - 1; i >= 0; i--) {
-              if (t[i] != null) {
-                document.head.appendChild(t[i].ref);
-              }
-            }
-          }
-          t[index] = null;
-          cascadedTagInstances.set(tagName, t);
-        } else {
-          if (tag.ref.parentNode) {
-            tag.ref.parentNode.removeChild(tag.ref);
-          }
-        }
-      }
-    }
-  };
-  {
-    actions.addServerTag = tagDesc => {
-      const {
-        tags = []
-      } = props;
-      // tweak only cascading tags
-      if (cascadingTags.indexOf(tagDesc.tag) !== -1) {
-        const index = tags.findIndex(prev => {
-          const prevName = prev.props.name || prev.props.property;
-          const nextName = tagDesc.props.name || tagDesc.props.property;
-          return prev.tag === tagDesc.tag && prevName === nextName;
+        return new Response(JSON.stringify(error), {
+          status: 500
         });
-        if (index !== -1) {
-          tags.splice(index, 1);
-        }
       }
-      tags.push(tagDesc);
-    };
-    if (Array.isArray(props.tags) === false) {
-      throw Error("tags array should be passed to <MetaProvider /> in node");
     }
-  }
-  return createComponent(MetaContext.Provider, {
-    value: actions,
-    get children() {
-      return props.children;
-    }
-  });
+    return await forward(event);
+  };
 };
-const MetaTag = (tag, props) => {
-  const id = createUniqueId();
-  const c = useContext(MetaContext);
-  if (!c) throw new Error("<MetaProvider /> should be in the tree");
-  useHead({
-    tag,
-    props,
-    id,
-    get name() {
-      return props.name || props.property;
-    }
-  });
-  return null;
-};
-function useHead(tagDesc) {
-  const {
-    addClientTag,
-    removeClientTag,
-    addServerTag
-  } = useContext(MetaContext);
-  createRenderEffect(() => {
-    if (!isServer) ;
-  });
-  {
-    addServerTag(tagDesc);
-    return null;
-  }
-}
-function renderTags(tags) {
-  return tags.map(tag => {
-    const keys = Object.keys(tag.props);
-    const props = keys.map(k => k === "children" ? "" : ` ${k}="${tag.props[k]}"`).join("");
-    return tag.props.children ? `<${tag.tag} data-sm="${tag.id}"${props}>${
-    // Tags might contain multiple text children:
-    //   <Title>example - {myCompany}</Title>
-    Array.isArray(tag.props.children) ? tag.props.children.join("") : tag.props.children}</${tag.tag}>` : `<${tag.tag} data-sm="${tag.id}"${props}/>`;
-  }).join("");
-}
-const Title = props => MetaTag("title", props);
-const Meta$1 = props => MetaTag("meta", props);
-const Link = props => MetaTag("link", props);
 function normalizeIntegration(integration) {
     if (!integration) {
         return {
@@ -2003,20 +2008,28 @@ function A$1(props) {
     const loc = normalizePath(location.pathname).toLowerCase();
     return props.end ? path === loc : loc.startsWith(path);
   });
-  return ssrElement("a", () => ({
-    "link": true,
-    ...rest,
-    "href": href() || props.href,
-    "state": JSON.stringify(props.state),
-    "classList": {
-      ...(props.class && {
-        [props.class]: true
-      }),
-      [props.inactiveClass]: !isActive(),
-      [props.activeClass]: isActive(),
-      ...rest.classList
+  return ssrElement("a", mergeProps({
+    link: true
+  }, rest, {
+    get href() {
+      return href() || props.href;
     },
-    "aria-current": isActive() ? "page" : undefined
+    get state() {
+      return JSON.stringify(props.state);
+    },
+    get classList() {
+      return {
+        ...(props.class && {
+          [props.class]: true
+        }),
+        [props.inactiveClass]: !isActive(),
+        [props.activeClass]: isActive(),
+        ...rest.classList
+      };
+    },
+    get ["aria-current"]() {
+      return isActive() ? "page" : undefined;
+    }
   }), undefined, true);
 }
 
@@ -2056,394 +2069,7 @@ const A = A$1;
 const Routes = Routes$1;
 const Outlet = Outlet$1;
 
-const _tmpl$$8 = ["<div", " style=\"", "\"><div style=\"", "\"><p style=\"", "\" id=\"error-message\">", "</p><button id=\"reset-errors\" style=\"", "\">Clear errors and retry</button><pre style=\"", "\">", "</pre></div></div>"];
-function ErrorBoundary(props) {
-  return createComponent(ErrorBoundary$1, {
-    fallback: (e, reset) => {
-      return createComponent(Show, {
-        get when() {
-          return !props.fallback;
-        },
-        get fallback() {
-          return props.fallback(e, reset);
-        },
-        get children() {
-          return createComponent(ErrorMessage, {
-            error: e
-          });
-        }
-      });
-    },
-    get children() {
-      return props.children;
-    }
-  });
-}
-function ErrorMessage(props) {
-  return ssr(_tmpl$$8, ssrHydrationKey(), "padding:" + "16px", "background-color:" + "rgba(252, 165, 165)" + (";color:" + "rgb(153, 27, 27)") + (";border-radius:" + "5px") + (";overflow:" + "scroll") + (";padding:" + "16px") + (";margin-bottom:" + "8px"), "font-weight:" + "bold", escape(props.error.message), "color:" + "rgba(252, 165, 165)" + (";background-color:" + "rgb(153, 27, 27)") + (";border-radius:" + "5px") + (";padding:" + "4px 8px"), "margin-top:" + "8px" + (";width:" + "100%"), escape(props.error.stack));
-}
-
-// @ts-expect-error
-const routeLayouts = {
-  "/about": {
-    "id": "/(pages)/about",
-    "layouts": ["/(pages)"]
-  },
-  "/": {
-    "id": "/(pages)/",
-    "layouts": ["/(pages)"]
-  },
-  "/:profile/view": {
-    "id": "/(pages)/:profile/view",
-    "layouts": ["/(pages)"]
-  },
-  "/*404": {
-    "id": "/*404",
-    "layouts": []
-  }
-};
-
-const _tmpl$$7 = ["<link", " rel=\"stylesheet\"", ">"],
-  _tmpl$2$1 = ["<link", " rel=\"modulepreload\"", ">"];
-function flattenIslands(match, manifest) {
-  let result = [...match];
-  match.forEach(m => {
-    if (m.type !== "island") return;
-    const islandManifest = manifest[m.href];
-    if (islandManifest) {
-      const res = flattenIslands(islandManifest.assets, manifest);
-      result.push(...res);
-    }
-  });
-  return result;
-}
-function getAssetsFromManifest(manifest, routerContext) {
-  let match = routerContext.matches.reduce((memo, m) => {
-    if (m.length) {
-      const fullPath = m.reduce((previous, match) => previous + match.originalPath, "");
-      const route = routeLayouts[fullPath];
-      if (route) {
-        memo.push(...(manifest[route.id] || []));
-        const layoutsManifestEntries = route.layouts.flatMap(manifestKey => manifest[manifestKey] || []);
-        memo.push(...layoutsManifestEntries);
-      }
-    }
-    return memo;
-  }, []);
-  match.push(...(manifest["entry-client"] || []));
-  match = flattenIslands(match, manifest);
-  const links = match.reduce((r, src) => {
-    r[src.href] = src.type === "style" ? ssr(_tmpl$$7, ssrHydrationKey(), ssrAttribute("href", escape(src.href, true), false)) : src.type === "script" ? ssr(_tmpl$2$1, ssrHydrationKey(), ssrAttribute("href", escape(src.href, true), false)) : undefined;
-    return r;
-  }, {});
-  return Object.values(links);
-}
-
-/**
- * Links are used to load assets for the server rendered HTML
- * @returns {JSXElement}
- */
-function Links() {
-  const context = useContext(ServerContext);
-  useAssets(() => getAssetsFromManifest(context.env.manifest, context.routerContext));
-  return null;
-}
-
-function Meta() {
-  const context = useContext(ServerContext);
-  // @ts-expect-error The ssr() types do not match the Assets child types
-  useAssets(() => ssr(renderTags(context.tags)));
-  return null;
-}
-
-const _tmpl$4 = ["<script", " type=\"module\" async", "></script>"];
-const isDev = "production" === "development";
-const isIslands = false;
-function Scripts() {
-  const context = useContext(ServerContext);
-  return [createComponent(HydrationScript, {}), isIslands , createComponent(NoHydration, {
-    get children() {
-      return (ssr(_tmpl$4, ssrHydrationKey(), ssrAttribute("src", escape(context.env.manifest["entry-client"][0].href, true), false)) );
-    }
-  }), isDev ];
-}
-
-function Html(props) {
-  {
-    return ssrElement("html", props, undefined, false);
-  }
-}
-function Head(props) {
-  {
-    return ssrElement("head", props, () => [props.children, createComponent(Meta, {}), createComponent(Links, {})], false);
-  }
-}
-function Body(props) {
-  {
-    return ssrElement("body", props, () => props.children , false);
-  }
-}
-
-const _tmpl$$6 = ["<div", " class=\"shadow bg-gray-100 sticky top-0\"><!--#-->", "<!--/--><!--#-->", "<!--/--><a class=\"p-2 h-full inline-block transition-colors bg-gray-100 hover:bg-white\" href=\"/api/render-static-markup\">Render static markup</a></div>"];
-function PagesLayout() {
-  return [ssr(_tmpl$$6, ssrHydrationKey(), escape(createComponent(A, {
-    "class": "p-2 h-full inline-block transition-colors bg-gray-100 hover:bg-white",
-    href: "/",
-    children: "Index"
-  })), escape(createComponent(A, {
-    "class": "p-2 h-full inline-block transition-colors bg-gray-100 hover:bg-white",
-    href: "/about",
-    children: "About"
-  }))), createComponent(Outlet, {})];
-}
-
-const _tmpl$$5 = ["<button", " class=\"w-[200px] rounded-full bg-gray-100 border-2 border-gray-300 focus:border-gray-400 active:border-gray-400 px-[2rem] py-[1rem]\">Clicks: <!--#-->", "<!--/--></button>"];
-function Counter() {
-  const [count, setCount] = createSignal(0);
-  return ssr(_tmpl$$5, ssrHydrationKey(), escape(count()));
-}
-
-const _tmpl$$4 = ["<main", " class=\"text-center mx-auto text-gray-700 p-4\"><h1 class=\"max-6-xs text-6xl text-sky-700 font-thin uppercase my-16\">About Page</h1><!--#-->", "<!--/--><p class=\"mt-8\">Visit <!--#-->", "<!--/--> to learn how to build Solid apps.</p><p class=\"my-4\"><!--#-->", "<!--/--> - <span>About Page</span></p></main>"];
-function About() {
-  return ssr(_tmpl$$4, ssrHydrationKey(), escape(createComponent(Counter, {})), escape(createComponent(A, {
-    href: "https://solidjs.com",
-    target: "_blank",
-    "class": "text-sky-600 hover:underline",
-    children: "solidjs.com"
-  })), escape(createComponent(A, {
-    href: "/",
-    "class": "text-sky-600 hover:underline",
-    children: "Home"
-  })));
-}
-
-const _tmpl$$3 = ["<main", " class=\"text-center mx-auto text-gray-700 p-4\"><div class=\"flex gap-4 justify-center\"><h1 class=\"max-6-xs text-6xl text-sky-700 font-thin uppercase my-16\">Hello world!</h1><!--#-->", "<!--/--><!--#-->", "<!--/--><!--#-->", "<!--/--><div lang=\"ja\" style=\"", "\">\u30CF\u30ED\u30FC\u4E16\u754C</div></div><!--#-->", "<!--/--><p class=\"mt-8\">Visit <a href=\"https://solidjs.com\" target=\"_blank\" class=\"text-sky-600 hover:underline\">solidjs.com</a> to learn how to build Solid apps.</p><p class=\"my-4\"><span>Home</span> - <!--#-->", "<!--/--> </p></main>"];
-function Home() {
-  return ssr(_tmpl$$3, ssrHydrationKey(), escape(createComponent(Link, {
-    rel: "preconnect",
-    href: "https://fonts.googleapis.com"
-  })), escape(createComponent(Link, {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous"
-  })), escape(createComponent(Link, {
-    href: "https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500&display=swap",
-    rel: "stylesheet"
-  })), "writing-mode:" + "vertical-rl" + (";font-family:" + "'Noto Serif JP', serif"), escape(createComponent(Counter, {})), escape(createComponent(A, {
-    href: "/about",
-    "class": "text-sky-600 hover:underline",
-    children: "About Page"
-  })));
-}
-
-const _tmpl$$2 = ["<div", ">This is a special view <span>", "</span></div>"];
-function View() {
-  const params = useParams();
-  return ssr(_tmpl$$2, ssrHydrationKey(), escape(JSON.stringify(params)));
-}
-
-const _tmpl$$1 = ["<main", " class=\"text-center mx-auto text-gray-700 p-4\"><h1 class=\"max-6-xs text-6xl text-sky-700 font-thin uppercase my-16\">Not Found</h1><p class=\"mt-8\">Visit <!--#-->", "<!--/--> to learn how to build Solid apps.</p><p class=\"my-4\"><!--#-->", "<!--/--> - <!--#-->", "<!--/--></p></main>"];
-function NotFound() {
-  return ssr(_tmpl$$1, ssrHydrationKey(), escape(createComponent(A, {
-    href: "https://solidjs.com",
-    target: "_blank",
-    "class": "text-sky-600 hover:underline",
-    children: "solidjs.com"
-  })), escape(createComponent(A, {
-    href: "/",
-    "class": "text-sky-600 hover:underline",
-    children: "Home"
-  })), escape(createComponent(A, {
-    href: "/about",
-    "class": "text-sky-600 hover:underline",
-    children: "About Page"
-  })));
-}
-
-/// <reference path="../server/types.tsx" />
-const fileRoutes = [{
-  component: PagesLayout,
-  path: "",
-  children: [{
-    component: About,
-    path: "/about"
-  }, {
-    component: Home,
-    path: "/"
-  }, {
-    component: View,
-    path: "/:profile/view"
-  }]
-}, {
-  component: NotFound,
-  path: "/*404"
-}];
-
-/**
- * Routes are the file system based routes, used by Solid App Router to show the current page according to the URL.
- */
-
-const FileRoutes = () => {
-  return fileRoutes;
-};
-
-function Root() {
-  return createComponent(Html, {
-    lang: "en",
-    get children() {
-      return [createComponent(Head, {
-        get children() {
-          return [createComponent(Title, {
-            children: "SolidStart - With TailwindCSS"
-          }), createComponent(Meta$1, {
-            charset: "utf-8"
-          }), createComponent(Meta$1, {
-            name: "viewport",
-            content: "width=device-width, initial-scale=1"
-          })];
-        }
-      }), createComponent(Body, {
-        get children() {
-          return [createComponent(Suspense, {
-            get children() {
-              return createComponent(ErrorBoundary, {
-                get children() {
-                  return createComponent(Routes, {
-                    get children() {
-                      return createComponent(FileRoutes, {});
-                    }
-                  });
-                }
-              });
-            }
-          }), createComponent(Scripts, {})];
-        }
-      })];
-    }
-  });
-}
-
-const _tmpl$ = ["<div", "><span>", "</span><strong>", "</strong></div>"],
-  _tmpl$2 = "<head><title>Static text</title></head>",
-  _tmpl$3 = ["<html", ">", "<body><div>Hello world <strong>this is a test</strong></div><!--#-->", "<!--/--><!--#-->", "<!--/--></body></html>"];
-const Plus = props => ssr(_tmpl$, ssrHydrationKey(), `${escape(props.a)} + ${escape(props.b)} = `, escape(props.a) + escape(props.b));
-const GET = async ctx => {
-  const response = new Response('<!DOCTYPE html>' + renderToString(() => createComponent(NoHydration, {
-    get children() {
-      return ssr(_tmpl$3, ssrHydrationKey(), createComponent(NoHydration, {
-        get children() {
-          return ssr(_tmpl$2);
-        }
-      }), escape(createComponent(Plus, {
-        a: 1,
-        b: 2
-      })), escape(createComponent(Plus, {
-        a: 2,
-        b: 3
-      })));
-    }
-  })), {
-    headers: {
-      'content-type': 'text/html'
-    }
-  });
-  response.headers.append('set-cookie', 'cookie1=abc');
-  response.headers.append('set-cookie', 'cookie2=123');
-  console.log(response);
-  return response;
-};
-
-const api = [
-  {
-    GET: "skip",
-    path: "/*404"
-  },
-  {
-    GET: "skip",
-    path: "/about"
-  },
-  {
-    GET: "skip",
-    path: "/"
-  },
-  {
-    GET: GET,
-    path: "/api/render-static-markup"
-  },
-  {
-    GET: "skip",
-    path: "/:profile/view"
-  }
-];
-function routeToMatchRoute(route) {
-  const segments = route.path.split("/").filter(Boolean);
-  const params = [];
-  const matchSegments = [];
-  let score = route.path.endsWith("/") ? 4 : 0;
-  let wildcard = false;
-  for (const [index, segment] of segments.entries()) {
-    if (segment[0] === ":") {
-      const name = segment.slice(1);
-      score += 3;
-      params.push({
-        type: ":",
-        name,
-        index
-      });
-      matchSegments.push(null);
-    } else if (segment[0] === "*") {
-      params.push({
-        type: "*",
-        name: segment.slice(1),
-        index
-      });
-      wildcard = true;
-    } else {
-      score += 4;
-      matchSegments.push(segment);
-    }
-  }
-  return {
-    ...route,
-    score,
-    params,
-    matchSegments,
-    wildcard
-  };
-}
-const allRoutes = api.map(routeToMatchRoute).sort((a, b) => b.score - a.score);
-registerApiRoutes(allRoutes);
-function getApiHandler(url, method) {
-  return getRouteMatches$1(allRoutes, url.pathname, method.toUpperCase());
-}
-
-const apiRoutes = ({ forward }) => {
-  return async (event) => {
-    let apiHandler = getApiHandler(new URL(event.request.url), event.request.method);
-    if (apiHandler) {
-      let apiEvent = Object.freeze({
-        request: event.request,
-        params: apiHandler.params,
-        env: event.env,
-        $type: FETCH_EVENT,
-        fetch: internalFetch
-      });
-      try {
-        return await apiHandler.handler(apiEvent);
-      } catch (error) {
-        if (error instanceof Response) {
-          return error;
-        }
-        return new Response(JSON.stringify(error), {
-          status: 500
-        });
-      }
-    }
-    return await forward(event);
-  };
-};
-
-const server$ = (fn) => {
+const server$ = (_fn) => {
   throw new Error("Should be compiled away");
 };
 async function parseRequest(event) {
@@ -2457,9 +2083,6 @@ async function parseRequest(event) {
         args = JSON.parse(text, (key, value) => {
           if (!value) {
             return value;
-          }
-          if (value.$type === "fetch_event") {
-            return event;
           }
           if (value.$type === "headers") {
             let headers = new Headers();
@@ -2607,7 +2230,7 @@ async function handleServerRequest(event) {
   return null;
 }
 const handlers = /* @__PURE__ */ new Map();
-server$.createHandler = (_fn, hash) => {
+server$.createHandler = (_fn, hash, serverResource) => {
   let fn = function(...args) {
     let ctx;
     if (typeof this === "object") {
@@ -2622,10 +2245,9 @@ server$.createHandler = (_fn, hash) => {
     }
     const execute = async () => {
       try {
-        let e = await _fn.call(ctx, ...args);
-        return e;
+        return serverResource ? _fn.call(ctx, args[0], ctx) : _fn.call(ctx, ...args);
       } catch (e) {
-        if (/[A-Za-z]+ is not defined/.test(e.message)) {
+        if (e instanceof Error && /[A-Za-z]+ is not defined/.test(e.message)) {
           const error = new Error(
             e.message + "\n You probably are using a variable defined in a closure in your server function."
           );
@@ -2678,6 +2300,8 @@ const inlineServerFunctions = ({ forward }) => {
       }
       let serverFunctionEvent = Object.freeze({
         request: event.request,
+        clientAddress: event.clientAddress,
+        locals: event.locals,
         fetch: internalFetch,
         $type: FETCH_EVENT,
         env: event.env
@@ -2690,7 +2314,7 @@ const inlineServerFunctions = ({ forward }) => {
         return new Response(null, {
           status: 302,
           headers: {
-            Location: new URL(event.request.headers.get("referer")).pathname + "?form=" + encodeURIComponent(
+            Location: new URL(event.request.headers.get("referer") || "").pathname + "?form=" + encodeURIComponent(
               JSON.stringify({
                 url: url.pathname,
                 entries,
@@ -2707,7 +2331,443 @@ const inlineServerFunctions = ({ forward }) => {
   };
 };
 
-const rootData = Object.values(/* #__PURE__ */ Object.assign({}))[0];
+function renderAsync(fn, options) {
+  return () => apiRoutes({
+    forward: inlineServerFunctions({
+      async forward(event) {
+        let pageEvent = createPageEvent(event);
+        let markup = await renderToStringAsync(() => fn(pageEvent), options);
+        if (pageEvent.routerContext && pageEvent.routerContext.url) {
+          return redirect(pageEvent.routerContext.url, {
+            headers: pageEvent.responseHeaders
+          });
+        }
+        markup = handleIslandsRouting(pageEvent, markup);
+        return new Response(markup, {
+          status: pageEvent.getStatusCode(),
+          headers: pageEvent.responseHeaders
+        });
+      }
+    })
+  });
+}
+function createPageEvent(event) {
+  let responseHeaders = new Headers({
+    "Content-Type": "text/html"
+  });
+  const prevPath = event.request.headers.get("x-solid-referrer");
+  let statusCode = 200;
+  function setStatusCode(code) {
+    statusCode = code;
+  }
+  function getStatusCode() {
+    return statusCode;
+  }
+  const pageEvent = Object.freeze({
+    request: event.request,
+    prevUrl: prevPath || "",
+    routerContext: {},
+    tags: [],
+    env: event.env,
+    clientAddress: event.clientAddress,
+    locals: event.locals,
+    $type: FETCH_EVENT,
+    responseHeaders,
+    setStatusCode,
+    getStatusCode,
+    fetch: internalFetch
+  });
+  return pageEvent;
+}
+function handleIslandsRouting(pageEvent, markup) {
+  return markup;
+}
+
+const MetaContext = createContext();
+const cascadingTags = ["title", "meta"];
+const getTagType = tag => tag.tag + (tag.name ? `.${tag.name}"` : "");
+const MetaProvider = props => {
+  const cascadedTagInstances = new Map();
+  const actions = {
+    addClientTag: tag => {
+      let tagType = getTagType(tag);
+      if (cascadingTags.indexOf(tag.tag) !== -1) {
+        //  only cascading tags need to be kept as singletons
+        if (!cascadedTagInstances.has(tagType)) {
+          cascadedTagInstances.set(tagType, []);
+        }
+        let instances = cascadedTagInstances.get(tagType);
+        let index = instances.length;
+        instances = [...instances, tag];
+        // track indices synchronously
+        cascadedTagInstances.set(tagType, instances);
+        return index;
+      }
+      return -1;
+    },
+    removeClientTag: (tag, index) => {
+      const tagName = getTagType(tag);
+      if (tag.ref) {
+        const t = cascadedTagInstances.get(tagName);
+        if (t) {
+          if (tag.ref.parentNode) {
+            tag.ref.parentNode.removeChild(tag.ref);
+            for (let i = index - 1; i >= 0; i--) {
+              if (t[i] != null) {
+                document.head.appendChild(t[i].ref);
+              }
+            }
+          }
+          t[index] = null;
+          cascadedTagInstances.set(tagName, t);
+        } else {
+          if (tag.ref.parentNode) {
+            tag.ref.parentNode.removeChild(tag.ref);
+          }
+        }
+      }
+    }
+  };
+  {
+    actions.addServerTag = tagDesc => {
+      const {
+        tags = []
+      } = props;
+      // tweak only cascading tags
+      if (cascadingTags.indexOf(tagDesc.tag) !== -1) {
+        const index = tags.findIndex(prev => {
+          const prevName = prev.props.name || prev.props.property;
+          const nextName = tagDesc.props.name || tagDesc.props.property;
+          return prev.tag === tagDesc.tag && prevName === nextName;
+        });
+        if (index !== -1) {
+          tags.splice(index, 1);
+        }
+      }
+      tags.push(tagDesc);
+    };
+    if (Array.isArray(props.tags) === false) {
+      throw Error("tags array should be passed to <MetaProvider /> in node");
+    }
+  }
+  return createComponent(MetaContext.Provider, {
+    value: actions,
+    get children() {
+      return props.children;
+    }
+  });
+};
+const MetaTag = (tag, props) => {
+  const id = createUniqueId();
+  const c = useContext(MetaContext);
+  if (!c) throw new Error("<MetaProvider /> should be in the tree");
+  useHead({
+    tag,
+    props,
+    id,
+    get name() {
+      return props.name || props.property;
+    }
+  });
+  return null;
+};
+function useHead(tagDesc) {
+  const {
+    addClientTag,
+    removeClientTag,
+    addServerTag
+  } = useContext(MetaContext);
+  createRenderEffect(() => {
+    if (!isServer) ;
+  });
+  {
+    addServerTag(tagDesc);
+    return null;
+  }
+}
+function renderTags(tags) {
+  return tags.map(tag => {
+    const keys = Object.keys(tag.props);
+    const props = keys.map(k => k === "children" ? "" : ` ${k}="${tag.props[k]}"`).join("");
+    return tag.props.children ? `<${tag.tag} data-sm="${tag.id}"${props}>${
+    // Tags might contain multiple text children:
+    //   <Title>example - {myCompany}</Title>
+    Array.isArray(tag.props.children) ? tag.props.children.join("") : tag.props.children}</${tag.tag}>` : `<${tag.tag} data-sm="${tag.id}"${props}/>`;
+  }).join("");
+}
+const Title = props => MetaTag("title", props);
+const Meta$1 = props => MetaTag("meta", props);
+const Link = props => MetaTag("link", props);
+
+const _tmpl$$7 = ["<div", " style=\"", "\"><div style=\"", "\"><p style=\"", "\" id=\"error-message\">", "</p><button id=\"reset-errors\" style=\"", "\">Clear errors and retry</button><pre style=\"", "\">", "</pre></div></div>"];
+function ErrorBoundary(props) {
+  return createComponent(ErrorBoundary$1, {
+    fallback: (e, reset) => {
+      return createComponent(Show, {
+        get when() {
+          return !props.fallback;
+        },
+        get fallback() {
+          return props.fallback && props.fallback(e, reset);
+        },
+        get children() {
+          return createComponent(ErrorMessage, {
+            error: e
+          });
+        }
+      });
+    },
+    get children() {
+      return props.children;
+    }
+  });
+}
+function ErrorMessage(props) {
+  return ssr(_tmpl$$7, ssrHydrationKey(), "padding:" + "16px", "background-color:" + "rgba(252, 165, 165)" + (";color:" + "rgb(153, 27, 27)") + (";border-radius:" + "5px") + (";overflow:" + "scroll") + (";padding:" + "16px") + (";margin-bottom:" + "8px"), "font-weight:" + "bold", escape(props.error.message), "color:" + "rgba(252, 165, 165)" + (";background-color:" + "rgb(153, 27, 27)") + (";border-radius:" + "5px") + (";padding:" + "4px 8px"), "margin-top:" + "8px" + (";width:" + "100%"), escape(props.error.stack));
+}
+
+const routeLayouts = {
+  "/about": {
+    "id": "/(pages)/about",
+    "layouts": ["/(pages)"]
+  },
+  "/": {
+    "id": "/(pages)/",
+    "layouts": ["/(pages)"]
+  },
+  "/:profile/view": {
+    "id": "/(pages)/:profile/view",
+    "layouts": ["/(pages)"]
+  },
+  "/*404": {
+    "id": "/*404",
+    "layouts": []
+  }
+};
+
+const _tmpl$$6 = ["<link", " rel=\"stylesheet\"", ">"],
+  _tmpl$2 = ["<link", " rel=\"modulepreload\"", ">"];
+function flattenIslands(match, manifest) {
+  let result = [...match];
+  match.forEach(m => {
+    if (m.type !== "island") return;
+    const islandManifest = manifest[m.href];
+    if (islandManifest) {
+      const res = flattenIslands(islandManifest.assets, manifest);
+      result.push(...res);
+    }
+  });
+  return result;
+}
+function getAssetsFromManifest(manifest, routerContext) {
+  let match = routerContext.matches ? routerContext.matches.reduce((memo, m) => {
+    if (m.length) {
+      const fullPath = m.reduce((previous, match) => previous + match.originalPath, "");
+      const route = routeLayouts[fullPath];
+      if (route) {
+        memo.push(...(manifest[route.id] || []));
+        const layoutsManifestEntries = route.layouts.flatMap(manifestKey => manifest[manifestKey] || []);
+        memo.push(...layoutsManifestEntries);
+      }
+    }
+    return memo;
+  }, []) : [];
+  match.push(...(manifest["entry-client"] || []));
+  match = manifest ? flattenIslands(match, manifest) : [];
+  const links = match.reduce((r, src) => {
+    r[src.href] = src.type === "style" ? ssr(_tmpl$$6, ssrHydrationKey(), ssrAttribute("href", escape(src.href, true), false)) : src.type === "script" ? ssr(_tmpl$2, ssrHydrationKey(), ssrAttribute("href", escape(src.href, true), false)) : undefined;
+    return r;
+  }, {});
+  return Object.values(links);
+}
+
+/**
+ * Links are used to load assets for the server rendered HTML
+ * @returns {JSXElement}
+ */
+function Links() {
+  const context = useContext(ServerContext);
+  useAssets(() => getAssetsFromManifest(context.env.manifest, context.routerContext));
+  return null;
+}
+
+function Meta() {
+  const context = useContext(ServerContext);
+  // @ts-expect-error The ssr() types do not match the Assets child types
+  useAssets(() => ssr(renderTags(context.tags)));
+  return null;
+}
+
+const _tmpl$4 = ["<script", " type=\"module\" async", "></script>"];
+const isDev = "production" === "development";
+const isIslands = false;
+function Scripts() {
+  const context = useContext(ServerContext);
+  return [createComponent(HydrationScript, {}), isIslands , createComponent(NoHydration, {
+    get children() {
+      return (      ssr(_tmpl$4, ssrHydrationKey(), ssrAttribute("src", escape(context.env.manifest["entry-client"][0].href, true), false)) );
+    }
+  }), isDev ];
+}
+
+function Html(props) {
+  {
+    return ssrElement("html", props, undefined, false);
+  }
+}
+function Head(props) {
+  {
+    return ssrElement("head", props, () => [escape(props.children), createComponent(Meta, {}), createComponent(Links, {})], false);
+  }
+}
+function Body(props) {
+  {
+    return ssrElement("body", props, () => escape(props.children) , false);
+  }
+}
+
+const _tmpl$$5 = ["<div", " class=\"shadow bg-gray-100 sticky top-0\"><!--#-->", "<!--/--><!--#-->", "<!--/--><a class=\"p-2 h-full inline-block transition-colors bg-gray-100 hover:bg-white\" href=\"/api/render-static-markup\">Render static markup</a></div>"];
+function PagesLayout() {
+  return [ssr(_tmpl$$5, ssrHydrationKey(), escape(createComponent(A, {
+    "class": "p-2 h-full inline-block transition-colors bg-gray-100 hover:bg-white",
+    href: "/",
+    children: "Index"
+  })), escape(createComponent(A, {
+    "class": "p-2 h-full inline-block transition-colors bg-gray-100 hover:bg-white",
+    href: "/about",
+    children: "About"
+  }))), createComponent(Outlet, {})];
+}
+
+const _tmpl$$4 = ["<button", " class=\"w-[200px] rounded-full bg-gray-100 border-2 border-gray-300 focus:border-gray-400 active:border-gray-400 px-[2rem] py-[1rem]\">Clicks: <!--#-->", "<!--/--></button>"];
+function Counter() {
+  const [count, setCount] = createSignal(0);
+  return ssr(_tmpl$$4, ssrHydrationKey(), escape(count()));
+}
+
+const _tmpl$$3 = ["<main", " class=\"text-center mx-auto text-gray-700 p-4\"><h1 class=\"max-6-xs text-6xl text-sky-700 font-thin uppercase my-16\">About Page</h1><!--#-->", "<!--/--><p class=\"mt-8\">Visit <!--#-->", "<!--/--> to learn how to build Solid apps.</p><p class=\"my-4\"><!--#-->", "<!--/--> - <span>About Page</span></p></main>"];
+function About() {
+  return ssr(_tmpl$$3, ssrHydrationKey(), escape(createComponent(Counter, {})), escape(createComponent(A, {
+    href: "https://solidjs.com",
+    target: "_blank",
+    "class": "text-sky-600 hover:underline",
+    children: "solidjs.com"
+  })), escape(createComponent(A, {
+    href: "/",
+    "class": "text-sky-600 hover:underline",
+    children: "Home"
+  })));
+}
+
+const _tmpl$$2 = ["<main", " class=\"text-center mx-auto text-gray-700 p-4\"><div class=\"flex gap-4 justify-center\"><h1 class=\"max-6-xs text-6xl text-sky-700 font-thin uppercase my-16\">Hello world!</h1><!--#-->", "<!--/--><!--#-->", "<!--/--><!--#-->", "<!--/--><div lang=\"ja\" style=\"", "\">\u30CF\u30ED\u30FC\u4E16\u754C</div></div><!--#-->", "<!--/--><p class=\"mt-8\">Visit <a href=\"https://solidjs.com\" target=\"_blank\" class=\"text-sky-600 hover:underline\">solidjs.com</a> to learn how to build Solid apps.</p><p class=\"my-4\"><span>Home</span> - <!--#-->", "<!--/--> </p></main>"];
+function Home() {
+  return ssr(_tmpl$$2, ssrHydrationKey(), escape(createComponent(Link, {
+    rel: "preconnect",
+    href: "https://fonts.googleapis.com"
+  })), escape(createComponent(Link, {
+    rel: "preconnect",
+    href: "https://fonts.gstatic.com",
+    crossOrigin: "anonymous"
+  })), escape(createComponent(Link, {
+    href: "https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500&display=swap",
+    rel: "stylesheet"
+  })), "writing-mode:" + "vertical-rl" + (";font-family:" + "'Noto Serif JP', serif"), escape(createComponent(Counter, {})), escape(createComponent(A, {
+    href: "/about",
+    "class": "text-sky-600 hover:underline",
+    children: "About Page"
+  })));
+}
+
+const _tmpl$$1 = ["<div", ">This is a special view <span>", "</span></div>"];
+function View() {
+  const params = useParams();
+  return ssr(_tmpl$$1, ssrHydrationKey(), escape(JSON.stringify(params)));
+}
+
+const _tmpl$ = ["<main", " class=\"text-center mx-auto text-gray-700 p-4\"><h1 class=\"max-6-xs text-6xl text-sky-700 font-thin uppercase my-16\">Not Found</h1><p class=\"mt-8\">Visit <!--#-->", "<!--/--> to learn how to build Solid apps.</p><p class=\"my-4\"><!--#-->", "<!--/--> - <!--#-->", "<!--/--></p></main>"];
+function NotFound() {
+  return ssr(_tmpl$, ssrHydrationKey(), escape(createComponent(A, {
+    href: "https://solidjs.com",
+    target: "_blank",
+    "class": "text-sky-600 hover:underline",
+    children: "solidjs.com"
+  })), escape(createComponent(A, {
+    href: "/",
+    "class": "text-sky-600 hover:underline",
+    children: "Home"
+  })), escape(createComponent(A, {
+    href: "/about",
+    "class": "text-sky-600 hover:underline",
+    children: "About Page"
+  })));
+}
+
+/// <reference path="../server/types.tsx" />
+const fileRoutes = [{
+  component: PagesLayout,
+  path: "",
+  children: [{
+    component: About,
+    path: "/about"
+  }, {
+    component: Home,
+    path: "/"
+  }, {
+    component: View,
+    path: "/:profile/view"
+  }]
+}, {
+  component: NotFound,
+  path: "/*404"
+}];
+
+/**
+ * Routes are the file system based routes, used by Solid App Router to show the current page according to the URL.
+ */
+
+const FileRoutes = () => {
+  return fileRoutes;
+};
+
+function Root() {
+  return createComponent(Html, {
+    lang: "en",
+    get children() {
+      return [createComponent(Head, {
+        get children() {
+          return [createComponent(Title, {
+            children: "SolidStart - With TailwindCSS"
+          }), createComponent(Meta$1, {
+            charset: "utf-8"
+          }), createComponent(Meta$1, {
+            name: "viewport",
+            content: "width=device-width, initial-scale=1"
+          })];
+        }
+      }), createComponent(Body, {
+        get children() {
+          return [createComponent(Suspense, {
+            get children() {
+              return createComponent(ErrorBoundary, {
+                get children() {
+                  return createComponent(Routes, {
+                    get children() {
+                      return createComponent(FileRoutes, {});
+                    }
+                  });
+                }
+              });
+            }
+          }), createComponent(Scripts, {})];
+        }
+      })];
+    }
+  });
+}
+
+const rootData = Object.values(/* #__PURE__ */ Object.assign({
+
+}))[0];
 const dataFn = rootData ? rootData.default : undefined;
 
 /** Function responsible for listening for streamed [operations]{@link Operation}. */
@@ -2719,7 +2779,7 @@ const composeMiddleware = exchanges => ({
   forward
 }), forward);
 function createHandler(...exchanges) {
-  const exchange = composeMiddleware([apiRoutes, inlineServerFunctions, ...exchanges]);
+  const exchange = composeMiddleware(exchanges);
   return async event => {
     return await exchange({
       forward: async op => {
@@ -2791,6 +2851,8 @@ const onRequestGet = async ({ request, next, env }) => {
   };
   return entryServer({
     request: request,
+    clientAddress: request.headers.get('cf-connecting-ip'),
+    locals: {},
     env
   });
 };
