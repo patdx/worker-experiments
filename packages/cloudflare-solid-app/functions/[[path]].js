@@ -2,89 +2,89 @@ var manifest = {
 	"/(pages)": [
 	{
 		type: "script",
-		href: "/assets/(pages)-a740722f.js"
+		href: "/assets/(pages)-e63848b4.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client-f1f18f84.js"
+		href: "/assets/entry-client-c80e2fac.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client-143d1697.css"
+		href: "/assets/entry-client-18d2f45e.css"
 	}
 ],
 	"/(pages)/:profile/view": [
 	{
 		type: "script",
-		href: "/assets/view-086959bb.js"
+		href: "/assets/view-5729b2a9.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client-f1f18f84.js"
+		href: "/assets/entry-client-c80e2fac.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client-143d1697.css"
+		href: "/assets/entry-client-18d2f45e.css"
 	}
 ],
 	"/(pages)/about": [
 	{
 		type: "script",
-		href: "/assets/about-e0dfe55a.js"
+		href: "/assets/about-3763af96.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client-f1f18f84.js"
+		href: "/assets/entry-client-c80e2fac.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client-143d1697.css"
+		href: "/assets/entry-client-18d2f45e.css"
 	},
 	{
 		type: "script",
-		href: "/assets/Counter-9d0c58a2.js"
+		href: "/assets/Counter-4f2deb2c.js"
 	}
 ],
 	"/(pages)/": [
 	{
 		type: "script",
-		href: "/assets/index-8c25ac51.js"
+		href: "/assets/index-b92154f7.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client-f1f18f84.js"
+		href: "/assets/entry-client-c80e2fac.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client-143d1697.css"
+		href: "/assets/entry-client-18d2f45e.css"
 	},
 	{
 		type: "script",
-		href: "/assets/Counter-9d0c58a2.js"
+		href: "/assets/Counter-4f2deb2c.js"
 	}
 ],
 	"/*404": [
 	{
 		type: "script",
-		href: "/assets/_...404_-79fe3970.js"
+		href: "/assets/_...404_-5df7c124.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client-f1f18f84.js"
+		href: "/assets/entry-client-c80e2fac.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client-143d1697.css"
+		href: "/assets/entry-client-18d2f45e.css"
 	}
 ],
 	"entry-client": [
 	{
 		type: "script",
-		href: "/assets/entry-client-f1f18f84.js"
+		href: "/assets/entry-client-c80e2fac.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client-143d1697.css"
+		href: "/assets/entry-client-18d2f45e.css"
 	}
 ],
 	"index.html": [
@@ -93,14 +93,16 @@ var manifest = {
 
 const ERROR = Symbol("error");
 function castError(err) {
-  if (err instanceof Error || typeof err === "string") return err;
-  return new Error("Unknown error");
+  if (err instanceof Error) return err;
+  return new Error(typeof err === "string" ? err : "Unknown error", {
+    cause: err
+  });
 }
 function handleError(err) {
-  err = castError(err);
+  const error = castError(err);
   const fns = lookup(Owner, ERROR);
-  if (!fns) throw err;
-  for (const f of fns) f(err);
+  if (!fns) throw error;
+  for (const f of fns) f(error);
 }
 const UNOWNED = {
   context: null,
@@ -201,11 +203,21 @@ function cleanNode(node) {
     node.cleanups = null;
   }
 }
-function onError(fn) {
-  if (Owner) {
-    if (Owner.context === null) Owner.context = {
-      [ERROR]: [fn]
-    };else if (!Owner.context[ERROR]) Owner.context[ERROR] = [fn];else Owner.context[ERROR].push(fn);
+function catchError(fn, handler) {
+  Owner = {
+    owner: Owner,
+    context: {
+      [ERROR]: [handler]
+    },
+    owned: null,
+    cleanups: null
+  };
+  try {
+    return fn();
+  } catch (err) {
+    handleError(err);
+  } finally {
+    Owner = Owner.owner;
   }
 }
 function createContext(defaultValue) {
@@ -349,7 +361,7 @@ function splitProps(props, ...keys) {
 }
 function Show(props) {
   let c;
-  return props.when ? typeof (c = props.children) === "function" ? c(props.when) : c : props.fallback || "";
+  return props.when ? typeof (c = props.children) === "function" ? c(props.keyed ? props.when : () => props.when) : c : props.fallback || "";
 }
 function ErrorBoundary$1(props) {
   let error,
@@ -368,19 +380,18 @@ function ErrorBoundary$1(props) {
     const f = props.fallback;
     return typeof f === "function" && f.length ? f(error, () => {}) : f;
   }
-  onError(err => {
-    error = err;
-    !sync && ctx.replace("e" + id, displayFallback);
-    sync = true;
-  });
   createMemo(() => {
     clean = Owner;
-    return res = props.children;
+    return catchError(() => res = props.children, err => {
+      error = err;
+      !sync && ctx.replace("e" + id, displayFallback);
+      sync = true;
+    });
   });
   if (error) return displayFallback();
   sync = false;
   return {
-    t: `<!e${id}>${resolveSSRNode$1(res)}<!/e${id}>`
+    t: `<!!$e${id}>${resolveSSRNode$1(res)}<!!$/e${id}>`
   };
 }
 const SuspenseContext = createContext();
@@ -407,54 +418,55 @@ function Suspense(props) {
       }
     }
   });
+  function suspenseError(err) {
+    if (!done || !done(undefined, err)) {
+      runWithOwner(o.owner, () => {
+        throw err;
+      });
+    }
+  }
   function runSuspense() {
     setHydrateContext({
       ...ctx,
       count: 0
     });
     cleanNode(o);
-    return runWithOwner(o, () => {
-      return createComponent(SuspenseContext.Provider, {
-        value,
-        get children() {
-          return props.children;
-        }
-      });
-    });
+    return runWithOwner(o, () => createComponent(SuspenseContext.Provider, {
+      value,
+      get children() {
+        return catchError(() => props.children, suspenseError);
+      }
+    }));
   }
   const res = runSuspense();
   if (suspenseComplete(value)) return res;
-  runWithOwner(o, () => {
-    onError(err => {
-      if (!done || !done(undefined, err)) {
-        runWithOwner(o.owner, () => {
-          throw err;
-        });
-      }
-    });
-  });
   done = ctx.async ? ctx.registerFragment(id) : undefined;
-  if (ctx.async) {
+  return catchError(() => {
+    if (ctx.async) {
+      setHydrateContext({
+        ...ctx,
+        count: 0,
+        id: ctx.id + "0-f",
+        noHydrate: true
+      });
+      const res = {
+        t: `<template id="pl-${id}"></template>${resolveSSRNode$1(props.fallback)}<!pl-${id}>`
+      };
+      setHydrateContext(ctx);
+      return res;
+    }
     setHydrateContext({
       ...ctx,
       count: 0,
-      id: ctx.id + "0-f",
-      noHydrate: true
+      id: ctx.id + "0-f"
     });
-    const res = {
-      t: `<template id="pl-${id}"></template>${resolveSSRNode$1(props.fallback)}<!pl-${id}>`
-    };
-    setHydrateContext(ctx);
-    return res;
-  }
-  setHydrateContext({
-    ...ctx,
-    count: 0,
-    id: ctx.id + "0-f"
-  });
-  ctx.writeResource(id, "$$f");
-  return props.fallback;
+    ctx.writeResource(id, "$$f");
+    return props.fallback;
+  }, suspenseError);
 }
+
+var I=(c=>(c[c.AggregateError=1]="AggregateError",c[c.ArrayPrototypeValues=2]="ArrayPrototypeValues",c[c.ArrowFunction=4]="ArrowFunction",c[c.BigInt=8]="BigInt",c[c.ErrorPrototypeStack=16]="ErrorPrototypeStack",c[c.Map=32]="Map",c[c.MethodShorthand=64]="MethodShorthand",c[c.ObjectAssign=128]="ObjectAssign",c[c.Promise=256]="Promise",c[c.Set=512]="Set",c[c.Symbol=1024]="Symbol",c[c.TypedArray=2048]="TypedArray",c[c.BigIntTypedArray=4096]="BigIntTypedArray",c))(I||{});var be="hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_",ve=be.length,Ae="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_",ge=Ae.length;function se(e){let r=e%ve,n=be[r];for(e=(e-r)/ve;e>0;)r=e%ge,n+=Ae[r],e=(e-r)/ge;return n}var Le={disabledFeatures:0};function h(e={}){let r=Object.assign({},Le,e||{});return {markedRefs:new Set,refs:new Map,features:8191^r.disabledFeatures}}function V(e){return {stack:[],vars:[],assignments:[],validRefs:[],refSize:0,features:e.features,markedRefs:new Set(e.markedRefs),valueMap:new Map}}function R(e,r){e.markedRefs.add(r);}function m(e,r){let n=e.validRefs[r];n==null&&(n=e.refSize++,e.validRefs[r]=n);let t=e.vars[n];return t==null&&(t=se(n),e.vars[n]=t),t}function P(e,r){let n=e.refs.get(r);return n==null?e.refs.size:n}function z(e,r){let n=e.refs.get(r);if(n==null){let t=e.refs.size;return e.refs.set(r,t),t}return R(e,n),n}function S(e,r){if(!e)throw new Error(r)}function A$2(e){let r="",n=0;for(let t=0,a=e.length;t<a;t++){let o;switch(e[t]){case'"':o='\\"';break;case"\\":o="\\\\";break;case"<":o="\\x3C";break;case`
+`:o="\\n";break;case"\r":o="\\r";break;case"\u2028":o="\\u2028";break;case"\u2029":o="\\u2029";break;default:continue}r+=e.slice(n,t)+o,n=t+1;}return n===0?r=e:r+=e.slice(n),r}var Ie={[0]:"Symbol.asyncIterator",[1]:"Symbol.hasInstance",[2]:"Symbol.isConcatSpreadable",[3]:"Symbol.iterator",[4]:"Symbol.match",[5]:"Symbol.matchAll",[6]:"Symbol.replace",[7]:"Symbol.search",[8]:"Symbol.species",[9]:"Symbol.split",[10]:"Symbol.toPrimitive",[11]:"Symbol.toStringTag",[12]:"Symbol.unscopables"},O={[Symbol.asyncIterator]:0,[Symbol.hasInstance]:1,[Symbol.isConcatSpreadable]:2,[Symbol.iterator]:3,[Symbol.match]:4,[Symbol.matchAll]:5,[Symbol.replace]:6,[Symbol.search]:7,[Symbol.species]:8,[Symbol.split]:9,[Symbol.toPrimitive]:10,[Symbol.toStringTag]:11,[Symbol.unscopables]:12};var T={t:2,i:void 0,s:!0,l:void 0,c:void 0,m:void 0,d:void 0,a:void 0,f:void 0},U={t:2,i:void 0,s:!1,l:void 0,c:void 0,m:void 0,d:void 0,a:void 0,f:void 0},j={t:4,i:void 0,s:void 0,l:void 0,c:void 0,m:void 0,d:void 0,a:void 0,f:void 0},M={t:3,i:void 0,s:void 0,l:void 0,c:void 0,m:void 0,d:void 0,a:void 0,f:void 0},D={t:5,i:void 0,s:void 0,l:void 0,c:void 0,m:void 0,d:void 0,a:void 0,f:void 0},_={t:6,i:void 0,s:void 0,l:void 0,c:void 0,m:void 0,d:void 0,a:void 0,f:void 0},L={t:7,i:void 0,s:void 0,l:void 0,c:void 0,m:void 0,d:void 0,a:void 0,f:void 0},x={t:8,i:void 0,s:void 0,l:void 0,c:void 0,m:void 0,d:void 0,a:void 0,f:void 0};function F(e){return {t:0,i:void 0,s:e,l:void 0,c:void 0,m:void 0,d:void 0,a:void 0,f:void 0}}function K(e){return {t:1,i:void 0,s:A$2(e),l:void 0,c:void 0,m:void 0,d:void 0,a:void 0,f:void 0}}function W(e,r){return S(e.features&8,'Unsupported type "BigInt"'),{t:9,i:void 0,s:""+r,l:void 0,c:void 0,m:void 0,d:void 0,a:void 0,f:void 0}}function Y(e){return {t:10,i:e,s:void 0,l:void 0,c:void 0,m:void 0,d:void 0,a:void 0,f:void 0}}function Z(e,r){return {t:11,i:e,s:r.toISOString(),l:void 0,c:void 0,m:void 0,d:void 0,f:void 0,a:void 0}}function G(e,r){return {t:12,i:e,s:void 0,l:void 0,c:r.source,m:r.flags,d:void 0,a:void 0,f:void 0}}function H(e,r,n){let t=n.constructor.name;S(e.features&2048,`Unsupported value type "${t}"`);let a=n.length,o=new Array(a);for(let i=0;i<a;i++)o[i]=""+n[i];return {t:22,i:r,s:o,l:n.byteOffset,c:t,m:void 0,d:void 0,a:void 0,f:void 0}}var ke=4104;function J(e,r,n){let t=n.constructor.name;S((e.features&ke)===ke,`Unsupported value type "${t}"`);let a=n.length,o=new Array(a);for(let i=0;i<a;i++)o[i]=""+n[i];return {t:23,i:r,s:o,l:n.byteOffset,c:t,m:void 0,d:void 0,a:void 0,f:void 0}}function $(e){return {t:24,i:void 0,s:O[e],l:void 0,c:void 0,m:void 0,d:void 0,a:void 0,f:void 0}}function w(e){return e instanceof EvalError?"EvalError":e instanceof RangeError?"RangeError":e instanceof ReferenceError?"ReferenceError":e instanceof SyntaxError?"SyntaxError":e instanceof TypeError?"TypeError":e instanceof URIError?"URIError":"Error"}function C(e,r){let n,t=w(r);r.name!==t?n={name:r.name}:r.constructor.name!==t&&(n={name:r.constructor.name});let a=Object.getOwnPropertyNames(r);for(let o of a)o!=="name"&&o!=="message"&&(o==="stack"?e.features&16&&(n=n||{},n[o]=r[o]):(n=n||{},n[o]=r[o]));return n}function q(e){let r=Object.getOwnPropertyNames(e);if(r.length){let n={};for(let t of r)n[t]=e[t];return n}}function N(e){if(!e||typeof e!="object"||Array.isArray(e))return !1;switch(e.constructor){case Map:case Set:case Int8Array:case Int16Array:case Int32Array:case Uint8Array:case Uint16Array:case Uint32Array:case Uint8ClampedArray:case Float32Array:case Float64Array:case BigInt64Array:case BigUint64Array:return !1;}return Symbol.iterator in e}var xe=/^[$A-Z_][0-9A-Z_$]*$/i;function le(e){let r=e[0];return (r==="$"||r==="_"||r>="A"&&r<="Z"||r>="a"&&r<="z")&&xe.test(e)}function ne(e){switch(e.t){case"index":return e.s+"="+e.v;case"map":return e.s+".set("+e.k+","+e.v+")";case"set":return e.s+".add("+e.v+")";default:return ""}}function nr(e){let r=[],n=e[0],t=n,a;for(let o=1,i=e.length;o<i;o++){if(a=e[o],a.t===t.t)switch(a.t){case"index":a.v===t.v?n={t:"index",s:a.s,k:void 0,v:ne(n)}:(r.push(n),n=a);break;case"map":a.s===t.s?n={t:"map",s:ne(n),k:a.k,v:a.v}:(r.push(n),n=a);break;case"set":a.s===t.s?n={t:"set",s:ne(n),k:void 0,v:a.v}:(r.push(n),n=a);break;}else r.push(n),n=a;t=a;}return r.push(n),r}function Pe(e){if(e.length){let r="",n=nr(e);for(let t=0,a=n.length;t<a;t++)r+=ne(n[t])+",";return r}}function ze(e){return Pe(e.assignments)}function Be(e,r,n){e.assignments.push({t:"index",s:r,k:void 0,v:n});}function tr(e,r,n){R(e,r),e.assignments.push({t:"set",s:m(e,r),k:void 0,v:n});}function Se(e,r,n,t){R(e,r),e.assignments.push({t:"map",s:m(e,r),k:n,v:t});}function me(e,r,n,t){R(e,r),Be(e,m(e,r)+"["+n+"]",t);}function Te(e,r,n,t){R(e,r),Be(e,m(e,r)+"."+n,t);}function b(e,r,n){return e.markedRefs.has(r)?m(e,r)+"="+n:n}function k(e,r){return r.t===10&&e.stack.includes(r.i)}function ye(e,r){let n=r.l,t="",a,o=!1;for(let i=0;i<n;i++)i!==0&&(t+=","),a=r.a[i],a?k(e,a)?(me(e,r.i,i,m(e,a.i)),o=!0):(t+=y(e,a),o=!1):o=!0;return "["+t+(o?",]":"]")}function ar(e,r){e.stack.push(r.i);let n=ye(e,r);return e.stack.pop(),b(e,r.i,n)}function Ue(e,r,n){if(n.s===0)return "{}";let t="";e.stack.push(r);let a,o,i,d,s,u=!1;for(let l=0;l<n.s;l++)a=n.k[l],o=n.v[l],i=Number(a),d=i>=0||le(a),k(e,o)?(s=m(e,o.i),d&&Number.isNaN(i)?Te(e,r,a,s):me(e,r,d?a:'"'+A$2(a)+'"',s)):(t+=(u?",":"")+(d?a:'"'+A$2(a)+'"')+":"+y(e,o),u=!0);return e.stack.pop(),"{"+t+"}"}function or(e,r,n,t){let a=Ue(e,n,r);return a!=="{}"?"Object.assign("+t+","+a+")":t}function ir(e,r,n){e.stack.push(r);let t=[],a,o,i,d,s,u;for(let l=0;l<n.s;l++)a=e.stack,e.stack=[],o=y(e,n.v[l]),e.stack=a,i=n.k[l],d=Number(i),s=e.assignments,e.assignments=t,u=d>=0||le(i),u&&Number.isNaN(d)?Te(e,r,i,o):me(e,r,u?i:'"'+A$2(i)+'"',o),e.assignments=s;return e.stack.pop(),Pe(t)}function te(e,r,n,t){if(n)if(e.features&128)t=or(e,n,r,t);else {R(e,r);let a=ir(e,r,n);if(a)return "("+b(e,r,t)+","+a+m(e,r)+")"}return b(e,r,t)}function sr(e,r){return te(e,r.i,r.d,"Object.create(null)")}function lr(e,r){return b(e,r.i,Ue(e,r.i,r.d))}function dr(e,r){let n="new Set",t=r.l;if(t){let a="";e.stack.push(r.i);let o,i=!1;for(let d=0;d<t;d++)o=r.a[d],k(e,o)?tr(e,r.i,m(e,o.i)):(a+=(i?",":"")+y(e,o),i=!0);e.stack.pop(),a&&(n+="(["+a+"])");}return b(e,r.i,n)}function ur(e,r){let n="new Map";if(r.d.s){let t="";e.stack.push(r.i);let a,o,i,d,s,u=!1;for(let l=0;l<r.d.s;l++)a=r.d.k[l],o=r.d.v[l],k(e,a)?(i=m(e,a.i),k(e,o)?(d=m(e,o.i),Se(e,r.i,i,d)):(s=e.stack,e.stack=[],Se(e,r.i,i,y(e,o)),e.stack=s)):k(e,o)?(d=m(e,o.i),s=e.stack,e.stack=[],Se(e,r.i,y(e,a),d),e.stack=s):(t+=(u?",[":"[")+y(e,a)+","+y(e,o)+"]",u=!0);e.stack.pop(),t&&(n+="(["+t+"])");}return b(e,r.i,n)}function fr(e,r){e.stack.push(r.i);let n="new AggregateError("+ye(e,r)+',"'+A$2(r.m)+'")';return e.stack.pop(),te(e,r.i,r.d,n)}function cr(e,r){let n="new "+r.c+'("'+A$2(r.m)+'")';return te(e,r.i,r.d,n)}function Sr(e,r){let n;if(k(e,r.f)){let t=m(e,r.f.i);e.features&4?n="Promise.resolve().then(()=>"+t+")":n="Promise.resolve().then(function(){return "+t+"})";}else {e.stack.push(r.i);let t=y(e,r.f);e.stack.pop(),n="Promise.resolve("+t+")";}return b(e,r.i,n)}function mr(e,r){let n="",t=r.t===23;for(let o=0,i=r.s.length;o<i;o++)n+=(o!==0?",":"")+r.s[o]+(t?"n":"");let a="["+n+"]"+(r.l!==0?","+r.l:"");return b(e,r.i,"new "+r.c+"("+a+")")}function yr(e,r){let n=e.stack;e.stack=[];let t=ye(e,r);e.stack=n;let a=t;return e.features&2?a+=".values()":a+="[Symbol.iterator]()",e.features&4?a="{[Symbol.iterator]:()=>"+a+"}":e.features&64?a="{[Symbol.iterator](){return "+a+"}}":a="{[Symbol.iterator]:function(){return "+a+"}}",te(e,r.i,r.d,a)}function y(e,r){switch(r.t){case 0:return ""+r.s;case 1:return '"'+r.s+'"';case 2:return r.s?"!0":"!1";case 4:return "void 0";case 3:return "null";case 5:return "-0";case 6:return "1/0";case 7:return "-1/0";case 8:return "NaN";case 9:return r.s+"n";case 10:return m(e,r.i);case 15:return ar(e,r);case 16:return lr(e,r);case 17:return sr(e,r);case 11:return b(e,r.i,'new Date("'+r.s+'")');case 12:return b(e,r.i,"/"+r.c+"/"+r.m);case 13:return dr(e,r);case 14:return ur(e,r);case 23:case 22:return mr(e,r);case 20:return fr(e,r);case 19:return cr(e,r);case 21:return yr(e,r);case 18:return Sr(e,r);case 24:return Ie[r.s];default:throw new Error("Unsupported type")}}function Ne(e,r){let n=r.length,t=new Array(n),a=new Array(n),o;for(let i=0;i<n;i++)i in r&&(o=r[i],N(o)?a[i]=o:t[i]=g(e,o));for(let i=0;i<n;i++)i in a&&(t[i]=g(e,a[i]));return t}function Nr(e,r,n){return {t:15,i:r,s:void 0,l:n.length,c:void 0,m:void 0,d:void 0,a:Ne(e,n),f:void 0}}function pr(e,r,n){S(e.features&32,'Unsupported type "Map"');let t=n.size,a=new Array(t),o=new Array(t),i=new Array(t),d=new Array(t),s=0,u=0;for(let[l,f]of n.entries())N(l)||N(f)?(i[s]=l,d[s]=f,s++):(a[u]=g(e,l),o[u]=g(e,f),u++);for(let l=0;l<s;l++)a[u+l]=g(e,i[l]),o[u+l]=g(e,d[l]);return {t:14,i:r,s:void 0,l:void 0,c:void 0,m:void 0,d:{k:a,v:o,s:t},a:void 0,f:void 0}}function vr(e,r,n){S(e.features&512,'Unsupported type "Set"');let t=n.size,a=new Array(t),o=new Array(t),i=0,d=0;for(let s of n.keys())N(s)?o[i++]=s:a[d++]=g(e,s);for(let s=0;s<i;s++)a[d+s]=g(e,o[s]);return {t:13,i:r,s:void 0,l:t,c:void 0,m:void 0,d:void 0,a,f:void 0}}function oe(e,r){let n=Object.keys(r),t=n.length,a=new Array(t),o=new Array(t),i=new Array(t),d=new Array(t),s=0,u=0,l;for(let f of n)l=r[f],N(l)?(i[s]=f,d[s]=l,s++):(a[u]=f,o[u]=g(e,l),u++);for(let f=0;f<s;f++)a[u+f]=i[f],o[u+f]=g(e,d[f]);return {k:a,v:o,s:t}}function De(e,r,n){S(e.features&1024,'Unsupported type "Iterable"');let t=q(n),a=Array.from(n);return {t:21,i:r,s:void 0,l:a.length,c:void 0,m:void 0,d:t?oe(e,t):void 0,a:Ne(e,a),f:void 0}}function je(e,r,n,t){return Symbol.iterator in n?De(e,r,n):{t:t?17:16,i:r,s:void 0,l:void 0,c:void 0,m:void 0,d:oe(e,n),a:void 0,f:void 0}}function Me(e,r,n){let t=C(e,n),a=t?oe(e,t):void 0;return {t:20,i:r,s:void 0,l:n.errors.length,c:void 0,m:n.message,d:a,a:Ne(e,n.errors),f:void 0}}function ae(e,r,n){let t=C(e,n),a=t?oe(e,t):void 0;return {t:19,i:r,s:void 0,l:void 0,c:w(n),m:n.message,d:a,a:void 0,f:void 0}}function g(e,r){switch(typeof r){case"boolean":return r?T:U;case"undefined":return j;case"string":return K(r);case"number":switch(r){case 1/0:return _;case-1/0:return L;}return r!==r?x:Object.is(r,-0)?D:F(r);case"bigint":return W(e,r);case"object":{if(!r)return M;let n=z(e,r);if(e.markedRefs.has(n))return Y(n);if(Array.isArray(r))return Nr(e,n,r);switch(r.constructor){case Date:return Z(n,r);case RegExp:return G(n,r);case Int8Array:case Int16Array:case Int32Array:case Uint8Array:case Uint16Array:case Uint32Array:case Uint8ClampedArray:case Float32Array:case Float64Array:return H(e,n,r);case BigInt64Array:case BigUint64Array:return J(e,n,r);case Map:return pr(e,n,r);case Set:return vr(e,n,r);case Object:return je(e,n,r,!1);case void 0:return je(e,n,r,!0);case AggregateError:return e.features&1?Me(e,n,r):ae(e,n,r);case Error:case EvalError:case RangeError:case ReferenceError:case SyntaxError:case TypeError:case URIError:return ae(e,n,r);}if(r instanceof AggregateError)return e.features&1?Me(e,n,r):ae(e,n,r);if(r instanceof Error)return ae(e,n,r);if(Symbol.iterator in r)return De(e,n,r);throw new Error("Unsupported type")}case"symbol":return S(e.features&1024,'Unsupported type "symbol"'),S(r in O,"seroval only supports well-known symbols"),$(r);default:throw new Error("Unsupported type")}}function ie(e,r){let n=g(e,r),t=n.t===16||n.t===21;return [n,P(e,r),t]}function pe(e,r,n,t){if(e.vars.length){let a=ze(e),o=t;if(a){let d=m(e,r);o=t+","+a+d,t.startsWith(d+"=")||(o=d+"="+o);}let i=e.vars.length>1?e.vars.join(","):e.vars[0];return e.features&4?(i=e.vars.length>1||e.vars.length===0?"("+i+")":i,"("+i+"=>("+o+"))()"):"(function("+i+"){return "+o+"})()"}return n?"("+t+")":t}function gr(e,r){let n=h(r),[t,a,o]=ie(n,e),i=V(n),d=y(i,t);return pe(i,a,o,d)}
 
 const booleans = ["allowfullscreen", "async", "autofocus", "autoplay", "checked", "controls", "default", "disabled", "formnovalidate", "hidden", "indeterminate", "ismap", "loop", "multiple", "muted", "nomodule", "novalidate", "open", "playsinline", "readonly", "required", "reversed", "seamless", "selected"];
 const BooleanAttributes = /*#__PURE__*/new Set(booleans);
@@ -464,254 +476,13 @@ const Aliases = /*#__PURE__*/Object.assign(Object.create(null), {
   htmlFor: "for"
 });
 
-const {
-  hasOwnProperty
-} = Object.prototype;
-const REF_START_CHARS = "hjkmoquxzABCDEFGHIJKLNPQRTUVWXYZ$_";
-const REF_START_CHARS_LEN = REF_START_CHARS.length;
-const REF_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_";
-const REF_CHARS_LEN = REF_CHARS.length;
-const STACK = [];
-const BUFFER = [""];
-let ASSIGNMENTS = new Map();
-let INDEX_OR_REF = new WeakMap();
-let REF_COUNT = 0;
-BUFFER.pop();
-function stringify(root) {
-  if (writeProp(root, "")) {
-    let result = BUFFER[0];
-    for (let i = 1, len = BUFFER.length; i < len; i++) {
-      result += BUFFER[i];
-    }
-    if (REF_COUNT) {
-      if (ASSIGNMENTS.size) {
-        let ref = INDEX_OR_REF.get(root);
-        if (typeof ref === "number") {
-          ref = toRefParam(REF_COUNT++);
-          result = ref + "=" + result;
-        }
-        for (const [assignmentRef, assignments] of ASSIGNMENTS) {
-          result += ";" + assignments + assignmentRef;
-        }
-        result += ";return " + ref;
-        ASSIGNMENTS = new Map();
-      } else {
-        result = "return " + result;
-      }
-      result = "(function(" + refParamsString() + "){" + result + "}())";
-    } else if (root && root.constructor === Object) {
-      result = "(" + result + ")";
-    }
-    BUFFER.length = 0;
-    INDEX_OR_REF = new WeakMap();
-    return result;
-  }
-  return "void 0";
-}
-function writeProp(cur, accessor) {
-  switch (typeof cur) {
-    case "string":
-      BUFFER.push(quote(cur, 0));
-      break;
-    case "number":
-      BUFFER.push(cur + "");
-      break;
-    case "boolean":
-      BUFFER.push(cur ? "!0" : "!1");
-      break;
-    case "object":
-      if (cur === null) {
-        BUFFER.push("null");
-      } else {
-        const ref = getRef(cur, accessor);
-        switch (ref) {
-          case true:
-            return false;
-          case false:
-            switch (cur.constructor) {
-              case Object:
-                writeObject(cur);
-                break;
-              case Array:
-                writeArray(cur);
-                break;
-              case Date:
-                BUFFER.push('new Date("' + cur.toISOString() + '")');
-                break;
-              case RegExp:
-                BUFFER.push(cur + "");
-                break;
-              case Map:
-                BUFFER.push("new Map(");
-                writeArray(Array.from(cur));
-                BUFFER.push(")");
-                break;
-              case Set:
-                BUFFER.push("new Set(");
-                writeArray(Array.from(cur));
-                BUFFER.push(")");
-                break;
-              case undefined:
-                BUFFER.push("Object.assign(Object.create(null),");
-                writeObject(cur);
-                BUFFER.push(")");
-                break;
-              default:
-                return false;
-            }
-            break;
-          default:
-            BUFFER.push(ref);
-            break;
-        }
-      }
-      break;
-    default:
-      return false;
-  }
-  return true;
-}
-function writeObject(obj) {
-  let sep = "{";
-  STACK.push(obj);
-  for (const key in obj) {
-    if (hasOwnProperty.call(obj, key)) {
-      const val = obj[key];
-      const escapedKey = toObjectKey(key);
-      BUFFER.push(sep + escapedKey + ":");
-      if (writeProp(val, escapedKey)) {
-        sep = ",";
-      } else {
-        BUFFER.pop();
-      }
-    }
-  }
-  if (sep === "{") {
-    BUFFER.push("{}");
-  } else {
-    BUFFER.push("}");
-  }
-  STACK.pop();
-}
-function writeArray(arr) {
-  BUFFER.push("[");
-  STACK.push(arr);
-  writeProp(arr[0], 0);
-  for (let i = 1, len = arr.length; i < len; i++) {
-    BUFFER.push(",");
-    writeProp(arr[i], i);
-  }
-  STACK.pop();
-  BUFFER.push("]");
-}
-function getRef(cur, accessor) {
-  let ref = INDEX_OR_REF.get(cur);
-  if (ref === undefined) {
-    INDEX_OR_REF.set(cur, BUFFER.length);
-    return false;
-  }
-  if (typeof ref === "number") {
-    ref = insertAndGetRef(cur, ref);
-  }
-  if (STACK.includes(cur)) {
-    const parent = STACK[STACK.length - 1];
-    let parentRef = INDEX_OR_REF.get(parent);
-    if (typeof parentRef === "number") {
-      parentRef = insertAndGetRef(parent, parentRef);
-    }
-    ASSIGNMENTS.set(ref, (ASSIGNMENTS.get(ref) || "") + toAssignment(parentRef, accessor) + "=");
-    return true;
-  }
-  return ref;
-}
-function toObjectKey(name) {
-  const invalidIdentifierPos = getInvalidIdentifierPos(name);
-  return invalidIdentifierPos === -1 ? name : quote(name, invalidIdentifierPos);
-}
-function toAssignment(parent, key) {
-  return parent + (typeof key === "number" || key[0] === '"' ? "[" + key + "]" : "." + key);
-}
-function getInvalidIdentifierPos(name) {
-  let char = name[0];
-  if (!(char >= "a" && char <= "z" || char >= "A" && char <= "Z" || char === "$" || char === "_")) {
-    return 0;
-  }
-  for (let i = 1, len = name.length; i < len; i++) {
-    char = name[i];
-    if (!(char >= "a" && char <= "z" || char >= "A" && char <= "Z" || char >= "0" && char <= "9" || char === "$" || char === "_")) {
-      return i;
-    }
-  }
-  return -1;
-}
-function quote(str, startPos) {
-  let result = "";
-  let lastPos = 0;
-  for (let i = startPos, len = str.length; i < len; i++) {
-    let replacement;
-    switch (str[i]) {
-      case '"':
-        replacement = '\\"';
-        break;
-      case "\\":
-        replacement = "\\\\";
-        break;
-      case "<":
-        replacement = "\\x3C";
-        break;
-      case "\n":
-        replacement = "\\n";
-        break;
-      case "\r":
-        replacement = "\\r";
-        break;
-      case "\u2028":
-        replacement = "\\u2028";
-        break;
-      case "\u2029":
-        replacement = "\\u2029";
-        break;
-      default:
-        continue;
-    }
-    result += str.slice(lastPos, i) + replacement;
-    lastPos = i + 1;
-  }
-  if (lastPos === startPos) {
-    result = str;
-  } else {
-    result += str.slice(lastPos);
-  }
-  return '"' + result + '"';
-}
-function insertAndGetRef(obj, pos) {
-  const ref = toRefParam(REF_COUNT++);
-  INDEX_OR_REF.set(obj, ref);
-  if (pos) {
-    BUFFER[pos - 1] += ref + "=";
-  } else {
-    BUFFER[pos] = ref + "=" + BUFFER[pos];
-  }
-  return ref;
-}
-function refParamsString() {
-  let result = REF_START_CHARS[0];
-  for (let i = 1; i < REF_COUNT; i++) {
-    result += "," + toRefParam(i);
-  }
-  REF_COUNT = 0;
-  return result;
-}
-function toRefParam(index) {
-  let mod = index % REF_START_CHARS_LEN;
-  let ref = REF_START_CHARS[mod];
-  index = (index - mod) / REF_START_CHARS_LEN;
-  while (index > 0) {
-    mod = index % REF_CHARS_LEN;
-    ref += REF_CHARS[mod];
-    index = (index - mod) / REF_CHARS_LEN;
-  }
-  return ref;
+const ES2017FLAG = I.AggregateError
+| I.BigInt
+| I.BigIntTypedArray;
+function stringify(data) {
+  return gr(data, {
+    disabledFeatures: ES2017FLAG
+  });
 }
 
 const VOID_ELEMENTS = /^(?:area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)$/i;
@@ -727,7 +498,7 @@ function renderToString(code, options = {}) {
     nonce: options.nonce,
     writeResource(id, p, error) {
       if (sharedConfig.context.noHydrate) return;
-      if (error) return scripts += `_$HY.set("${id}", ${serializeError(p)});`;
+      if (error) return scripts += `_$HY.set("${id}", ${stringify(p)});`;
       scripts += `_$HY.set("${id}", ${stringify(p)});`;
     }
   };
@@ -818,15 +589,15 @@ function renderToStream(code, options = {}) {
     },
     replace(id, payloadFn) {
       if (firstFlushed) return;
-      const placeholder = `<!${id}>`;
+      const placeholder = `<!!$${id}>`;
       const first = html.indexOf(placeholder);
       if (first === -1) return;
-      const last = html.indexOf(`<!/${id}>`, first + placeholder.length);
+      const last = html.indexOf(`<!!$/${id}>`, first + placeholder.length);
       html = html.replace(html.slice(first, last + placeholder.length + 1), resolveSSRNode(payloadFn()));
     },
     writeResource(id, p, error, wait) {
       const serverOnly = sharedConfig.context.noHydrate;
-      if (error) return !serverOnly && pushTask(serializeSet(dedupe, id, p, serializeError));
+      if (error) return !serverOnly && pushTask(serializeSet(dedupe, id, p));
       if (!p || typeof p !== "object" || !("then" in p)) return !serverOnly && pushTask(serializeSet(dedupe, id, p));
       if (!firstFlushed) wait && blockingResources.push(p);else !serverOnly && pushTask(`_$HY.init("${id}")`);
       if (serverOnly) return;
@@ -849,10 +620,10 @@ function renderToStream(code, options = {}) {
           if ((value !== undefined || error) && !completed) {
             if (!firstFlushed) {
               Promise.resolve().then(() => html = replacePlaceholder(html, key, value !== undefined ? value : ""));
-              error && pushTask(serializeSet(dedupe, key, error, serializeError));
+              error && pushTask(serializeSet(dedupe, key, error));
             } else {
               buffer.write(`<template id="${key}">${value !== undefined ? value : " "}</template>`);
-              pushTask(`${keys.length ? keys.map(k => `_$HY.unset("${k}")`).join(";") + ";" : ""}$df("${key}"${error ? "," + serializeError(error) : ""})${!scriptFlushed ? ";" + REPLACE_SCRIPT : ""}`);
+              pushTask(`${keys.length ? keys.map(k => `_$HY.unset("${k}")`).join(";") + ";" : ""}$df("${key}"${error ? "," + stringify(error) : ""})${!scriptFlushed ? ";" + REPLACE_SCRIPT : ""}`);
               scriptFlushed = true;
             }
           }
@@ -1081,7 +852,7 @@ function resolveSSRNode(node) {
     let prev = {};
     let mapped = "";
     for (let i = 0, len = node.length; i < len; i++) {
-      if (typeof prev !== "object" && typeof node[i] !== "object") mapped += `<!--!-->`;
+      if (typeof prev !== "object" && typeof node[i] !== "object") mapped += `<!--!$-->`;
       mapped += resolveSSRNode(prev = node[i]);
     }
     return mapped;
@@ -1121,21 +892,6 @@ function injectScripts(html, scripts, nonce) {
   }
   return html + tag;
 }
-function serializeError(error) {
-  if (error.message) {
-    const fields = {};
-    const keys = Object.getOwnPropertyNames(error);
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-      const value = error[key];
-      if (!value || key !== "message" && typeof value !== "function") {
-        fields[key] = value;
-      }
-    }
-    return `Object.assign(new Error(${stringify(error.message)}), ${stringify(fields)})`;
-  }
-  return stringify(error);
-}
 function waitForFragments(registry, key) {
   for (const k of [...registry.keys()].reverse()) {
     if (key.startsWith(k)) {
@@ -1145,11 +901,11 @@ function waitForFragments(registry, key) {
   }
   return false;
 }
-function serializeSet(registry, key, value, serializer = stringify) {
+function serializeSet(registry, key, value) {
   const exist = registry.get(value);
   if (exist) return `_$HY.set("${key}", _$HY.r["${exist}"][0])`;
   value !== null && typeof value === "object" && registry.set(value, key);
-  return `_$HY.set("${key}", ${serializer(value)})`;
+  return `_$HY.set("${key}", ${stringify(value)})`;
 }
 function replacePlaceholder(html, key, value) {
   const marker = `<template id="pl-${key}">`;
@@ -1201,7 +957,7 @@ let apiRoutes$1;
 const registerApiRoutes = (routes) => {
   apiRoutes$1 = routes;
 };
-async function internalFetch(route, init) {
+async function internalFetch(route, init, env = {}, locals = {}) {
   if (route.startsWith("http")) {
     return await fetch(route, init);
   }
@@ -1215,8 +971,8 @@ async function internalFetch(route, init) {
     request,
     params: handler.params,
     clientAddress: "127.0.0.1",
-    env: {},
-    locals: {},
+    env,
+    locals,
     $type: FETCH_EVENT,
     fetch: internalFetch
   });
@@ -1368,7 +1124,7 @@ function routeToMatchRoute(route) {
   const segments = route.path.split("/").filter(Boolean);
   const params = [];
   const matchSegments = [];
-  let score = route.path.endsWith("/") ? 4 : 0;
+  let score = 0;
   let wildcard = false;
   for (const [index, segment] of segments.entries()) {
     if (segment[0] === ":") {
@@ -1381,6 +1137,7 @@ function routeToMatchRoute(route) {
       });
       matchSegments.push(null);
     } else if (segment[0] === "*") {
+      score -= 1;
       params.push({
         type: "*",
         name: segment.slice(1),
@@ -1489,9 +1246,9 @@ function createBeforeLeave() {
 }
 
 const hasSchemeRegex = /^(?:[a-z0-9]+:)?\/\//i;
-const trimPathRegex = /^\/+|\/+$/g;
+const trimPathRegex = /^\/+|(\/)\/+$/g;
 function normalizePath(path, omitSlash = false) {
-    const s = path.replace(trimPathRegex, "");
+    const s = path.replace(trimPathRegex, "$1");
     return s ? (omitSlash || /^[?#]/.test(s) ? s : "/" + s) : "";
 }
 function resolvePath(base, path, from) {
@@ -1528,10 +1285,7 @@ function extractSearchParams(url) {
     });
     return params;
 }
-function urlDecode(str, isQuery) {
-    return decodeURIComponent(isQuery ? str.replace(/\+/g, " ") : str);
-}
-function createMatcher(path, partial) {
+function createMatcher(path, partial, matchFilters) {
     const [pattern, splat] = path.split("/*", 2);
     const segments = pattern.split("/").filter(Boolean);
     const len = segments.length;
@@ -1545,22 +1299,50 @@ function createMatcher(path, partial) {
             path: len ? "" : "/",
             params: {}
         };
+        const matchFilter = (s) => matchFilters === undefined ? undefined : matchFilters[s];
         for (let i = 0; i < len; i++) {
             const segment = segments[i];
             const locSegment = locSegments[i];
-            if (segment[0] === ":") {
-                match.params[segment.slice(1)] = locSegment;
+            const dynamic = segment[0] === ":";
+            const key = dynamic ? segment.slice(1) : segment;
+            if (dynamic && matchSegment(locSegment, matchFilter(key))) {
+                match.params[key] = locSegment;
             }
-            else if (segment.localeCompare(locSegment, undefined, { sensitivity: "base" }) !== 0) {
+            else if (dynamic || !matchSegment(locSegment, segment)) {
                 return null;
             }
             match.path += `/${locSegment}`;
         }
         if (splat) {
-            match.params[splat] = lenDiff ? locSegments.slice(-lenDiff).join("/") : "";
+            const remainder = lenDiff ? locSegments.slice(-lenDiff).join("/") : "";
+            if (matchSegment(remainder, matchFilter(splat))) {
+                match.params[splat] = remainder;
+            }
+            else {
+                return null;
+            }
         }
         return match;
     };
+}
+function matchSegment(input, filter) {
+    const isEqual = (s) => s.localeCompare(input, undefined, { sensitivity: "base" }) === 0;
+    if (filter === undefined) {
+        return true;
+    }
+    else if (typeof filter === "string") {
+        return isEqual(filter);
+    }
+    else if (typeof filter === "function") {
+        return filter(input);
+    }
+    else if (Array.isArray(filter)) {
+        return filter.some(isEqual);
+    }
+    else if (filter instanceof RegExp) {
+        return filter.test(input);
+    }
+    return false;
 }
 function scoreRoute(route) {
     const [pattern, splat] = route.pattern.split("/*", 2);
@@ -1652,7 +1434,7 @@ function createRoutes(routeDef, base = "", fallback) {
                 ...shared,
                 originalPath,
                 pattern,
-                matcher: createMatcher(pattern, !isLeaf)
+                matcher: createMatcher(pattern, !isLeaf, routeDef.matchFilters)
             });
         }
         return acc;
@@ -1726,9 +1508,9 @@ function createLocation(path, state) {
             return prev;
         }
     }, origin);
-    const pathname = createMemo(() => urlDecode(url().pathname));
-    const search = createMemo(() => urlDecode(url().search, true));
-    const hash = createMemo(() => urlDecode(url().hash));
+    const pathname = createMemo(() => url().pathname);
+    const search = createMemo(() => url().search, true);
+    const hash = createMemo(() => url().hash);
     const key = createMemo(() => "");
     return {
         get pathname() {
@@ -1869,11 +1651,10 @@ function createRouterContext(integration, base = "", data, out) {
         beforeLeave
     };
 }
-function createRouteContext(router, parent, child, match) {
+function createRouteContext(router, parent, child, match, params) {
     const { base, location, navigatorFactory } = router;
     const { pattern, element: outlet, preload, data } = match().route;
     const path = createMemo(() => match().path);
-    const params = createMemoObject(() => match().params);
     preload && preload();
     const route = {
         parent,
@@ -1926,6 +1707,14 @@ const Routes$1 = props => {
   const routeDefs = children(() => props.children);
   const branches = createMemo(() => createBranches(routeDefs(), joinPaths(parentRoute.pattern, props.base || ""), Outlet$1));
   const matches = createMemo(() => getRouteMatches(branches(), router.location.pathname));
+  const params = createMemoObject(() => {
+    const m = matches();
+    const params = {};
+    for (let i = 0; i < m.length; i++) {
+      Object.assign(params, m[i].params);
+    }
+    return params;
+  });
   if (router.out) {
     router.out.matches.push(matches().map(({
       route,
@@ -1955,7 +1744,7 @@ const Routes$1 = props => {
         }
         createRoot(dispose => {
           disposers[i] = dispose;
-          next[i] = createRouteContext(router, next[i - 1] || parentRoute, () => routeStates()[i + 1], () => matches()[i]);
+          next[i] = createRouteContext(router, next[i - 1] || parentRoute, () => routeStates()[i + 1], () => matches()[i], params);
         });
       }
     }
@@ -1970,6 +1759,7 @@ const Routes$1 = props => {
     get when() {
       return routeStates() && root;
     },
+    keyed: true,
     children: route => createComponent(RouteContextObj.Provider, {
       value: route,
       get children() {
@@ -1984,6 +1774,7 @@ const Outlet$1 = () => {
     get when() {
       return route.child;
     },
+    keyed: true,
     children: child => createComponent(RouteContextObj.Provider, {
       value: child,
       get children() {
@@ -2457,13 +2248,14 @@ const MetaProvider = props => {
     }
   });
 };
-const MetaTag = (tag, props) => {
+const MetaTag = (tag, props, setting) => {
   const id = createUniqueId();
   const c = useContext(MetaContext);
   if (!c) throw new Error("<MetaProvider /> should be in the tree");
   useHead({
     tag,
     props,
+    setting,
     id,
     get name() {
       return props.name || props.property;
@@ -2488,15 +2280,26 @@ function useHead(tagDesc) {
 function renderTags(tags) {
   return tags.map(tag => {
     const keys = Object.keys(tag.props);
-    const props = keys.map(k => k === "children" ? "" : ` ${k}="${tag.props[k]}"`).join("");
-    return tag.props.children ? `<${tag.tag} data-sm="${tag.id}"${props}>${
-    // Tags might contain multiple text children:
-    //   <Title>example - {myCompany}</Title>
-    Array.isArray(tag.props.children) ? tag.props.children.join("") : tag.props.children}</${tag.tag}>` : `<${tag.tag} data-sm="${tag.id}"${props}/>`;
+    // @ts-expect-error
+    const props = keys.map(k => k === "children" ? "" : ` ${k}="${escape(tag.props[k], true)}"`).join("");
+    if (tag.props.children) {
+      // Tags might contain multiple text children:
+      //   <Title>example - {myCompany}</Title>
+      const children = Array.isArray(tag.props.children) ? tag.props.children.join("") : tag.props.children;
+      if (tag.setting?.escape && typeof children === "string") {
+        return `<${tag.tag} data-sm="${tag.id}"${props}>${escape(children)}</${tag.tag}>`;
+      }
+      return `<${tag.tag} data-sm="${tag.id}"${props}>${children}</${tag.tag}>`;
+    }
+    return `<${tag.tag} data-sm="${tag.id}"${props}/>`;
   }).join("");
 }
-const Title = props => MetaTag("title", props);
-const Meta$1 = props => MetaTag("meta", props);
+const Title = props => MetaTag("title", props, {
+  escape: true
+});
+const Meta$1 = props => MetaTag("meta", props, {
+  escape: true
+});
 const Link = props => MetaTag("link", props);
 
 const _tmpl$$7 = ["<div", " style=\"", "\"><div style=\"", "\"><p style=\"", "\" id=\"error-message\">", "</p><button id=\"reset-errors\" style=\"", "\">Clear errors and retry</button><pre style=\"", "\">", "</pre></div></div>"];
@@ -2771,6 +2574,10 @@ const rootData = Object.values(/* #__PURE__ */ Object.assign({
 const dataFn = rootData ? rootData.default : undefined;
 
 /** Function responsible for listening for streamed [operations]{@link Operation}. */
+
+/** Input parameters for to an Exchange factory function. */
+
+/** Function responsible for receiving an observable [operation]{@link Operation} and returning a [result]{@link OperationResult}. */
 
 /** This composes an array of Exchanges into a single ExchangeIO function */
 const composeMiddleware = exchanges => ({
