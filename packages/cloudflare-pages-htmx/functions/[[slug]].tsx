@@ -7,6 +7,8 @@ export const onRequest: PagesFunction = async (context) => {
 
   // console.log(`ji +`, url.pathname);
 
+  console.log('context.env', context.env);
+
   if (url.pathname.startsWith('/assets')) {
     console.log(`fetching ${url}`);
     return context.env.ASSETS.fetch(context.request);

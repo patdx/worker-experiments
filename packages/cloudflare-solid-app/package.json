@@ -9,19 +9,19 @@
   },
   "type": "module",
   "devDependencies": {
-    "@cloudflare/workers-types": "4.20230404.0",
+    "@cloudflare/workers-types": "4.20230904.0",
     "@types/cookie": "0.5.1",
-    "autoprefixer": "10.4.14",
-    "postcss": "8.4.23",
+    "autoprefixer": "10.4.15",
+    "postcss": "8.4.29",
     "solid-js": "1.7.3",
     "solid-start": "0.2.26",
     "solid-start-cloudflare-pages": "0.2.26",
     "solid-start-cloudflare-workers": "0.2.26",
     "solid-start-node": "0.2.26",
-    "tailwindcss": "3.3.2",
-    "typescript": "5.0.4",
-    "vite": "4.3.3",
-    "wrangler": "2.17.0"
+    "tailwindcss": "3.3.3",
+    "typescript": "5.2.2",
+    "vite": "4.4.9",
+    "wrangler": "3.4.0"
   },
   "dependencies": {
     "@cloudflare/kv-asset-handler": "0.3.0",

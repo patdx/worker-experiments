@@ -2,89 +2,89 @@ var manifest = {
 	"/(pages)": [
 	{
 		type: "script",
-		href: "/assets/(pages)-e63848b4.js"
+		href: "/assets/(pages)-d3f6994b.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client-c80e2fac.js"
+		href: "/assets/entry-client-e41e0a73.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client-18d2f45e.css"
+		href: "/assets/entry-client-e5486c63.css"
 	}
 ],
 	"/(pages)/:profile/view": [
 	{
 		type: "script",
-		href: "/assets/view-5729b2a9.js"
+		href: "/assets/view-6f168c9a.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client-c80e2fac.js"
+		href: "/assets/entry-client-e41e0a73.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client-18d2f45e.css"
+		href: "/assets/entry-client-e5486c63.css"
 	}
 ],
 	"/(pages)/about": [
 	{
 		type: "script",
-		href: "/assets/about-3763af96.js"
+		href: "/assets/about-0dbd2012.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client-c80e2fac.js"
+		href: "/assets/entry-client-e41e0a73.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client-18d2f45e.css"
+		href: "/assets/entry-client-e5486c63.css"
 	},
 	{
 		type: "script",
-		href: "/assets/Counter-4f2deb2c.js"
+		href: "/assets/Counter-daee8e3a.js"
 	}
 ],
 	"/(pages)/": [
 	{
 		type: "script",
-		href: "/assets/index-b92154f7.js"
+		href: "/assets/index-57978711.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client-c80e2fac.js"
+		href: "/assets/entry-client-e41e0a73.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client-18d2f45e.css"
+		href: "/assets/entry-client-e5486c63.css"
 	},
 	{
 		type: "script",
-		href: "/assets/Counter-4f2deb2c.js"
+		href: "/assets/Counter-daee8e3a.js"
 	}
 ],
 	"/*404": [
 	{
 		type: "script",
-		href: "/assets/_...404_-5df7c124.js"
+		href: "/assets/_...404_-d0f30f38.js"
 	},
 	{
 		type: "script",
-		href: "/assets/entry-client-c80e2fac.js"
+		href: "/assets/entry-client-e41e0a73.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client-18d2f45e.css"
+		href: "/assets/entry-client-e5486c63.css"
 	}
 ],
 	"entry-client": [
 	{
 		type: "script",
-		href: "/assets/entry-client-c80e2fac.js"
+		href: "/assets/entry-client-e41e0a73.js"
 	},
 	{
 		type: "style",
-		href: "/assets/entry-client-18d2f45e.css"
+		href: "/assets/entry-client-e5486c63.css"
 	}
 ],
 	"index.html": [
@@ -2506,6 +2506,7 @@ function NotFound() {
 }
 
 /// <reference path="../server/types.tsx" />
+
 const fileRoutes = [{
   component: PagesLayout,
   path: "",
