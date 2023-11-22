@@ -24,7 +24,7 @@
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "@vavite/multibuild": "2.0.2",
-    "@vavite/multibuild-cli": "2.0.2",
+    "@vavite/multibuild-cli": "3.0.0",
     "autoprefixer": "10.4.15",
     "better-sqlite3": "8.6.0",
     "json5": "2.2.3",
