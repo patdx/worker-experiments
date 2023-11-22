@@ -12,13 +12,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@nx/js": "16.8.1",
-    "@nx/workspace": "16.8.1",
+    "@nx/js": "17.1.3",
+    "@nx/workspace": "17.1.3",
     "@typescript-eslint/eslint-plugin": "6.6.0",
     "@typescript-eslint/parser": "6.6.0",
     "eslint": "8.48.0",
     "eslint-plugin-sql-formatter": "1.0.5",
-    "nx": "16.8.1",
+    "nx": "17.1.3",
     "open-cli": "7.2.0",
     "prettier-package-json": "2.8.0",
     "typescript": "5.2.2",
@@ -31,3 +31,4 @@
     ]
   }
 }
+
