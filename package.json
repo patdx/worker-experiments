@@ -24,8 +24,10 @@
     "typescript": "5.2.2",
     "wrangler": "3.4.0"
   },
-  "packageManager": "pnpm@8.7.4",
+  "packageManager": "pnpm@8.10.5+sha256.a4bd9bb7b48214bbfcd95f264bd75bb70d100e5d4b58808f5cd6ab40c6ac21c5",
   "pnpm": {
-    "onlyBuiltDependencies": ["better-sqlite3"]
+    "onlyBuiltDependencies": [
+      "better-sqlite3"
+    ]
   }
 }
