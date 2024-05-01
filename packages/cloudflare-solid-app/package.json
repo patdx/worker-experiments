@@ -13,7 +13,7 @@
     "@types/cookie": "0.5.1",
     "autoprefixer": "10.4.15",
     "postcss": "8.4.29",
-    "solid-js": "1.7.3",
+    "solid-js": "1.8.17",
     "solid-start": "0.2.26",
     "solid-start-cloudflare-pages": "0.2.26",
     "solid-start-cloudflare-workers": "0.2.26",
@@ -25,8 +25,8 @@
   },
   "dependencies": {
     "@cloudflare/kv-asset-handler": "0.3.0",
-    "@solidjs/meta": "0.28.4",
-    "@solidjs/router": "0.8.2",
+    "@solidjs/meta": "0.29.3",
+    "@solidjs/router": "0.13.3",
     "cookie": "0.5.0",
     "undici": "5.22.0"
   },
