@@ -8,7 +8,7 @@
     "dev": "nx dev",
     "x-dev": "pnpm build && wrangler pages dev ./dist/client --d1=DB --persist",
     "build": "vavite",
-    "deploy": "rm -rf dist && vavite && wrangler pages deploy ./dist/client --project-name cloudflare-pages-htmx"
+    "deploy": "rm -rf dist && vavite && wrangler pages deploy"
   },
   "keywords": [],
   "author": "",

@@ -8,11 +8,11 @@
         "commands": [
           "pnpm vite build --watch",
           "pnpm vite build --ssr --watch",
-          "wrangler pages dev ./dist/client --d1=DB --compatibility-date 2023-09-04",
+          "wrangler pages dev ",
           "open-cli http://127.0.0.1:8788/"
         ],
         "parallel": true,
-        "cwd": "packages/cloudflare-pages-htmx" 
+        "cwd": "packages/cloudflare-pages-htmx"
       }
     }
   }

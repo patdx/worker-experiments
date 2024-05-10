@@ -22,33 +22,63 @@ export const loader = async (args: LoaderFunctionArgs) => {
 
   let migrations;
   let error = '';
-  const tables = await db
-    .prepare(
-      sql`
-        PRAGMA table_list
-      `
-    )
-    .all<{
-      schema: string;
-      name: string;
-      type: string;
-      ncol: number;
-      wr: number;
-      strict: number;
-    }>();
 
-  const tableInfos = await Promise.all(
-    (tables.results ?? []).map((table) =>
-      db
-        .prepare(`PRAGMA ${table.schema}.table_info(${table.name})`)
-        .all()
-        .then((result) => ({
-          name: table.name,
-          schema: table.schema,
-          info: result.results,
-        }))
-    )
-  );
+  let tables: {
+    name: string;
+    sql: string;
+  }[] = [];
+
+  try {
+    tables = await db
+      .prepare(
+        sql`
+          SELECT
+            name,
+            sql
+          FROM
+            sqlite_schema
+          WHERE
+            type = 'table'
+            AND name NOT LIKE '_cf_%'
+        `
+      )
+      .all<{
+        name: string;
+        sql: string;
+      }>()
+      .then((result) => result.results);
+  } catch (err) {
+    console.log('failed to get tables', err);
+  }
+
+  console.log({ tables });
+
+  let tableInfos: { name: string; schema: string; info: any }[] = [];
+
+  // ${table.schema}.
+
+  try {
+    tableInfos = await Promise.all(
+      (tables ?? []).map((table) =>
+        db
+          .prepare(`PRAGMA table_info(${table.name})`)
+          .all()
+          .then((result) => ({
+            name: table.name,
+            schema: table.schema,
+            info: result.results,
+          }))
+          .catch((err) => {
+            console.log('failed to get table info for ' + table.name, err);
+          })
+      )
+    );
+  } catch (err) {
+    console.log('failed to get table info', err);
+    tableInfos = [];
+  }
+
+  console.log({ tableInfos });
 
   try {
     migrations = await listMigrations(db);
@@ -60,7 +90,7 @@ export const loader = async (args: LoaderFunctionArgs) => {
     });
   }
 
-  return { migrations, error, tables: tables.results ?? [], tableInfos };
+  return { migrations, error, tables, tableInfos };
 };
 
 export const action = async (args: ActionFunctionArgs) => {

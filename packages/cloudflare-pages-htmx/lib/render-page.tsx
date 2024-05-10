@@ -5,7 +5,7 @@ import {
   createStaticRouter,
   StaticRouterProvider,
 } from 'react-router-dom/server';
-import manifest from '../dist/client/manifest.json';
+import manifest from '../dist/client/.vite/manifest.json';
 import { ALL_ROUTES, PARENT_ROUTES } from './all-routes';
 import { Document } from './components/document';
 import { SERVER_CONTEXT } from './context';

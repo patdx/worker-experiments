@@ -2,7 +2,9 @@
 
 import { defineConfig } from 'vite';
 import type {} from '@vavite/multibuild';
-import preact from '@preact/preset-vite';
+// import preact from '@preact/preset-vite';
+import preact from '@vitejs/plugin-react';
+
 import remixRoutes from 'vite-plugin-remix-routes';
 import path from 'path';
 
@@ -50,7 +52,7 @@ export default defineConfig({
     {
       name: 'app-config',
       config(config, env) {
-        if (env.ssrBuild) {
+        if (env.isSsrBuild) {
           return {
             build: {
               emptyOutDir: false,
