@@ -1,7 +1,7 @@
 import {
   type LoaderFunctionArgs,
   useLoaderData,
-  ActionFunctionArgs,
+  type ActionFunctionArgs,
 } from 'react-router';
 import { ButtonGroup, Button } from '../../../../lib/components/button';
 import { SimpleTable } from '../../../../lib/components/simple-table';
@@ -9,7 +9,7 @@ import { SERVER_CONTEXT } from '../../../../lib/context';
 import {
   listMigrations,
   migrate,
-  MigrationCommand,
+  type MigrationCommand,
 } from '../../../../lib/migrate';
 import { renderPage } from '../../../../lib/render-page';
 import { sql } from '../../../../lib/sql';

@@ -1,10 +1,10 @@
 import {
   AbstractLevel,
-  AbstractSublevel,
-  AbstractIterator,
-  AbstractKeyIterator,
-  AbstractValueIterator,
-  AbstractChainedBatch,
+  // AbstractSublevel,
+  // AbstractIterator,
+  // AbstractKeyIterator,
+  // AbstractValueIterator,
+  // AbstractChainedBatch,
 } from 'abstract-level';
 
 import { KVNamespace } from '@miniflare/kv';

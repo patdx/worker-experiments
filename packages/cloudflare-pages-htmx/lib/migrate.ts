@@ -1,5 +1,3 @@
-import { Item } from './components/item';
-
 type Migration = {
   name: string;
   up: (db: D1Database) => D1PreparedStatement[];

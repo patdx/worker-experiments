@@ -1,5 +1,6 @@
 {
   "name": "htmx-experiments",
+  "type": "module",
   "private": true,
   "version": "1.0.0",
   "description": "",
@@ -12,23 +13,27 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@eslint/eslintrc": "^3.0.2",
+    "@eslint/js": "~9.2.0",
+    "@nx/eslint": "19.0.2",
     "@nx/js": "19.0.2",
     "@nx/workspace": "19.0.2",
-    "@typescript-eslint/eslint-plugin": "6.6.0",
-    "@typescript-eslint/parser": "6.6.0",
-    "eslint": "8.48.0",
+    "eslint": "9.2.0",
     "eslint-plugin-sql-formatter": "1.0.5",
+    "globals": "15.2.0",
     "nx": "19.0.2",
-    "open-cli": "7.2.0",
+    "open-cli": "8.0.0",
     "prettier-package-json": "2.8.0",
     "typescript": "5.4.5",
-    "wrangler": "3.4.0"
+    "wrangler": "3.55.0"
   },
   "packageManager": "pnpm@8.15.8+sha512.d1a029e1a447ad90bc96cd58b0fad486d2993d531856396f7babf2d83eb1823bb83c5a3d0fc18f675b2d10321d49eb161fece36fe8134aa5823ecd215feed392",
   "pnpm": {
     "onlyBuiltDependencies": [
       "better-sqlite3"
     ]
+  },
+  "dependencies": {
+    "typescript-eslint": "7.8.0"
   }
 }
-

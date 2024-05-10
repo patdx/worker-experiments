@@ -1,15 +1,13 @@
 import clsx from 'clsx';
 import { DateTime } from 'luxon';
 import {
-  ActionFunctionArgs,
+  type ActionFunctionArgs,
   useLoaderData,
   type LoaderFunctionArgs,
 } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
 import { NavLink } from '../../../lib/components/nav-link';
-import { SimpleTable } from '../../../lib/components/simple-table';
 import { SERVER_CONTEXT } from '../../../lib/context';
-import { renderPage } from '../../../lib/render-page';
 import { hx } from '../../../lib/utils/hx';
 import { getUuid } from '../../../lib/utils/uuid';
 
