@@ -134,8 +134,8 @@ importers:
         specifier: 10.4.19
         version: 10.4.19(postcss@8.4.38)
       better-sqlite3:
-        specifier: 9.6.0
-        version: 9.6.0
+        specifier: 10.1.0
+        version: 10.1.0
       json5:
         specifier: 2.2.3
         version: 2.2.3
@@ -5198,8 +5198,8 @@ packages:
       pascalcase: 0.1.1
     dev: true
 
-  /better-sqlite3@9.6.0:
-    resolution: {integrity: sha512-yR5HATnqeYNVnkaUTf4bOP2dJSnyhP4puJN/QPRyx4YkBEEUxib422n2XzPqDEHjQQqazoYoADdAm5vE15+dAQ==}
+  /better-sqlite3@10.1.0:
+    resolution: {integrity: sha512-hqpHJaCfKEZFaAWdMh6crdzRWyzQzfP6Ih8TYI0vFn01a6ZTDSbJIMXN+6AMBaBOh99DzUy8l3PsV9R3qnJDng==}
     requiresBuild: true
     dependencies:
       bindings: 1.5.0
@@ -9481,7 +9481,7 @@ packages:
     dependencies:
       hosted-git-info: 7.0.1
       proc-log: 3.0.0
-      semver: 7.5.4
+      semver: 7.6.2
       validate-npm-package-name: 5.0.0
     dev: true
 
