@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@cloudflare/workers-types": "4.20240502.0",
+    "@cloudflare/workers-types": "4.20240620.0",
     "@preact/preset-vite": "2.8.2",
     "@rollup/plugin-inject": "5.0.5",
     "@tailwindcss/forms": "0.5.7",
@@ -35,7 +35,7 @@
     "vavite": "4.1.1",
     "vite": "5.2.11",
     "vite-plugin-remix-routes": "0.4.1",
-    "wrangler": "3.55.0"
+    "wrangler": "3.62.0"
   },
   "dependencies": {
     "@remix-run/router": "1.16.0",
