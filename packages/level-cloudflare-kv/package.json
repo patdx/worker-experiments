@@ -14,7 +14,7 @@
     "@miniflare/storage-file": "2.14.2",
     "classic-level": "1.4.1",
     "level-auto-index": "2.0.0",
-    "tape": "5.7.5",
+    "tape": "5.8.1",
     "tempy": "3.1.0"
   }
 }
