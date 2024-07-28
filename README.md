@@ -1,19 +1,9 @@
-# worker-experiments
-
-This repo contains some simple experiments with Cloudflare Workers and htmx to
-see what kind of small dynamic site is possible.
-
-Even with something like HTMX, JSX is my favorite templating language. Also, as
-the cloudflare workers runtime works on JSX, and HTMX needs to be paired with a
-server that can generate HTML, they seem like they would be good companions for
-for a small, fast, website.
-
-## cloudflare-pages-htmx
+# cloudflare-pages-htmx (Worker experiments)
 
 Preview: https://cloudflare-pages-htmx.pages.dev/
 
-This example works a little better. It uses Vite to prebundle the browser side
-assets (at the moment, just htmx and tailwind).
+It uses Vite to prebundle the browser side assets (at the moment, just htmx and
+tailwind).
 
 The "pages" are generated using Cloudflare Pages functions and they render plain
 HTML which is served to the client.

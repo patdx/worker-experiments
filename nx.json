@@ -1,16 +1,5 @@
 {
-  "targetDefaults": {
-    "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "cache": true
-    }
-  },
-  "defaultBase": "main",
-  "workspaceLayout": {
-    "appsDir": "packages",
-    "libsDir": "packages"
-  },
-  "useInferencePlugins": false
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "targetDefaults": {},
+  "defaultBase": "main"
 }

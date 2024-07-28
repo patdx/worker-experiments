@@ -2,11 +2,11 @@
 
 import { defineConfig } from 'vite';
 import type {} from '@vavite/multibuild';
-// import preact from '@preact/preset-vite';
 import preact from '@vitejs/plugin-react';
-
 import remixRoutes from 'vite-plugin-remix-routes';
-import path from 'path';
+import path from 'node:path';
+
+// import preact from '@preact/preset-vite';
 
 // pnpm vavite
 

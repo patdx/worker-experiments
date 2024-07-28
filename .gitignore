@@ -1,3 +1,7 @@
 node_modules
-
 .nx/cache
+/dist
+/.wrangler
+
+
+.nx/workspace-data

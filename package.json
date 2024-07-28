@@ -1,31 +1,90 @@
 {
-  "name": "htmx-experiments",
-  "type": "module",
-  "private": true,
+  "name": "cloudflare-pages-htmx",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "sideEffects": false,
   "scripts": {
-    "build": "nx run-many --target=build",
-    "do-update": "pnpm update -iLr"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nx dev",
+    "x-dev": "pnpm build && wrangler pages dev ./dist/client --d1=DB --persist",
+    "build": "vavite",
+    "deploy": "rm -rf dist && vavite && wrangler pages deploy",
+    "start": "nx exec -- wrangler pages dev"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@nx/js": "19.0.2",
-    "@nx/workspace": "19.0.2",
     "@vitejs/plugin-react": "4.2.1",
-    "nx": "19.0.2",
+    "@cloudflare/workers-types": "4.20240502.0",
+    "@preact/preset-vite": "2.8.2",
+    "@rollup/plugin-inject": "5.0.5",
+    "@tailwindcss/forms": "0.5.7",
+    "@tailwindcss/typography": "0.5.13",
+    "@types/luxon": "3.4.2",
+    "@types/node": "20.12.11",
+    "@types/react": "18.3.1",
+    "@types/react-dom": "18.3.0",
+    "@vavite/multibuild": "4.1.1",
+    "@vavite/multibuild-cli": "4.1.1",
+    "autoprefixer": "10.4.19",
+    "json5": "2.2.3",
     "open-cli": "8.0.0",
-    "prettier-package-json": "2.8.0",
+    "postcss": "8.4.38",
+    "tailwindcss": "3.4.3",
     "typescript": "5.4.5",
-    "wrangler": "3.55.0"
+    "vavite": "4.1.1",
+    "vite": "5.2.11",
+    "vite-plugin-remix-routes": "0.4.1",
+    "wrangler": "3.55.0",
+    "nx": "19.5.3"
+  },
+  "dependencies": {
+    "@remix-run/router": "1.16.0",
+    "clsx": "2.1.1",
+    "generouted": "1.19.3",
+    "htmx.org": "1.9.12",
+    "luxon": "3.4.4",
+    "preact": "10.21.0",
+    "preact-render-to-string": "6.4.2",
+    "react": "npm:@preact/compat",
+    "react-dom": "npm:@preact/compat",
+    "react-icons": "5.2.1",
+    "react-router": "6.23.0",
+    "react-router-dom": "6.23.0"
   },
   "packageManager": "pnpm@9.6.0+sha512.38dc6fba8dba35b39340b9700112c2fe1e12f10b17134715a4aa98ccf7bb035e76fd981cf0bb384dfa98f8d6af5481c2bef2f4266a24bfa20c34eb7147ce0b5e",
+  "nx": {
+    "targets": {
+      "start": {
+        "dependsOn": [
+          "build"
+        ]
+      },
+      "build": {
+        "outputs": [
+          "{projectRoot}/dist"
+        ],
+        "cache": true
+      },
+      "dev": {
+        "executor": "nx:run-commands",
+        "options": {
+          "commands": [
+            "pnpm vite build --watch",
+            "pnpm vite build --ssr --watch",
+            "wrangler pages dev",
+            "open-cli http://127.0.0.1:8788/"
+          ],
+          "parallel": true,
+          "cwd": "packages/cloudflare-pages-htmx"
+        }
+      }
+    }
+  },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "better-sqlite3"
+      "nx"
     ]
   }
 }
