@@ -43,7 +43,7 @@
     "@remix-run/router": "1.16.0",
     "clsx": "2.1.1",
     "generouted": "1.19.3",
-    "htmx.org": "1.9.12",
+    "htmx.org": "2.0.1",
     "luxon": "3.4.4",
     "preact": "10.21.0",
     "preact-render-to-string": "6.4.2",
