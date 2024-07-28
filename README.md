@@ -48,6 +48,14 @@ Just a simple served solid start app.
 The URL https://cloudflare-solid-app.pages.dev/api/hello will serve two
 `set-cookie` headers.
 
+## other archived experiments:
+
+- https://github.com/patdx/worker-experiments/tree/77ff9f7aae68e94e960f7b84c97a13dec1ce16a7/packages/http-test-go
+- https://github.com/patdx/worker-experiments/tree/77ff9f7aae68e94e960f7b84c97a13dec1ce16a7/packages/http-test-rust
+- https://github.com/patdx/worker-experiments/tree/77ff9f7aae68e94e960f7b84c97a13dec1ce16a7/packages/level-cloudflare-kv
+  (Cloudflare D1 is cheaper and faster than trying to add such features on top
+  of KV)
+
 ## Future ideas:
 
 - The htmx syntax is awkward to mix with React, because of prop passing and
