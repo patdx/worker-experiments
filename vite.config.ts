@@ -1,14 +1,11 @@
-// https://vitejs.dev/guide/backend-integration.html
-
 import { defineConfig } from 'vite';
 import type {} from '@vavite/multibuild';
 import preact from '@vitejs/plugin-react';
 import remixRoutes from 'vite-plugin-remix-routes';
 import path from 'node:path';
 
-// import preact from '@preact/preset-vite';
-
 // pnpm vavite
+// https://vitejs.dev/guide/backend-integration.html
 
 // https://vitejs.dev/config/
 export default defineConfig({

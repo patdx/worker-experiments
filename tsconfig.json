@@ -4,7 +4,7 @@
     "lib": ["es2021"],
     "jsx": "react-jsx",
     "module": "es2022",
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "types": ["@cloudflare/workers-types"],
     "resolveJsonModule": true,
     "allowJs": true,

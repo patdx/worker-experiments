@@ -1,7 +1,7 @@
 // Main browser code
 import htmx from 'htmx.org';
 
-console.log('hello');
+console.log('htmx', htmx);
 
 // import 'htmx.org/dist/ext/json-enc';
 // At the moment the above import is not working, due to:
