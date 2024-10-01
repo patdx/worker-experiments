@@ -67,8 +67,8 @@ importers:
         specifier: 18.3.0
         version: 18.3.0
       '@vavite/multibuild':
-        specifier: 4.1.1
-        version: 4.1.1(vite@5.3.5(@types/node@20.14.13))
+        specifier: 5.0.0
+        version: 5.0.0(vite@5.3.5(@types/node@20.14.13))
       '@vavite/multibuild-cli':
         specifier: 4.1.1
         version: 4.1.1(vite@5.3.5(@types/node@20.14.13))
@@ -1476,6 +1476,9 @@ packages:
   '@types/node-forge@1.3.11':
     resolution: {integrity: sha512-FQx220y22OKNTqaByeBGqHWYz4cl94tpcxeFdvBo3wjG6XPBuZ0BNgNZRV5J5TFmmcsJ4IzsLkmGRiQbnYsBEQ==}
 
+  '@types/node@18.19.54':
+    resolution: {integrity: sha512-+BRgt0G5gYjTvdLac9sIeE0iZcJxi4Jc4PV5EUzqi+88jmQLr+fRZdv2tCTV7IHKSGxM6SaLoOXQWWUiLUItMw==}
+
   '@types/node@20.14.13':
     resolution: {integrity: sha512-+bHoGiZb8UiQ0+WEtmph2IWQCjIqg8MDZMAV+ppRRhUZnquF5mQkP/9vpSwJClEiSM/C7fZZExPzfU0vJTyp8w==}
 
@@ -1512,6 +1515,11 @@ packages:
 
   '@vavite/multibuild@4.1.1':
     resolution: {integrity: sha512-R+UJWT2wH598OsGNA/NHgUgtOGvyh9kqaDsP/twJa/OJSH+RWgzj+ONQPqbkAYqPYu0NgRb8rkQOK4QJwdLx0A==}
+    peerDependencies:
+      vite: ^2.8.1 || 3 || 4 || 5
+
+  '@vavite/multibuild@5.0.0':
+    resolution: {integrity: sha512-j07Cm2Dtmx4oUVL0RTv47lR+ZXWSQr8J+UMlbb7ghdmn+W1GvUBbnFRoNCr203SBTlg4CsSIHfDAe9pq1om3Zw==}
     peerDependencies:
       vite: ^2.8.1 || 3 || 4 || 5
 
@@ -3558,6 +3566,9 @@ packages:
 
   picocolors@1.0.1:
     resolution: {integrity: sha512-anP1Z8qwhkbmu7MFP5iTt+wQKXgwzf7zTyGlcdzabySa9vd0Xt392U0rVmz9poOaBj0uHJKyyo9/upk0HrEQew==}
+
+  picocolors@1.1.0:
+    resolution: {integrity: sha512-TQ92mBOW0l3LeMeyLV6mzy/kWr8lkd/hp3mTg7wYK7zJhuBStmGMBG0BdeDZS/dZx1IukaX6Bk11zcln25o1Aw==}
 
   picomatch@2.3.1:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
@@ -5936,6 +5947,10 @@ snapshots:
     dependencies:
       '@types/node': 20.14.13
 
+  '@types/node@18.19.54':
+    dependencies:
+      undici-types: 5.26.5
+
   '@types/node@20.14.13':
     dependencies:
       undici-types: 5.26.5
@@ -5979,6 +5994,13 @@ snapshots:
       '@types/node': 20.14.13
       cac: 6.7.14
       picocolors: 1.0.1
+      vite: 5.3.5(@types/node@20.14.13)
+
+  '@vavite/multibuild@5.0.0(vite@5.3.5(@types/node@20.14.13))':
+    dependencies:
+      '@types/node': 18.19.54
+      cac: 6.7.14
+      picocolors: 1.1.0
       vite: 5.3.5(@types/node@20.14.13)
 
   '@vavite/node-loader@4.1.1(vite@5.3.5(@types/node@20.14.13))':
@@ -8300,6 +8322,8 @@ snapshots:
       is-reference: 3.0.1
 
   picocolors@1.0.1: {}
+
+  picocolors@1.1.0: {}
 
   picomatch@2.3.1: {}
 
