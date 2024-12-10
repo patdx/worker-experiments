@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import type { FC, ReactNode } from 'react';
 import { useLocation } from 'react-router';
-import { hx, HxProps } from '../utils/hx';
+import { hx, type HxProps } from '../utils/hx';
 
 export const NavLink: FC<
   {
@@ -23,7 +23,7 @@ export const NavLink: FC<
       className={clsx(
         'hover:bg-gray-200 hover:underline active:bg-gray-300 active:underline transition p-2',
         isMatch && 'font-bold',
-        className
+        className,
       )}
       {...hx({
         'hx-get': href,

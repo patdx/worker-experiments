@@ -1,7 +1,7 @@
 import { useLoaderData, type LoaderFunctionArgs } from 'react-router';
 import { useSearchParams } from 'react-router';
-import { NavLink } from '../../../lib/components/nav-link';
-import { SERVER_CONTEXT } from '../../../lib/context';
+import { NavLink } from '../../lib/components/nav-link';
+import { SERVER_CONTEXT } from '../../lib/context';
 
 const sql = String.raw;
 
@@ -21,7 +21,7 @@ export const loader = async (args: LoaderFunctionArgs) => {
           bookings
         WHERE
           id = ?
-      `
+      `,
     )
     .bind(id)
     .first<{

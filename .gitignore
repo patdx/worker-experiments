@@ -2,6 +2,8 @@ node_modules
 .nx/cache
 /dist
 /.wrangler
+/build
 
 
 .nx/workspace-data
+.react-router/

@@ -1,8 +1,8 @@
-import render from 'preact-render-to-string';
+import reactDomServer from 'react-dom/server';
 import type { ReactElement } from 'react';
 
 export const htmlFragment = (node: ReactElement) => {
-  return new Response(render(node), {
+  return new Response(reactDomServer.renderToStaticMarkup(node), {
     headers: {
       'Content-Type': 'text/html',
     },

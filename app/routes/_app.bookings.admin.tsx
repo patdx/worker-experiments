@@ -5,11 +5,11 @@ import {
   type LoaderFunctionArgs,
 } from 'react-router';
 import { useSearchParams } from 'react-router';
-import { NavLink } from '../../../lib/components/nav-link';
-import { SimpleTable } from '../../../lib/components/simple-table';
-import { SERVER_CONTEXT } from '../../../lib/context';
-import { renderPage } from '../../../lib/render-page';
-import { getUuid } from '../../../lib/utils/uuid';
+import { NavLink } from '../../lib/components/nav-link';
+import { SimpleTable } from '../../lib/components/simple-table';
+import { SERVER_CONTEXT } from '../../lib/context';
+import { renderPage } from '../../lib/render-page';
+import { getUuid } from '../../lib/utils/uuid';
 
 const getNext7Days = () => {
   const days: string[] = [];
@@ -57,7 +57,7 @@ export const loader = async (args: LoaderFunctionArgs) => {
           bookings
         ORDER BY
           created_at DESC
-      `
+      `,
     )
     .all<{
       id: string;
@@ -77,7 +77,7 @@ export const loader = async (args: LoaderFunctionArgs) => {
         GROUP BY
           day,
           hour
-      `
+      `,
     )
     .all<{
       day: string;
@@ -97,7 +97,7 @@ export const loader = async (args: LoaderFunctionArgs) => {
     schedules.push(schedule);
     for (const hour of getAllBookingTimes()) {
       const foundStats = stats.results?.find(
-        (stat) => stat.day === day && stat.hour === hour
+        (stat) => stat.day === day && stat.hour === hour,
       );
       schedule.slots.push({
         hour,
@@ -129,7 +129,7 @@ export const action = async (args: ActionFunctionArgs) => {
         bookings (id, name, day, hour)
       VALUES
         (?, ?, ?, ?)
-    `
+    `,
   )
     .bind(getUuid(), name, day, hour)
     .run()

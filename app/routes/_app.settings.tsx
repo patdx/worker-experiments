@@ -1,5 +1,5 @@
-import { NavLink } from '../../../lib/components/nav-link';
-import { HtmxOutlet } from '../../../lib/htmx-outlet';
+import { NavLink } from '../../lib/components/nav-link';
+import { HtmxOutlet } from '../../lib/htmx-outlet';
 
 const SettingsPage = () => (
   <>

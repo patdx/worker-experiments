@@ -2,7 +2,7 @@
 name = "cloudflare-pages-htmx"
 compatibility_date = "2023-08-15"
 
-pages_build_output_dir = "./dist/client"
+pages_build_output_dir = "./build/client"
 
 [[d1_databases]]
 # database_id = "9c561187-dddb-40b9-888e-986cd87be9b4"

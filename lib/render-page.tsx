@@ -1,21 +1,32 @@
-import { matchRoutes, createStaticHandler } from '@remix-run/router';
-import render from 'preact-render-to-string';
+import reactDomServer from 'react-dom/server';
 import type { RouteObject } from 'react-router';
-import { createStaticRouter, StaticRouterProvider } from 'react-router';
-import manifest from '../dist/client/.vite/manifest.json';
+import {
+  createStaticRouter,
+  StaticRouterProvider,
+  matchRoutes,
+  createStaticHandler,
+  createRequestHandler,
+} from 'react-router';
 import { ALL_ROUTES, PARENT_ROUTES } from './all-routes';
 import { Document } from './components/document';
 import { SERVER_CONTEXT } from './context';
 import { diffRoutes } from './diff-routes';
 
+import manifest from '../build/client/.vite/manifest.json';
+
+const render = reactDomServer.renderToStaticMarkup;
+
 // https://github.com/remix-run/react-router/blob/4d915e3305df5b01f51abdeb1c01bf442453522e/examples/ssr-data-router/src/entry.server.tsx
+
+// TODO: I think I need to use something like this
+// https://github.com/remix-run/react-router/blob/487961f20c8d663671f3cd45c31c67fa97128dce/packages/react-router/lib/server-runtime/server.ts#L40
 
 export const renderPage = async (
   eventContext: EventContext<unknown, any, Record<string, unknown>>,
   options?: {
     /** if true will just refresh the section for API */
     apiRefresh?: boolean;
-  }
+  },
 ) => {
   let request = eventContext.request;
 
@@ -31,11 +42,16 @@ export const renderPage = async (
   SERVER_CONTEXT.set(request, eventContext as any);
 
   const matches = matchRoutes(ALL_ROUTES, new URL(request.url).pathname);
+
+  console.log('matches', matches);
+
   const deepestMatch = matches && matches[matches.length - 1];
   const isApiRoute =
     deepestMatch &&
     (!deepestMatch.route.element ||
       (request.method !== 'GET' && request.method !== 'HEAD'));
+
+  console.log('api route?', request.method, isApiRoute, deepestMatch);
 
   // console.log('api route?', request.method, isApiRoute, deepestMatch);
 
@@ -51,7 +67,7 @@ export const renderPage = async (
     const change = diffRoutes(
       ALL_ROUTES,
       new URL(hxCurrentUrl).pathname,
-      new URL(nextUrl).pathname
+      new URL(nextUrl).pathname,
     );
 
     routes = change?.route ? [change.route] : [];
@@ -93,20 +109,22 @@ export const renderPage = async (
 
     console.log(routes[0].id, parentId, outletId);
 
-    outputString = render(
-      <div
-        // TODO: figure out the parent parent id more correctly
-        id={outletId}
-        data-route={routes[0].path}
-        hx-swap-oob="innerHTML"
-      >
-        <StaticRouterProvider
-          router={router}
-          context={context}
-          hydrate={false}
-        />
-      </div>
-    );
+    outputString =
+      // TODO: streaming?
+      reactDomServer.renderToStaticMarkup(
+        <div
+          // TODO: figure out the parent parent id more correctly
+          id={outletId}
+          data-route={routes[0].path}
+          hx-swap-oob="innerHTML"
+        >
+          <StaticRouterProvider
+            router={router}
+            context={context}
+            hydrate={false}
+          />
+        </div>,
+      );
   } else {
     outputString = // full page render:
       '<!DOCTYPE html>' +
@@ -117,7 +135,7 @@ export const renderPage = async (
             context={context}
             hydrate={false}
           />
-        </Document>
+        </Document>,
       );
   }
 

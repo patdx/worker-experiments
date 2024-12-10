@@ -6,10 +6,10 @@ import {
   type LoaderFunctionArgs,
 } from 'react-router';
 import { useSearchParams } from 'react-router';
-import { NavLink } from '../../../lib/components/nav-link';
-import { SERVER_CONTEXT } from '../../../lib/context';
-import { hx } from '../../../lib/utils/hx';
-import { getUuid } from '../../../lib/utils/uuid';
+import { NavLink } from '../../lib/components/nav-link';
+import { SERVER_CONTEXT } from '../../lib/context';
+import { hx } from '../../lib/utils/hx';
+import { getUuid } from '../../lib/utils/uuid';
 
 const getNext7Days = () => {
   const days: string[] = [];
@@ -60,7 +60,7 @@ export const loader = async (args: LoaderFunctionArgs) => {
         GROUP BY
           day,
           hour
-      `
+      `,
     )
     .all<{
       day: string;
@@ -80,7 +80,7 @@ export const loader = async (args: LoaderFunctionArgs) => {
     schedules.push(schedule);
     for (const hour of getAllBookingTimes()) {
       const foundStats = stats.results?.find(
-        (stat) => stat.day === day && stat.hour === hour
+        (stat) => stat.day === day && stat.hour === hour,
       );
       schedule.slots.push({
         hour,
@@ -113,7 +113,7 @@ export const action = async (args: ActionFunctionArgs) => {
         bookings (id, name, day, hour)
       VALUES
         (?, ?, ?, ?)
-    `
+    `,
   )
     .bind(id, name, day, hour)
     .run()
@@ -171,7 +171,7 @@ const BookingsPage = () => {
                   </td>
                   {schedules.map((schedule) => {
                     const slot = schedule.slots.find(
-                      (slot) => slot.hour === hour
+                      (slot) => slot.hour === hour,
                     );
 
                     const isSelected =
@@ -184,10 +184,10 @@ const BookingsPage = () => {
                       taken === 0
                         ? 'book-now'
                         : taken <= 2
-                        ? 'remaining'
-                        : taken < MAX_BOOKINGS_PER_SLOT
-                        ? 'few-remaining'
-                        : undefined;
+                          ? 'remaining'
+                          : taken < MAX_BOOKINGS_PER_SLOT
+                            ? 'few-remaining'
+                            : undefined;
 
                     const remaining = MAX_BOOKINGS_PER_SLOT - taken;
 
@@ -195,7 +195,7 @@ const BookingsPage = () => {
                       <td
                         className={clsx(
                           'p-2',
-                          isSelected ? 'border-2 bg-gray-200' : 'border'
+                          isSelected ? 'border-2 bg-gray-200' : 'border',
                         )}
                       >
                         {displayType ? (
@@ -210,7 +210,7 @@ const BookingsPage = () => {
                               'underline',
                               displayType === 'book-now' && 'text-green-500',
                               displayType === 'remaining' && 'text-orange-500',
-                              displayType === 'few-remaining' && 'text-red-500'
+                              displayType === 'few-remaining' && 'text-red-500',
                             )}
                           >
                             {displayType === 'book-now' && 'Open'}

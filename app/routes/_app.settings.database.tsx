@@ -3,17 +3,17 @@ import {
   useLoaderData,
   type ActionFunctionArgs,
 } from 'react-router';
-import { ButtonGroup, Button } from '../../../../lib/components/button';
-import { SimpleTable } from '../../../../lib/components/simple-table';
-import { SERVER_CONTEXT } from '../../../../lib/context';
+import { ButtonGroup, Button } from '../../lib/components/button';
+import { SimpleTable } from '../../lib/components/simple-table';
+import { SERVER_CONTEXT } from '../../lib/context';
 import {
   listMigrations,
   migrate,
   type MigrationCommand,
-} from '../../../../lib/migrate';
-import { renderPage } from '../../../../lib/render-page';
-import { sql } from '../../../../lib/sql';
-import { hx } from '../../../../lib/utils/hx';
+} from '../../lib/migrate';
+import { renderPage } from '../../lib/render-page';
+import { sql } from '../../lib/sql';
+import { hx } from '../../lib/utils/hx';
 
 export const loader = async (args: LoaderFunctionArgs) => {
   const context = SERVER_CONTEXT.get(args.request);
@@ -40,7 +40,7 @@ export const loader = async (args: LoaderFunctionArgs) => {
           WHERE
             type = 'table'
             AND name NOT LIKE '_cf_%'
-        `
+        `,
       )
       .all<{
         name: string;
@@ -70,8 +70,8 @@ export const loader = async (args: LoaderFunctionArgs) => {
           }))
           .catch((err) => {
             console.log('failed to get table info for ' + table.name, err);
-          })
-      )
+          }),
+      ),
     );
   } catch (err) {
     console.log('failed to get table info', err);

@@ -1,17 +1,15 @@
-import {
-  type LoaderFunctionArgs,
-  useLoaderData,
-  ActionFunctionArgs,
-} from 'react-router';
-import { SERVER_CONTEXT } from '../../../lib/context';
-import { renderPage } from '../../../lib/render-page';
-import { getUuid } from '../../../lib/utils/uuid';
 import { IoTrash } from 'react-icons/io5';
-import { hx } from '../../../lib/utils/hx';
+import { useLoaderData } from 'react-router';
+import { SERVER_CONTEXT } from '../../lib/context';
+import { renderPage } from '../../lib/render-page';
+import { hx } from '../../lib/utils/hx';
+import { getUuid } from '../../lib/utils/uuid';
+
+import type { Route } from './+types/_app.comments';
 
 const sql = String.raw;
 
-export const loader = async (args: LoaderFunctionArgs) => {
+export const loader = async (args: Route.LoaderArgs) => {
   const context = SERVER_CONTEXT.get(args.request);
 
   const db = context!.env.DB;
@@ -25,7 +23,7 @@ export const loader = async (args: LoaderFunctionArgs) => {
           comments
         ORDER BY
           created_at DESC
-      `
+      `,
     )
     .all<{
       id: string;
@@ -38,7 +36,7 @@ export const loader = async (args: LoaderFunctionArgs) => {
   };
 };
 
-export const action = async (args: ActionFunctionArgs) => {
+export const action = async (args: Route.ActionArgs) => {
   console.log('Comment action!');
   const context = SERVER_CONTEXT.get(args.request)!;
 
@@ -53,7 +51,7 @@ export const action = async (args: ActionFunctionArgs) => {
           comments
         WHERE
           id = ?
-      `
+      `,
     )
       .bind(id)
       .run();
@@ -68,7 +66,7 @@ export const action = async (args: ActionFunctionArgs) => {
           comments (id, message)
         VALUES
           (?, ?)
-      `
+      `,
     )
       .bind(getUuid(), message)
       .run()
