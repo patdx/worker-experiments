@@ -5,7 +5,7 @@ import {
   useLoaderData,
   type LoaderFunctionArgs,
 } from 'react-router';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import { NavLink } from '../../../lib/components/nav-link';
 import { SERVER_CONTEXT } from '../../../lib/context';
 import { hx } from '../../../lib/utils/hx';

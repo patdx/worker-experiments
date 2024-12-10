@@ -1,10 +1,7 @@
 import { matchRoutes, createStaticHandler } from '@remix-run/router';
 import render from 'preact-render-to-string';
 import type { RouteObject } from 'react-router';
-import {
-  createStaticRouter,
-  StaticRouterProvider,
-} from 'react-router-dom/server';
+import { createStaticRouter, StaticRouterProvider } from 'react-router';
 import manifest from '../dist/client/.vite/manifest.json';
 import { ALL_ROUTES, PARENT_ROUTES } from './all-routes';
 import { Document } from './components/document';

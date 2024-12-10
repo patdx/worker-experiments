@@ -4,7 +4,7 @@ import {
   useLoaderData,
   type LoaderFunctionArgs,
 } from 'react-router';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import { NavLink } from '../../../lib/components/nav-link';
 import { SimpleTable } from '../../../lib/components/simple-table';
 import { SERVER_CONTEXT } from '../../../lib/context';

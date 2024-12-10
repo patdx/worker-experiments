@@ -1,4 +1,4 @@
-import { matchRoutes, RouteObject } from 'react-router-dom';
+import { matchRoutes, type RouteObject } from 'react-router';
 
 export const diffRoutes = (
   routes: RouteObject[],
