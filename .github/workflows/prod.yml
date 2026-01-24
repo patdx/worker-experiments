@@ -11,17 +11,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          # We need to fetch all branches and commits so that Nx affected has a base to compare against.
-          fetch-depth: 0
-
-      - name:
-          Derive appropriate SHAs for base and head for `nx affected` commands
-        uses: nrwl/nx-set-shas@v4
-
-      - run: |
-          echo "BASE: ${{ env.NX_BASE }}"
-          echo "HEAD: ${{ env.NX_HEAD }}"
 
       - uses: pnpm/action-setup@v4
         name: Install pnpm
@@ -35,10 +24,10 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Build affected apps
-        run: pnpm nx affected --target=build
+      - name: Build
+        run: pnpm build
 
-      - name: Deploy affected apps
-        run: pnpm nx affected --target=deploy
+      - name: Deploy
+        run: pnpm deploy
         env: # Or as an environment variable
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

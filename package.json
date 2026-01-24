@@ -6,12 +6,11 @@
   "sideEffects": false,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nx start",
-    "xx-dev": "nx dev",
+    "dev": "pnpm vite build --watch & pnpm vite build --ssr --watch & wrangler pages dev & open-cli http://127.0.0.1:8788/",
     "x-dev": "pnpm build && wrangler pages dev ./dist/client --d1=DB --persist",
-    "build": "nx exec -- vavite",
+    "build": "vavite",
     "deploy": "rm -rf dist && vavite && wrangler pages deploy",
-    "start": "nx exec -- wrangler pages dev"
+    "start": "wrangler pages dev"
   },
   "keywords": [],
   "author": "",
@@ -30,7 +29,6 @@
     "@vitejs/plugin-react": "4.3.4",
     "autoprefixer": "10.4.20",
     "json5": "2.2.3",
-    "nx": "20.2.1",
     "open-cli": "8.0.0",
     "postcss": "8.4.49",
     "tailwindcss": "3.4.16",
@@ -52,38 +50,5 @@
     "react-icons": "5.4.0",
     "react-router": "7.0.2"
   },
-  "packageManager": "pnpm@9.15.0+sha512.76e2379760a4328ec4415815bcd6628dee727af3779aaa4c914e3944156c4299921a89f976381ee107d41f12cfa4b66681ca9c718f0668fa0831ed4c6d8ba56c",
-  "nx": {
-    "targets": {
-      "start": {
-        "dependsOn": [
-          "build"
-        ]
-      },
-      "build": {
-        "outputs": [
-          "{projectRoot}/dist"
-        ],
-        "cache": true
-      },
-      "dev": {
-        "executor": "nx:run-commands",
-        "options": {
-          "commands": [
-            "pnpm vite build --watch",
-            "pnpm vite build --ssr --watch",
-            "wrangler pages dev",
-            "open-cli http://127.0.0.1:8788/"
-          ],
-          "parallel": true,
-          "cwd": "packages/cloudflare-pages-htmx"
-        }
-      }
-    }
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "nx"
-    ]
-  }
+  "packageManager": "pnpm@9.15.0+sha512.76e2379760a4328ec4415815bcd6628dee727af3779aaa4c914e3944156c4299921a89f976381ee107d41f12cfa4b66681ca9c718f0668fa0831ed4c6d8ba56c"
 }
